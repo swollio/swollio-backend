@@ -8,15 +8,27 @@
   },
   "private": true,
   "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
     "build": "tsc",
     "start": "node build/index.js",
     "deploy": "gcloud app deploy"
+  },
+  "jest": {
+    "verbose": true,
+    "rootDir": "build"
   },
   "author": "Thomas Barrett",
   "license": "ISC",
   "dependencies": {
     "@types/express": "^4.17.7",
+    "@types/jest": "^26.0.5",
+    "@types/supertest": "^2.0.10",
     "express": "^4.17.1",
     "typescript": "^3.9.7"
+  },
+  "devDependencies": {
+    "jest": "^26.1.0",
+    "supertest": "^4.0.2"
   }
 }

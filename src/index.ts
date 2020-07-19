@@ -14,4 +14,4 @@ app.listen(PORT, () => {
   console.log('Press Ctrl+C to quit.');
 });
 
-module.exports = app;
+export default app;
