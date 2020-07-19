@@ -1,6 +1,10 @@
 import express from 'express'
 
+import athleteRouter from './routes/athlete'
+
 const app = express();
+
+app.use('/athlete', athleteRouter);
 
 app.get('/', (req, res) => {
   res.status(200).send('Hello, world!').end();
