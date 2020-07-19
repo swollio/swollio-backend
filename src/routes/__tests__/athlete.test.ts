@@ -1,5 +1,5 @@
 import express from 'express'
-import router from './athlete'
+import router from '../athlete'
 import supertest from 'supertest'
 
 const app = express();
