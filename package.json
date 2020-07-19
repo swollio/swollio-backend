@@ -8,8 +8,9 @@
   },
   "private": true,
   "scripts": {
-    "tsc": "tsc",
-    "start": "node build/index.js"
+    "build": "tsc",
+    "start": "node build/index.js",
+    "deploy": "gcloud app deploy"
   },
   "author": "Thomas Barrett",
   "license": "ISC",
