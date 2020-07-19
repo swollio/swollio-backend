@@ -27,5 +27,4 @@ router.get('/:id/exercises/', (req, res) => {
     res.send('unimplemented')
 });
 
-
 export default router;
