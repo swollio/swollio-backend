@@ -1,5 +1,5 @@
 import express from 'express'
-import router from './team'
+import router from '../routes/exercise'
 import supertest from 'supertest'
 
 const app = express();
