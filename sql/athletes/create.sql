@@ -1,2 +1,2 @@
-insert into athletes (first_name, last_name, gender, height, weight, age)
-values ($1, $2, $3, $4, $5, $6);
+INSERT INTO athletes (first_name, last_name, gender, height, weight, age)
+VALUE ($1, $2, $3, $4, $5, $6);

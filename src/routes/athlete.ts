@@ -4,16 +4,16 @@ import db from '../database'
 const router = express.Router()
 
 router.get('/', (req, res) => {
-    db['athletes.all']().then(result => {
-        res.send(result.rows);
+    db['athletes.list']().then(result => {
+        res.status(200).send(result.rows);
     }).catch(() => {
         res.status(500).send();
     });
 });
 
 router.get('/:id', (req, res) => {
-    db['athletes.one']([req.params.id]).then(result => {
-        res.send(result.rows);
+    db['athletes.find']([req.params.id]).then(result => {
+        res.status(200).send(result.rows);
     }).catch(() => {
         res.status(500).send();
     });
