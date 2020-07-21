@@ -6,7 +6,8 @@ const router = express.Router()
 router.get('/', (req, res) => {
     db['athletes.list']().then(result => {
         res.status(200).send(result.rows);
-    }).catch(() => {
+    }).catch((error) => {
+        console.log(error)
         res.status(500).send();
     });
 });
