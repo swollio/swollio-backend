@@ -1,1 +1,2 @@
-select id, name from users;
+SELECT id, first_name, last_name
+FROM athletes;

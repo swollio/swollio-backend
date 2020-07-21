@@ -3,7 +3,6 @@ import express from 'express'
 import athleteRouter from './routes/athlete'
 import teamRouter from './routes/team'
 import exerciseRouter from './routes/exercise'
-import db from './database'
 
 const app = express();
 
