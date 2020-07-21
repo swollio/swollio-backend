@@ -1,15 +1,22 @@
 import express from 'express'
+import db from '../database'
 
 const router = express.Router()
 
 router.get('/', (req, res) => {
-    res.status(500)
-    res.send('unimplemented')
+    db['athletes.all']().then(result => {
+        res.send(result.rows);
+    }).catch(() => {
+        res.status(500).send();
+    });
 });
 
 router.get('/:id', (req, res) => {
-    res.status(500)
-    res.send('unimplemented')
+    db['athletes.one']([req.params.id]).then(result => {
+        res.send(result.rows);
+    }).catch(() => {
+        res.status(500).send();
+    });
 });
 
 router.get('/:id/workouts', (req, res) => {
