@@ -22,4 +22,6 @@ function load_database() {
     return queries;
 }
 
-export default load_database();
+const db = load_database();
+
+export default db;

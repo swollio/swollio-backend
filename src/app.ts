@@ -7,8 +7,6 @@ import db from './database'
 
 const app = express();
 
-db['users.all']().then(res => console.log(res.rows));
-
 app.use('/athletes', athleteRouter);
 app.use('/teams', teamRouter);
 app.use('/exercises', exerciseRouter);
