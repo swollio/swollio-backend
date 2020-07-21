@@ -1,4 +1,4 @@
-import { Pool } from 'pg'
+import { Pool, QueryResult } from 'pg'
 import fs from 'fs'
 import path from 'path'
 import glob from 'glob-promise'
@@ -11,18 +11,15 @@ const pool = new Pool({
   port: 5432,
 })
 
+function load_database() {
+    let files = glob.sync("sql/**/*.sql")
+    var queries: {[key: string]: (values?: any[] | undefined) => Promise<QueryResult<any>> } = {};
+    files.forEach(file => {
+        const key = file.split('.')[0].split('/').slice(1).join('.');
+        const value = fs.readFileSync(file);
+        queries[key] = (values?: any[] | undefined) => pool.query(value.toString(), values);
+    });
+    return queries;
+}
 
-glob("sql/**/*.sql").then(files => {
-  let queries = new Map<string, string>();
-  files.forEach(file => {
-    const data = fs.readFileSync(file);
-    const key = file.split('.')[0].split('/').slice(1).join('.');
-    console.log(key)
-    queries = queries.set(key, data.toString());
-  });
-  return queries;
-}).then(queries => {
-  console.log(queries);
-});
-
-export {pool}
+export default load_database();
