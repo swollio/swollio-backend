@@ -3,4 +3,4 @@ package-lock.json
 build
 
 ## Db credentials
-src/localDbInfo.ts
+src/config.json

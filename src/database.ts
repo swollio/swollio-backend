@@ -1,9 +1,9 @@
 import { Pool, QueryResult } from 'pg'
 import fs from 'fs'
 import glob from 'glob-promise'
-import localDbInfo from './localDbInfo'
+import config from './config.json'
 
-const pool = new Pool(localDbInfo)
+const pool = new Pool(config.sql)
 
 /**
  * This function automatically creates an object using the SQL queries in the sql/*.
@@ -23,7 +23,5 @@ function load_database() {
 }
 
 const db = load_database();
-
-console.log(db);
 
 export default db;

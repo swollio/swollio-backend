@@ -1,0 +1,24 @@
+{
+    "athletes": [{
+        "first_name": "thomas",
+        "last_name": "barrett",
+        "gender": "male",
+        "height": 66,
+        "weight": 195,
+        "age": 20
+    }, {
+        "first_name": "anshul",
+        "last_name": "kamath",
+        "gender": "male",
+        "height": 66,
+        "weight": 180,
+        "age": 19
+    }, {
+        "first_name": "william",
+        "last_name": "covino",
+        "gender": "male",
+        "height": 60,
+        "weight": 175,
+        "age": 20
+    }]
+}
