@@ -15,6 +15,7 @@ import * as constants from './constants'
  * 
  * @returns {any} Returns a JSON with the same key-value pairs as queryParams, except with the right data types
  */
+
 function recastQuery (queryParams : constants.LooseType, templateTypes : { [key: string] : string [] }) {
     
     // Getting an array of each type in the templateTypes object
