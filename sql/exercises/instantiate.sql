@@ -1,36 +1,29 @@
-CREATE TABLE exercises (
+CREATE TABLE IF NOT EXISTS exercises (
 	id  SERIAL PRIMARY KEY,
    	name TEXT NOT NULL,
    	weight INT,
     reps INT,
-   	legitimacy INT,
-
+   	legitimacy INT
 );
 
-CREATE TABLE muscles (
+CREATE TABLE IF NOT EXISTS muscles (
 	id  SERIAL PRIMARY KEY,
-   	name TEXT NOT NULL,
+   	name TEXT NOT NULL
 );
 
-CREATE TABLE equipment (
+CREATE TABLE IF NOT EXISTS equipment (
 	id  SERIAL PRIMARY KEY,
-   	name TEXT NOT NULL,
+   	name TEXT NOT NULL
 );
 
-CREATE TABLE exercises_muscles (
+CREATE TABLE IF NOT EXISTS exercises_muscles (
 	exercise_id INT,
 	muscle_id INT,	
 	PRIMARY KEY (exercise_id, muscle_id)
 );
 
-CREATE TABLE exercises_equipment (
+CREATE TABLE IF NOT EXISTS exercises_equipment (
 	exercise_id INT,
 	equipment_id INT,	
 	PRIMARY KEY (exercise_id, equipment_id)
 );
-
-SELECT (id, name)
-FROM exercises
-INNER JOIN exercises_muscles
-ON exercises.id = exercises_muscles.exercise_id
-WHERE exercises_muscles.muscle_id = $1
