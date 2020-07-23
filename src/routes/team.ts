@@ -1,6 +1,8 @@
 import express from 'express'
+import { requirePermission } from '../utils'
 
 const router = express.Router()
+router.use(requirePermission([]))
 
 router.get('/', (req, res) => {
     res.status(500)
