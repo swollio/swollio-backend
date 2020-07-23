@@ -1,0 +1,1 @@
+INSERT INTO muscles(name) VALUES ($1);

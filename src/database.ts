@@ -3,7 +3,7 @@ import fs from 'fs'
 import glob from 'glob-promise'
 import config from './config.json'
 
-const pool = new Pool(config.sql)
+const pool = new Pool(config)
 
 /**
  * This function automatically creates an object using the SQL queries in the sql/*.
