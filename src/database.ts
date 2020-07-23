@@ -3,7 +3,7 @@ import fs from 'fs'
 import glob from 'glob-promise'
 import config from './config.json'
 
-const pool = new Pool(config)
+const pool = new Pool(config.sql)
 
 /**
  * This function automatically creates an object using the SQL queries in the sql/*.
@@ -23,5 +23,4 @@ function load_database() {
 }
 
 const db = load_database();
-
 export default db;
