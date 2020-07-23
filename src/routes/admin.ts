@@ -1,10 +1,12 @@
 import express from 'express';
 import db from '../database';
 import * as constants from '../constants';
+import { requirePermission } from '../utils'
 
 const app = express();
 
 const router = express.Router();
+router.use(requirePermission(['admin']))
 
 router.get('/', (req, res) => {
     res.status(200).send({hello: "world"});
