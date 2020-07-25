@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS users_athletes (
+    user_id INT PRIMARY KEY NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    athlete_id INT NOT NULL REFERENCES athletes(id) ON DELETE CASCADE
+);

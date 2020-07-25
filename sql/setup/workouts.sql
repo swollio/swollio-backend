@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS workouts (
+	id SERIAL PRIMARY KEY,
+    created TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    name TEXT NOT NULL,
+    repeat TEXT NOT NULL
+);
