@@ -1,5 +1,5 @@
 import app from './app'
-import db from './database'
+import db from './utilities/database'
 
 async function setupDatabase() {
   await db['setup.users']();

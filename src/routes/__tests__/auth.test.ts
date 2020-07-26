@@ -4,7 +4,7 @@ import supertest from 'supertest'
 import bcrypt from 'bcrypt'
 
 import router from '../auth'
-import db from '../../database'
+import db from '../../utilities/database'
 import mock from './mock.json'
 
 const app = express();

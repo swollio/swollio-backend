@@ -1,7 +1,7 @@
 import { Pool, QueryResult } from 'pg'
 import fs from 'fs'
 import glob from 'glob-promise'
-import config from './config.json'
+import config from '../config.json'
 
 const pool = new Pool(config.sql);
 
