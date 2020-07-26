@@ -1,0 +1,63 @@
+[
+    {
+        "id": 1,
+        "name": "barbell bench press",
+        "weight": 3,
+        "reps": 1,
+        "legitimacy": 3
+    },  {
+        "id": 2,
+        "name": "incline barbell bench press",
+        "weight": 3,
+        "reps": 1,
+        "legitimacy": 3
+    }, {
+        "id": 3,
+        "name": "dumbbell bench press",
+        "weight": 2,
+        "reps": 2,
+        "legitimacy": 3
+    }, {
+        "id": 4,
+        "name": "incline dumbbell bench press",
+        "weight": 2,
+        "reps": 2,
+        "legitimacy": 3
+    }, {
+        "id": 5,
+        "name": "barbell deadlift",
+        "weight": 3,
+        "reps": 1,
+        "legitimacy": 3
+    }, {
+        "id": 6,
+        "name": "barbell rows",
+        "weight": 2,
+        "reps": 2,
+        "legitimacy": 3
+    }, {
+        "id": 7,
+        "name": "pullups",
+        "weight": 1,
+        "reps": 2,
+        "legitimacy": 3
+    }, {
+        "id": 8,
+        "name": "back squats",
+        "weight": 3,
+        "reps": 1,
+        "legitimacy": 3
+    },  {
+        "id": 9,
+        "name": "skullcrusher",
+        "weight": 2,
+        "reps": 2,
+        "legitimacy": 3
+    }, {
+        "id": 10,
+        "name": "bicep curls",
+        "weight": 2,
+        "reps": 2,
+        "legitimacy": 3
+    }
+]

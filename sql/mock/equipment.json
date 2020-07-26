@@ -1,0 +1,27 @@
+[
+    {
+        "id": 1,
+        "name": "barbell"
+    }, {
+        "id": 2,
+        "name": "dumbbell"
+    }, {
+        "id": 3,
+        "name": "bench"
+    }, {
+        "id": 4,
+        "name": "medicine ball"
+    }, {
+        "id": 5,
+        "name": "rowing machine"
+    }, {
+        "id": 6,
+        "name": "treadmill"
+    }, {
+        "id": 7,
+        "name": "bike"
+    }, {
+        "id": 8,
+        "name": "pullup bar"
+    }
+]

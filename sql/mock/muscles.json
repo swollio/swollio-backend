@@ -1,60 +1,72 @@
 [
     {
+        "id": 1,
         "name": "quadriceps",
         "nickname": "quads",
         "group": "leg"
     },
     {
+        "id": 2,
         "name": "hamstrings",
         "nickname": "hamstrings",
         "group": "leg"
     },
     {
+        "id": 3,
         "name": "calves",
         "nickname": "calves",
         "group": "leg"
     },
     {
+        "id": 4,
         "name": "pectorals",
         "nickname": "pecs",
         "group": "chest"
     },
     {
+        "id": 5,
         "name": "latissimus dorsi",
         "nickname": "lats",
         "group": "back"
     },
     {
+        "id": 6,
         "name": "deltoids",
         "nickname": "delts",
         "group": "shoulder"
     },
     {
+        "id": 7,
         "name": "trapezius",
         "nickname": "traps",
         "group": "shoulder"
     },
     {
+        "id": 8,
         "name": "triceps",
         "nickname": "triceps",
         "group": "arm"
     },
     {
+        "id": 9,
         "name": "gluteus",
         "nickname": "glutes",
         "group": "leg"
     },
     {
+        "id": 10,
         "name": "biceps",
         "nickname": "biceps",
         "group": "arm"
     },
     {
+        "id": 11,
         "name": "forearms",
         "nickname": "forearms",
         "group": "arm"
     },
     {
+        "id": 12,
         "name": "abdominals",
         "nickname": "abs",
         "group": "abs"
