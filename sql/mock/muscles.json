@@ -3,72 +3,72 @@
         "id": 1,
         "name": "quadriceps",
         "nickname": "quads",
-        "group": "leg"
+        "region": "leg"
     },
     {
         "id": 2,
         "name": "hamstrings",
         "nickname": "hamstrings",
-        "group": "leg"
+        "region": "leg"
     },
     {
         "id": 3,
         "name": "calves",
         "nickname": "calves",
-        "group": "leg"
+        "region": "leg"
     },
     {
         "id": 4,
         "name": "pectorals",
         "nickname": "pecs",
-        "group": "chest"
+        "region": "chest"
     },
     {
         "id": 5,
         "name": "latissimus dorsi",
         "nickname": "lats",
-        "group": "back"
+        "region": "back"
     },
     {
         "id": 6,
         "name": "deltoids",
         "nickname": "delts",
-        "group": "shoulder"
+        "region": "shoulder"
     },
     {
         "id": 7,
         "name": "trapezius",
         "nickname": "traps",
-        "group": "shoulder"
+        "region": "shoulder"
     },
     {
         "id": 8,
         "name": "triceps",
         "nickname": "triceps",
-        "group": "arm"
+        "region": "arm"
     },
     {
         "id": 9,
         "name": "gluteus",
         "nickname": "glutes",
-        "group": "leg"
+        "region": "leg"
     },
     {
         "id": 10,
         "name": "biceps",
         "nickname": "biceps",
-        "group": "arm"
+        "region": "arm"
     },
     {
         "id": 11,
         "name": "forearms",
         "nickname": "forearms",
-        "group": "arm"
+        "region": "arm"
     },
     {
         "id": 12,
         "name": "abdominals",
         "nickname": "abs",
-        "group": "abs"
+        "region": "abs"
     }
 ]
