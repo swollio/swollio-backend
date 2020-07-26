@@ -1,0 +1,62 @@
+[
+    {
+        "name": "quadriceps",
+        "nickname": "quads",
+        "group": "leg"
+    },
+    {
+        "name": "hamstrings",
+        "nickname": "hamstrings",
+        "group": "leg"
+    },
+    {
+        "name": "calves",
+        "nickname": "calves",
+        "group": "leg"
+    },
+    {
+        "name": "pectorals",
+        "nickname": "pecs",
+        "group": "chest"
+    },
+    {
+        "name": "latissimus dorsi",
+        "nickname": "lats",
+        "group": "back"
+    },
+    {
+        "name": "deltoids",
+        "nickname": "delts",
+        "group": "shoulder"
+    },
+    {
+        "name": "trapezius",
+        "nickname": "traps",
+        "group": "shoulder"
+    },
+    {
+        "name": "triceps",
+        "nickname": "triceps",
+        "group": "arm"
+    },
+    {
+        "name": "gluteus",
+        "nickname": "glutes",
+        "group": "leg"
+    },
+    {
+        "name": "biceps",
+        "nickname": "biceps",
+        "group": "arm"
+    },
+    {
+        "name": "forearms",
+        "nickname": "forearms",
+        "group": "arm"
+    },
+    {
+        "name": "abdominals",
+        "nickname": "abs",
+        "group": "abs"
+    }
+]
