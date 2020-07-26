@@ -9,9 +9,7 @@ import adminRouter from './routes/admin'
 import authRouter from './routes/auth'
 
 const app = express();
-app.use(cors({
-  origin: '*'
-}))
+app.use(cors({origin: '*'}))
 app.use(bodyParser.json({limit: '5mb'}));
 
 app.use('/athletes', athleteRouter);

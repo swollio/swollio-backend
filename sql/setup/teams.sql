@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS teams (
     id SERIAL PRIMARY KEY,
     created TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    sport TEXT
 );
