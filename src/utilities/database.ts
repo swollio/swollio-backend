@@ -2,6 +2,7 @@ import { Pool, QueryResult } from 'pg'
 import fs from 'fs'
 import glob from 'glob-promise'
 import config from '../config.json'
+import format from 'pg-format';
 
 const pool = new Pool(config.sql);
 
@@ -16,7 +17,9 @@ function load_database() {
     files.forEach(file => {
         const key = file.split('.')[0].split('/').slice(1).join('.');
         const query = fs.readFileSync(file, { encoding: "utf8" });
-        queries[key] = (values?: any[] | undefined) => pool.query(query, values);
+        queries[key] = (values?: any[] | undefined) => {
+            return pool.query(format(query, ...(values || [])))
+        };
     });
 
     return queries;

@@ -1,13 +1,10 @@
 import Assignment from './assignment'
 
 export default interface Workout {
-    id: number,
+    id?: number,
+    created?: string,
     name: string,
-    date: string,
-    primary_muscles: string [],
-    secondary_muscles: string [], 
-    estimated_time: number,
-    tags: string [],
     repeat: "none" | "weekly";
-    exercises: Assignment []
+    tags: string [],
+    assignments: Assignment []
 }
