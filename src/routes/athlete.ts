@@ -14,6 +14,7 @@ router.get('/', (req, res) => {
     });
 });
 
+// Find athlete
 router.get('/:id', (req, res) => {
     db['athletes.find']([req.params.id]).then(result => {
         res.status(200).send(result.rows);
@@ -22,17 +23,26 @@ router.get('/:id', (req, res) => {
     });
 });
 
+// List athlete workouts
 router.get('/:id/workouts', (req, res) => {
     res.status(500)
     res.send('unimplemented')
 });
 
+// Get athlete's workout
 router.get('/:id/workouts/:workout_id', (req, res) => {
     res.status(500)
     res.send('unimplemented')
 });
 
+// Get athlete's progress over time
 router.get('/:id/exercises/', (req, res) => {
+    res.status(500)
+    res.send('unimplemented')
+});
+
+// Add athlete's workout results
+router.post('/:id/statistics', (req, res) => {
     res.status(500)
     res.send('unimplemented')
 });
