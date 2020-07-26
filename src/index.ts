@@ -1,6 +1,12 @@
 import app from './app'
 import db from './utilities/database'
 
+import muscles from './mock/muscles.json'
+import equipment from './mock/equipment.json'
+import exercises from './mock/exercises.json'
+import equipment_exercises from './mock/equipment_exercises.json'
+import muscles_exercises from './mock/muscles_exercises.json'
+
 async function setupDatabase() {
   await db['setup.users']();
   await db['setup.athletes']();
@@ -25,6 +31,27 @@ async function setupDatabase() {
   await db['setup.athletes_teams_tag']();
   
   await db['setup.workout_results'](); 
+
+  for (const m of muscles) {
+    await db['insert.muscles']([m.name, m.nickname, m.region]);
+  }
+
+  for (const e of exercises) {
+    await db['insert.exercises']([e.name, e.weight, e.reps, e.legitimacy]);
+  }
+
+  for (const e of equipment) {
+    await db['insert.equipment']([e.name]);
+  }
+
+  for (const x of muscles_exercises) {
+    await db['insert.muscles_exercises']([x.muscle_id, x.exercise_id]);
+  }
+  
+  for (const x of equipment_exercises) {
+    await db['insert.equipment_exercises']([x.equipment_id, x.exercise_id]);
+  }
+
 }
 
 setupDatabase().then(() => {
