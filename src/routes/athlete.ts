@@ -1,6 +1,6 @@
-import express from 'express'
-import db from '../database'
-import { requirePermission } from '../utils'
+import express from 'express';
+import db from '../utilities/database';
+import { requirePermission } from '../middleware/auth';
 
 const router = express.Router()
 router.use(requirePermission([]))

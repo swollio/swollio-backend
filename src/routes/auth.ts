@@ -1,7 +1,7 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import db from '../database'
+import db from '../utilities/database'
 import config from '../config.json'
  
 const router = express.Router()

@@ -1,9 +1,9 @@
 import express from 'express';
 import router from '../admin';
 import supertest from 'supertest';
-import db from '../../database';
+import db from '../../utilities/database';
 import mock from './mock.json';
-import * as constants from '../../constants';
+import * as constants from '../../utilities/constants';
 
 var app = express();
 app.use('/', router);

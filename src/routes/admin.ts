@@ -1,7 +1,7 @@
 import express from 'express';
-import db from '../database';
-import * as constants from '../constants';
-import { requirePermission } from '../utils'
+import db from '../utilities/database';
+import * as constants from '../utilities/constants';
+import { requirePermission } from '../middleware/auth';
 
 const app = express();
 

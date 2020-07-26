@@ -1,7 +1,7 @@
 import express from 'express'
 import router from '../athlete'
 import supertest from 'supertest'
-import db from '../../database'
+import db from '../../utilities/database'
 import mock from './mock.json'
 
 const app = express();

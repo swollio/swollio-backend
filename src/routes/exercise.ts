@@ -1,5 +1,5 @@
-import express from 'express'
-import { requirePermission } from '../utils'
+import express from 'express';
+import { requirePermission } from '../middleware/auth';
 
 const router = express.Router()
 router.use(requirePermission([]))
