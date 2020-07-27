@@ -1,12 +1,26 @@
 import express from 'express';
 import { requirePermission } from '../middleware/auth';
 import Workout from '../schema/workout'
+import Team from '../schema/team'
 import db from '../utilities/database'
 
 const router = express.Router()
 //router.use(requirePermission([]))
 
 // List all teams
+router.post('/', (req, res) => {
+    let team = req.body as Team;
+    db['teams.add_one']([
+        team.name,
+        team.sport
+    ]).then(result => {
+        res.status(200).send('success')
+    }).catch((error) => {
+        console.log(error);
+        res.status(500).send('unknown error');
+    });
+});
+
 router.get('/', (req, res) => {
     db['teams.all']().then(result => {
         res.status(200).send(result.rows);
@@ -32,6 +46,15 @@ router.get('/:team_id/athletes', async (req, res) => {
         req.params.team_id,
     ]);
     res.send(result.rows);
+});
+
+router.get('/:team_id/coaches', (req, res) => {
+    db['coaches.filter_by_team']([req.params.team_id]).then(result => {
+        res.status(200).send(result.rows);
+    }).catch((error) => {
+        console.log(error);
+        res.status(500).send('unknown error');
+    });
 });
 
 // Add an athlete for a team
