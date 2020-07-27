@@ -12,12 +12,12 @@ router.post('/login', async (req, res) => {
         res.status(403).send('incorrect email');
         return;
     }
-
+    const user_id = user.rows[0].id;
     const hash = user.rows[0].hash;
     const valid = await bcrypt.compare(req.body.password, hash);
     if (valid) {
         const token = jwt.sign({
-            user_id: user.rows[0].id
+            user_id: user_id
         }, config.auth.secret, { expiresIn: "1 day" });
         res.send(token);
     } else {
