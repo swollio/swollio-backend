@@ -7,29 +7,42 @@ const router = express.Router()
 
 // Get exercises
 router.get('/', (req, res) => {
-    res.status(500)
-    res.send("unimplemented")
+    if (req.query.search) {
+        db['exercises.search_by_name']([req.query.search])
+        .then(result => {
+            res.status(200).send(result.rows);
+        }).catch(() => {
+            res.status(500).send('unknown error');
+        });
+    } else {
+        db['exercises.all']()
+        .then(result => {
+            res.status(200).send(result.rows);
+        }).catch(() => {
+            res.status(500).send('unknown error');
+        });
+    }
 });
 
 /// Find an exercise
 router.get('/:id', (req, res) => {
-    res.status(500)
-    res.send("unimplemented")
+    db['exercises.filter_by_id']([req.params.id])
+    .then(result => {
+        res.status(200).send(result.rows[0]);
+    }).catch(() => {
+        res.status(500).send('unknown error');
+    });
 });
 
 router.get('/:id/similar', (req, res) => {
     db['exercises.filter_by_similar']([req.params.id])
-    .then((result) => res.send(result.rows))
+    .then((result) => {
+        res.send(result.rows)
+    })
     .catch((error) => {
         console.log(error)
-        res.status(500).send();
+        res.status(500).send('unknown error');
     });
-});
-
-// Create an exercise
-router.post('/', (req, res) => {
-    res.status(500)
-    res.send("unimplemented")
 });
 
 export default router

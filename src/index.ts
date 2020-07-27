@@ -22,9 +22,7 @@ async function setupDatabase() {
 
   await db['setup.workouts']();
   await db['setup.assignments']();
-  await db['setup.assignments_workouts']();
   await db['setup.custom_assignments']();
-  await db['setup.custom_assignments_workouts']();
 
   await db['setup.athletes_equipment']();
   await db['setup.athletes_teams']();
@@ -54,12 +52,8 @@ async function setupDatabase() {
 
 }
 
-setupDatabase().then(() => {
-  const PORT = process.env.PORT || 8080;
-  app.listen(PORT, () => {
-    console.log(`App listening on port ${PORT}`);
-    console.log('Press Ctrl+C to quit.');
-  });
-}).catch(error => {
-  console.log(error);
-})
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+  console.log('Press Ctrl+C to quit.');
+});

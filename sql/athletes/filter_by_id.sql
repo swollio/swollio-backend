@@ -1,0 +1,1 @@
+SELECT * FROM athletes WHERE id = %1$L;

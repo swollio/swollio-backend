@@ -11,6 +11,7 @@ import authRouter from './routes/auth'
 const app = express();
 app.use(cors({origin: '*'}))
 app.use(bodyParser.json({limit: '5mb'}));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/athletes', athleteRouter);
 app.use('/teams', teamRouter);
