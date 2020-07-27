@@ -7,12 +7,21 @@ const router = express.Router()
 
 // Get exercises
 router.get('/', (req, res) => {
-    db['exercises.all']()
-    .then(result => {
-        res.status(200).send(result.rows);
-    }).catch(() => {
-        res.status(500).send('unknown error');
-    });
+    if (req.query.search) {
+        db['exercises.search_by_name']([req.query.search])
+        .then(result => {
+            res.status(200).send(result.rows);
+        }).catch(() => {
+            res.status(500).send('unknown error');
+        });
+    } else {
+        db['exercises.all']()
+        .then(result => {
+            res.status(200).send(result.rows);
+        }).catch(() => {
+            res.status(500).send('unknown error');
+        });
+    }
 });
 
 /// Find an exercise
