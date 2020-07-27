@@ -8,16 +8,22 @@ const router = express.Router()
 
 // List all teams
 router.get('/', (req, res) => {
-    res.status(500)
-    res.send('unimplemented')
+    db['teams.all']().then(result => {
+        res.status(200).send(result.rows);
+    }).catch((error) => {
+        console.log(error);
+        res.status(500).send('unknown error');
+    });
 });
 
 // Find a team
 router.get('/:team_id', async (req, res) => {
-    let result = await db['teams.filter_by_id']([
-        req.params.team_id,
-    ]);
-    res.send(result.rows);
+    db['teams.filter_by_id']([req.params.team_id]).then(result => {
+        res.status(200).send(result.rows[0]);
+    }).catch((error) => {
+        console.log(error);
+        res.status(500).send('unknown error');
+    });
 });
 
 // List team's athletes
@@ -29,15 +35,25 @@ router.get('/:team_id/athletes', async (req, res) => {
 });
 
 // Add an athlete for a team
-router.post('/:team_id/athletes', (req, res) => {
-    res.status(500)
-    res.send('unimplemented')
+router.post('/:team_id/athletes/:athlete_id', (req, res) => {
+    db['teams.add_athlete']([req.params.team_id, req.params.athlete_id])
+    .then(result => {
+        res.status(200).send('success');
+    }).catch((error) => {
+        console.log(error);
+        res.status(500).send('unknown error');
+    });
 });
 
 // Delete athlete
 router.delete('/:team_id/athletes/:athlete_id', (req, res) => {
-    res.status(500)
-    res.send('unimplemented')
+    db['teams.remove_athlete']([req.params.team_id, req.params.athlete_id])
+    .then(result => {
+        res.status(200).send('success');
+    }).catch((error) => {
+        console.log(error);
+        res.status(500).send('unknown error');
+    });
 });
 
 // Get a team's workouts 
@@ -80,8 +96,13 @@ router.get('/:team_id/workouts/:workout_id', async (req, res) => {
 
 // Delete a team's workout
 router.delete('/:team_id/workouts/:workout_id', (req, res) => {
-    res.status(500)
-    res.send('unimplemented')
+    db['workouts.remove_one']([req.params.workout_id])
+    .then(result => {
+        res.status(200).send('success');
+    }).catch((error) => {
+        console.log(error);
+        res.status(500).send('unknown error');
+    });
 });
 
 // Get staistics to the team
