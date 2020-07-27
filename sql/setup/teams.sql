@@ -2,5 +2,6 @@ CREATE TABLE IF NOT EXISTS teams (
     id SERIAL PRIMARY KEY,
     created TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     name TEXT NOT NULL,
+    coach_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     sport TEXT
 );

@@ -12,11 +12,13 @@ router.post('/login', async (req, res) => {
         res.status(403).send('incorrect email');
         return;
     }
-
+    const user_id = user.rows[0].id;
     const hash = user.rows[0].hash;
     const valid = await bcrypt.compare(req.body.password, hash);
     if (valid) {
-        const token = jwt.sign({}, config.auth.secret, { expiresIn: "1 day" });
+        const token = jwt.sign({
+            user_id: user_id
+        }, config.auth.secret, { expiresIn: "1 day" });
         res.send(token);
     } else {
         res.status(403).send('incorrect email or password')
@@ -26,14 +28,16 @@ router.post('/login', async (req, res) => {
 router.post('/signup', async (req, res) => {
     try {
         const hash = await bcrypt.hash(req.body.password, 10);
-        await db['users.signup']([
+        const user = await db['users.signup']([
             req.body.first_name,
             req.body.last_name,
             req.body.email,
             hash
         ]);
 
-        const token = jwt.sign({}, config.auth.secret, { expiresIn: "1 day" });
+        const token = jwt.sign({
+            user_id: user.rows[0].id
+        }, config.auth.secret, { expiresIn: "1 day" });
         res.send(token);
     } catch (error) {
         res.status(403).send('unable to create account')

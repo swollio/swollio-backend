@@ -1,9 +1,10 @@
 import express from 'express';
 import db from '../utilities/database';
+import Athlete from '../schema/athlete'
 import { requirePermission } from '../middleware/auth';
 
 const router = express.Router()
-//router.use(requirePermission([]))
+router.use(requirePermission([]))
 
 router.get('/', (req, res) => {
     db['athletes.all']().then(result => {
@@ -13,6 +14,24 @@ router.get('/', (req, res) => {
         res.status(500).send();
     });
 });
+
+
+router.post('/', (req, res) => {
+    const athlete = req.body as Athlete;
+    db['athletes.add_one']([
+        req.token.user_id,
+        athlete.age,
+        athlete.height,
+        athlete.weight,
+        athlete.gender
+    ]).then(result => {
+        res.status(200).send('success');
+    }).catch((error) => {
+        console.log(error)
+        res.status(500).send();
+    });
+});
+
 
 // Find athlete
 router.get('/:id', (req, res) => {
