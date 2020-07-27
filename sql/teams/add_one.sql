@@ -1,2 +1,2 @@
-INSERT INTO teams (name, sport)
-VALUES (%1$L, %2$L);
+INSERT INTO teams (name, sport, coach_id)
+VALUES (%1$L, %2$L, %3$L);

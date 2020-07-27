@@ -5,14 +5,16 @@ import Team from '../schema/team'
 import db from '../utilities/database'
 
 const router = express.Router()
-//router.use(requirePermission([]))
+router.use(requirePermission([]))
 
 // List all teams
 router.post('/', (req, res) => {
+    console.log(req.token);
     let team = req.body as Team;
     db['teams.add_one']([
         team.name,
-        team.sport
+        team.sport,
+        req.token.user_id,
     ]).then(result => {
         res.status(200).send('success')
     }).catch((error) => {
@@ -49,7 +51,7 @@ router.get('/:team_id/athletes', async (req, res) => {
 });
 
 router.get('/:team_id/coaches', (req, res) => {
-    db['coaches.filter_by_team']([req.params.team_id]).then(result => {
+    db['teams.all_coaches']([req.params.team_id]).then(result => {
         res.status(200).send(result.rows);
     }).catch((error) => {
         console.log(error);

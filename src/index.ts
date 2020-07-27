@@ -10,9 +10,7 @@ import muscles_exercises from './mock/muscles_exercises.json'
 async function setupDatabase() {
   await db['setup.users']();
   await db['setup.athletes']();
-  await db['setup.users_athletes']();
   await db['setup.teams']();
-  await db['setup.users_teams']();
 
   await db['setup.exercises']();
   await db['setup.equipment']();
@@ -31,23 +29,23 @@ async function setupDatabase() {
   await db['setup.workout_results'](); 
 
   for (const m of muscles) {
-    await db['insert.muscles']([m.name, m.nickname, m.region]);
+    await db['exercises.add_muscles']([m.name, m.nickname, m.region]);
   }
 
   for (const e of exercises) {
-    await db['insert.exercises']([e.name, e.weight, e.reps, e.legitimacy]);
+    await db['exercises.add_exercises']([e.name, e.weight, e.reps, e.legitimacy]);
   }
 
   for (const e of equipment) {
-    await db['insert.equipment']([e.name]);
+    await db['exercises.add_equipment']([e.name]);
   }
 
   for (const x of muscles_exercises) {
-    await db['insert.muscles_exercises']([x.muscle_id, x.exercise_id]);
+    await db['exercises.add_muscles_exercises']([x.muscle_id, x.exercise_id]);
   }
   
   for (const x of equipment_exercises) {
-    await db['insert.equipment_exercises']([x.equipment_id, x.exercise_id]);
+    await db['exercises.add_equipment_exercises']([x.equipment_id, x.exercise_id]);
   }
 
 }
