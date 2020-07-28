@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import config from '../config.json';
 
 interface Token {
+    user_id: number,
     permissions?: string[],
 }
 
