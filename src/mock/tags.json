@@ -1,0 +1,34 @@
+[
+    {
+        "id": 1,
+        "tag": "sprint"
+    },
+    {
+        "id": 2,
+        "tag": "mid-distance"
+    },
+    {
+        "id": 3,
+        "tag": "distance"
+    },
+    {
+        "id": 4,
+        "tag": "taper"
+    },
+    {
+        "id": 5,
+        "tag": "butterfly"
+    },
+    {
+        "id": 6,
+        "tag": "backstroke"
+    },
+    {
+        "id": 7,
+        "tag": "breaststroke"
+    },
+    {
+        "id": 8,
+        "tag": "freestyle"
+    }
+]
