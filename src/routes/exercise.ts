@@ -8,7 +8,7 @@ const router = express.Router()
 // Get exercises
 router.get('/', (req, res) => {
     if (req.query.search) {
-        db['exercises.search_by_name']([req.query.search])
+        db['exercises.search_by_name']([(req.query.search as string).toLowerCase()])
         .then(result => {
             res.status(200).send(result.rows);
         }).catch(() => {
