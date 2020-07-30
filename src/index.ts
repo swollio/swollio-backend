@@ -20,6 +20,7 @@ async function setupDatabase() {
   await db['setup.users']();
   await db['setup.athletes']();
   await db['setup.teams']();
+  await db['setup.tags']();
 
   await db['setup.exercises']();
   await db['setup.equipment']();
@@ -31,7 +32,7 @@ async function setupDatabase() {
   await db['setup.assignments']();
   await db['setup.custom_assignments']();
 
-  await db['setup.tags']();
+  await db['setup.workout_tags']();
   await db['setup.athletes_equipment']();
   await db['setup.athletes_teams']();
   await db['setup.athletes_teams_tag']();
