@@ -1,8 +1,0 @@
-CREATE TABLE IF NOT EXISTS users (
-	id SERIAL PRIMARY KEY,
-    created TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    email TEXT UNIQUE,
-    hash TEXT NOT NULL
-);
