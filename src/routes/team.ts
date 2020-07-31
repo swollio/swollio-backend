@@ -94,7 +94,7 @@ router.post('/:team_id/workouts', async (req, res) => {
     let workout = req.body as Workout;
     let result = await db['workouts.insert_one']([
         req.params.team_id,
-        workout.name,
+        "Untitled Workout",
         workout.repeat
     ]);
     
