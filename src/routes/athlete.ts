@@ -2,6 +2,7 @@ import express from 'express';
 import db from '../utilities/database';
 import Athlete from '../schema/athlete'
 import { requirePermission } from '../middleware/auth';
+import Result from '../schema/result';
 
 const router = express.Router()
 router.use(requirePermission([]))
@@ -66,10 +67,40 @@ router.get('/:id/exercises/', (req, res) => {
     res.send('unimplemented')
 });
 
-// Add athlete's workout results
-router.post('/:id/exercises', (req, res) => {
-    res.status(500)
-    res.send('unimplemented')
+/*
+ * Add athlete's workout results. This takes an array of results
+ * from individual reps. Results can be sent as soon as the athlete
+ * completes a rep, but can also be sent in bulk as an array of results
+ * at the end of the workout.
+ *
+ * Example POST body:
+ * 
+ * [{
+ *   exercise_id: 4,
+ *   reps: 10,
+ *   weight: 120
+ * }, {
+ *   exercise_id: 4,
+ *   reps: 8,
+ *   weight: 140
+ * }, {
+ *   exercise_id: 4,
+ *   reps: 6,
+ *   weight: 160
+ * }]
+ */
+router.post('/:athlete_id/results/:workout_id', async (req, res) => {
+    const results = req.body as Result[];
+    await db['results.insert_many']([results.map(result => 
+        [
+            req.params.athlete_id,
+            result.exercise_id,
+            req.params.workout_id,
+            result.weight,
+            result.reps,
+        ]
+    )]);    
+    res.send('success')
 });
 
 export default router;
