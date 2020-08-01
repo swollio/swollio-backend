@@ -1,9 +1,6 @@
-SELECT users.id as user_id, users.first_name, users.last_name, users.email, teams.id as team_id FROM users 
-INNER JOIN teams
+SELECT users.id as user_id, users.first_name, users.last_name, users.email, teams.id as team_id, athletes.id as athlete_id FROM users 
+LEFT JOIN teams
     ON teams.coach_id = users.id
-WHERE users.id = %1$L
-UNION
-SELECT users.id as user_id, users.first_name, users.last_name, users.email, athletes.id as athlete_id FROM users 
-INNER JOIN athletes
+LEFT JOIN athletes
     ON athletes.user_id = users.id
-WHERE users.id = %1$L;
+WHERE users.id =  %1$L;
