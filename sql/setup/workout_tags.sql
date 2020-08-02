@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS workout_tags(
     tag_id INT NOT NULL,
 
     FOREIGN KEY (workout_id)
-    REFERENCES workouts(id)
+    REFERENCES workouts(id),
 
     FOREIGN KEY (tag_id)
     REFERENCES tags(id)

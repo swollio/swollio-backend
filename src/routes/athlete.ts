@@ -76,14 +76,17 @@ router.get('/:id/exercises/', (req, res) => {
  * Example POST body:
  * 
  * [{
+ *   assignment_id: 1,
  *   exercise_id: 4,
  *   reps: 10,
  *   weight: 120
  * }, {
+ *   assignment_id: 1,
  *   exercise_id: 4,
  *   reps: 8,
  *   weight: 140
  * }, {
+ *   assignment_id: 1,
  *   exercise_id: 4,
  *   reps: 6,
  *   weight: 160
@@ -95,7 +98,7 @@ router.post('/:athlete_id/results/:workout_id', async (req, res) => {
         [
             req.params.athlete_id,
             result.exercise_id,
-            req.params.workout_id,
+            result.assignment_id,
             result.weight,
             result.reps,
         ]
