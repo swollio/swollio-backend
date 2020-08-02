@@ -7,6 +7,11 @@ import Result from '../schema/result';
 const router = express.Router()
 router.use(requirePermission([]))
 
+/**
+ * Return a list of all athletes in the database. This method should only be
+ * accessible to admins. 
+ * 
+ */
 router.get('/', (req, res) => {
     db['athletes.all']().then(result => {
         res.status(200).send(result.rows);
