@@ -98,17 +98,20 @@ router.get('/:id/exercises/', (req, res) => {
  * }]
  */
 router.post('/:athlete_id/results/:workout_id', async (req, res) => {
+
     const results = req.body as Result[];
+
     await db['results.insert_many']([results.map(result => 
         [
-            req.params.athlete_id,
-            result.exercise_id,
+            req.params.athlete_id, 
+            result.exercise_id, 
             result.assignment_id,
             result.weight,
             result.reps,
-        ]
-    )]);    
-    res.send('success')
+            result.created,
+        ])
+    ]); 
+    res.sendStatus(200)
 });
 
 export default router;
