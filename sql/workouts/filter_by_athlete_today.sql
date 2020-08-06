@@ -14,14 +14,8 @@ WITH week_starts AS (
 	CROSS JOIN week_starts
 	WHERE (athlete_id = %1$L)
 	-- Start before the week ends and end before the week starts -
-), upcoming_completed AS (
-	SELECT upcoming.*, exists(select 1 from workout_results where workout_results.workout_id=upcoming.workout_id and workout_results.date=upcoming.date) as completed
-	FROM upcoming
-
 )
 
-SELECT date, ARRAY_AGG(ROW_TO_JSON(upcoming_completed)) as workouts FROM upcoming_completed
-WHERE (start_date <= date AND end_date >= date)
-	AND date >= CURRENT_DATE
-GROUP BY date
-ORDER BY date ASC;
+SELECT upcoming.*, exists(select 1 from workout_results where workout_results.workout_id=upcoming.workout_id and workout_results.date=upcoming.date) as completed
+FROM upcoming
+WHERE date=CURRENT_DATE;

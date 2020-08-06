@@ -95,7 +95,9 @@ router.post('/:team_id/workouts', async (req, res) => {
     let result = await db['workouts.insert_one']([
         req.params.team_id,
         "Untitled Workout",
-        workout.repeat
+        '{' + workout.repeat.map(x => '"' + x.toString() + '"').join(",") +'}',
+        workout.start_date,
+        workout.end_date || null
     ]);
     
     if (workout.assignments.length > 0) {

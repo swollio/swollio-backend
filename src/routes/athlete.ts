@@ -50,11 +50,21 @@ router.get('/:id', (req, res) => {
 
 // List athlete workouts
 router.get('/:id/workouts', (req, res) => {
-    db['workouts.filter_by_athlete']([req.params.id]).then(result => {
-        res.status(200).send(result.rows);
-    }).catch(() => {
-        res.status(500).send();
-    });
+    console.log(req.query)
+    if (req.query['date'] == 'today') {
+        db['workouts.filter_by_athlete_today']([req.params.id]).then(result => {
+            res.status(200).send(result.rows);
+        }).catch(() => {
+            res.status(500).send();
+        });
+    } else {
+        db['workouts.filter_by_athlete']([req.params.id]).then(result => {
+            res.status(200).send(result.rows);
+        }).catch(() => {
+            res.status(500).send();
+        });
+    }
+   
 });
 
 // Get athlete's workout
@@ -101,17 +111,23 @@ router.post('/:athlete_id/results/:workout_id', async (req, res) => {
 
     const results = req.body as Result[];
 
+    if (results.length == 0) {
+        res.status(200).send('success');
+        return;
+    }
     await db['results.insert_many']([results.map(result => 
         [
             req.params.athlete_id, 
             result.exercise_id, 
             result.assignment_id,
+            req.params.workout_id, 
+            result.date,
             result.weight,
             result.reps,
             result.created,
         ])
     ]); 
-    res.sendStatus(200)
+    res.status(200).send('success');
 });
 
 export default router;
