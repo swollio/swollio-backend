@@ -11,7 +11,7 @@
     "test": "npm run build && jest",
     "test:watch": "npm run build && jest --watch",
     "build": "tsc",
-    "start": "npm run build && nodemon -e ts,sql,json build/index.js",
+    "start": "nodemon",
     "deploy": "gcloud app deploy"
   },
   "jest": {

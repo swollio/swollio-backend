@@ -16,6 +16,12 @@ WITH week_starts AS (
 	-- Start before the week ends and end before the week starts -
 )
 
-SELECT upcoming.*, exists(select 1 from workout_results where workout_results.workout_id=upcoming.workout_id and workout_results.date=upcoming.date) as completed
+SELECT upcoming.*, 
+EXISTS(
+	SELECT 1 
+	FROM workout_surveys 
+	WHERE workout_id = upcoming.workout_id 
+	AND due_date = upcoming.date) 
+AS completed
 FROM upcoming
 WHERE date=CURRENT_DATE;
