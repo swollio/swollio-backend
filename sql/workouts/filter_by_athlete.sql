@@ -15,7 +15,14 @@ WITH week_starts AS (
 	WHERE (athlete_id = %1$L)
 	-- Start before the week ends and end before the week starts -
 ), upcoming_completed AS (
-	SELECT upcoming.*, exists(select 1 from workout_results where workout_results.workout_id=upcoming.workout_id and workout_results.date=upcoming.date) as completed
+	SELECT upcoming.*, 
+	EXISTS(
+		SELECT 1 
+		FROM workout_surveys 
+		WHERE workout_id = upcoming.workout_id 
+		AND due_date = upcoming.date 
+		AND athlete_id = %1$L) 
+	AS completed
 	FROM upcoming
 
 )

@@ -3,6 +3,7 @@ import db from '../utilities/database';
 import Athlete from '../schema/athlete'
 import { requirePermission } from '../middleware/auth';
 import Result from '../schema/result';
+import Survey from '../schema/survey';
 
 const router = express.Router()
 router.use(requirePermission([]))
@@ -50,6 +51,7 @@ router.get('/:id', (req, res) => {
 
 // List athlete workouts
 router.get('/:id/workouts', (req, res) => {
+
     if (req.query['date'] == 'today') {
         db['workouts.filter_by_athlete_today']([req.params.id]).then(result => {
             res.status(200).send(result.rows);
@@ -132,5 +134,32 @@ router.post('/:athlete_id/results/:workout_id', async (req, res) => {
     ]); 
     res.status(200).send('success');
 });
+
+/**
+ * This route adds a survey to the workout_surveys table after a workout is completed
+ */
+router.post('/:athlete_id/surveys/:workout_id', async (req, res) => {
+    const survey = req.body as Survey;
+
+    console.log(req.body);
+
+    if (!survey) {
+        res.status(500).send('No survey received');
+        return;
+    }
+
+    try {
+    await db['surveys.add_one']([
+        survey.athlete_id,
+        survey.workout_id,
+        survey.due_date,
+        survey.rating,
+        survey.hours_sleep,
+        survey.wellness
+    ]);
+    } catch (err) { console.log(err); }
+    res.status(200).send('success');
+});
+
 
 export default router;
