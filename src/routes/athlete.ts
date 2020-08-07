@@ -132,27 +132,28 @@ router.post('/:athlete_id/results/:workout_id', async (req, res) => {
 });
 
 /**
- * 
+ * This route adds a survey to the workout_surveys table after a workout is completed
  */
 router.post('/:athlete_id/surveys/:workout_id', async (req, res) => {
     const survey = req.body as Survey;
 
     console.log(req.body);
-    console.log(req.query);
 
     if (!survey) {
         res.status(500).send('No survey received');
         return;
     }
 
+    try {
     await db['surveys.add_one']([
         survey.athlete_id,
         survey.workout_id,
+        survey.due_date,
         survey.rating,
         survey.hours_sleep,
         survey.wellness
     ]);
-
+    } catch (err) { console.log(err); }
     res.status(200).send('success');
 });
 
