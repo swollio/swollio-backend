@@ -51,7 +51,7 @@ router.get('/:id', (req, res) => {
 
 // List athlete workouts
 router.get('/:id/workouts', (req, res) => {
-    // console.log(req.query)
+
     if (req.query['date'] == 'today') {
         db['workouts.filter_by_athlete_today']([req.params.id]).then(result => {
             res.status(200).send(result.rows);
@@ -79,8 +79,12 @@ router.get('/:id/workouts/:workout_id', (req, res) => {
 
 // Get athlete's progress over time
 router.get('/:id/exercises/', (req, res) => {
-    res.status(500)
-    res.send('unimplemented')
+    db['statistics.weight_by_exercise']([req.params.id]).then(result => {
+        console.log(result.rows);
+        res.status(200).send(result.rows);
+    }).catch(() => {
+        res.status(500).send();
+    });
 });
 
 /*
