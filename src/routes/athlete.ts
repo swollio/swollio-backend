@@ -3,6 +3,7 @@ import db from '../utilities/database';
 import Athlete from '../schema/athlete'
 import { requirePermission } from '../middleware/auth';
 import Result from '../schema/result';
+import Survey from '../schema/survey';
 
 const router = express.Router()
 router.use(requirePermission([]))
@@ -50,7 +51,7 @@ router.get('/:id', (req, res) => {
 
 // List athlete workouts
 router.get('/:id/workouts', (req, res) => {
-    console.log(req.query)
+    // console.log(req.query)
     if (req.query['date'] == 'today') {
         db['workouts.filter_by_athlete_today']([req.params.id]).then(result => {
             res.status(200).send(result.rows);
@@ -129,5 +130,31 @@ router.post('/:athlete_id/results/:workout_id', async (req, res) => {
     ]); 
     res.status(200).send('success');
 });
+
+/**
+ * 
+ */
+router.post('/:athlete_id/surveys/:workout_id', async (req, res) => {
+    const survey = req.body as Survey;
+
+    console.log(req.body);
+    console.log(req.query);
+
+    if (!survey) {
+        res.status(500).send('No survey received');
+        return;
+    }
+
+    await db['surveys.add_one']([
+        survey.athlete_id,
+        survey.workout_id,
+        survey.rating,
+        survey.hours_sleep,
+        survey.wellness
+    ]);
+
+    res.status(200).send('success');
+});
+
 
 export default router;

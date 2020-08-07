@@ -9,7 +9,7 @@ router.use(requirePermission([]))
 
 // List all teams
 router.post('/', (req, res) => {
-    console.log(req.token);
+    // console.log(req.token);
     let team = req.body as Team;
     db['teams.add_one']([
         team.name,
