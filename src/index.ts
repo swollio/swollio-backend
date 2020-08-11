@@ -49,7 +49,7 @@ async function setupDatabase() {
   }
 
   for (const athlete of athletes) {
-    await db['athletes.add_one']([athlete.user_id, athlete.age, athlete.weight, athlete.height, athlete.gender]);
+    await db['athletes.add_one']([athlete.user_id, athlete.age, athlete.height, athlete.weight, athlete.gender]);
     await db['teams.add_athlete']([1, athlete.id]);
   }
 
