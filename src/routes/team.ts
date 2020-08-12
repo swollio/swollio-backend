@@ -122,8 +122,8 @@ router.get('/:team_id/workouts/:workout_id', async (req, res) => {
 });
 
 // Delete a team's workout
-router.delete('/:team_id/workouts/:workout_id', (req, res) => {
-    db['workouts.remove_one']([req.params.workout_id])
+router.delete('/:team_id/workouts/:workout_id', async (req, res) => {
+    await db['workouts.remove_one']([req.params.workout_id])
     .then(result => {
         res.status(200).send('success');
     }).catch((error) => {
@@ -137,5 +137,23 @@ router.get('/:team_id/statistics', (req, res) => {
     res.status(500)
     res.send('unimplemented')
 });
+
+// Add athlete tag
+router.post('/:team_id/addTag/:athlete_id/:tag_id', async (req, res) => {
+    await db['tags.add_athlete_tag']([req.params.athlete_id, req.params.team_id, req.params.tag_id]);
+    res.status(200).send("success!");
+})
+
+// Get all team's tags
+router.get('/:team_id/getTags', async (req, res) => {
+    const result = await db['tags.get_team_tags']([req.params.team_id]);
+    res.status(200).send(result.rows);
+});
+
+// Get athlete's tags
+router.get(`/:team_id/getAthleteTags/:athlete_id`, async (req, res) => {
+    const result = await db['tags.get_athlete_tags']([req.params.athlete_id, req.params.team_id])
+    res.status(200).send(result.rows);
+})
 
 export default router;
