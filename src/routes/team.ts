@@ -139,14 +139,14 @@ router.get('/:team_id/statistics', (req, res) => {
 });
 
 // Add athlete tag
-router.post('/:team_id/addTag/:athlete_id/:tag_id', async (req, res) => {
-    await db['tags.add_athlete_tag']([req.params.athlete_id, req.params.team_id, req.params.tag_id]);
+router.post('/addTag/:athlete_id/:team_tag_id', async (req, res) => {
+    await db['tags.add_athlete_tag']([req.params.athlete_id, req.params.team_tag_id]);
     res.status(200).send("success!");
 })
 
 // Get all team's tags
 router.get('/:team_id/getTags', async (req, res) => {
-    const result = await db['tags.get_team_tags']([req.params.team_id]);
+    const result = await db['tags.get_all_team_tags']([req.params.team_id]);
     res.status(200).send(result.rows);
 });
 
