@@ -1,6 +1,5 @@
 CREATE TABLE IF NOT EXISTS teams (
     id SERIAL PRIMARY KEY,
-    pin INT UNIQUE,
     name TEXT NOT NULL,
     coach_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     sport TEXT,

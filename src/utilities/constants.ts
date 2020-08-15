@@ -1,8 +1,6 @@
-interface Muscle {
-    name: string
-}
+interface Muscle { name: string };
 
-export const muscles: Muscle[] = [
+export const muscles : Muscle[] = [
     { name: "Calves" },
     { name: "Hamstrings" },
     { name: "Quads" },
@@ -14,7 +12,5 @@ export const muscles: Muscle[] = [
     { name: "Deltoids" },
     { name: "Lats" },
     { name: "Pecs" },
-    { name: "Abs" },
-]
-
-export const string = "hello"
+    { name: "Abs" }
+];
