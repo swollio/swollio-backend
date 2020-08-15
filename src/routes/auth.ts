@@ -7,8 +7,10 @@ import config from '../config.json'
 const router = express.Router()
 
 router.post('/login', async (req, res) => {
+
     const user = await db['users.login']([req.body.email]);
     if (user.rows.length == 0) {
+        console.log(`login: failure: ${req.body.email} `)
         res.status(403).send('incorrect email');
         return;
     }
@@ -19,8 +21,10 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign({
             user_id: user_id
         }, config.auth.secret, { expiresIn: "1 day" });
+        console.log(`login: success: ${req.body.email} `)
         res.send(token);
     } else {
+        console.log(`login: failure: ${req.body.email} `)
         res.status(403).send('incorrect email or password')
     }
 });
