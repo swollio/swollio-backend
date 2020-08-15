@@ -1,0 +1,25 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "./tsconfig.json"
+    },
+    "extends": ["airbnb-typescript", "prettier/@typescript-eslint", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
+    "plugins": ["prettier"],
+    "rules": {
+        "prettier/prettier": "error",
+        "global-require": 0,
+        "no-plusplus": "off",
+        "comma-dangle": "off",
+        "no-console": "off",
+        "nonblock-statement-body-position": "off", // To prevent eslint/prettier conflicts
+        "curly": "off", //  Prevent eslint/prettier conflicts
+        "no-await-in-loop": "off",
+        "import/extensions": ["error", "ignorePackages", {
+            "ts": "never",
+            "js": "never"
+        }]
+    },
+    "env": {
+        "jest": true
+    }
+}

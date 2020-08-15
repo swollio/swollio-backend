@@ -1,32 +1,40 @@
-import express from 'express';
-import jwt from 'jsonwebtoken';
-import config from '../config.json';
+import express from "express"
+import jwt from "jsonwebtoken"
+import config from "../config.json"
 
 interface Token {
-    user_id: number,
-    permissions?: string[],
+    user_id: number
+    permissions?: string[]
 }
 
-export function requirePermission(permissions: string[]): express.Handler {
+export default function requirePermission(
+    permissions: string[]
+): express.Handler {
     return (req, res, next) => {
-        const auth_token = req.header('Authorization')?.split(' ')[1];
-        if (auth_token) {
-            jwt.verify(auth_token, config.auth.secret, (err, decoded) => {
-                if (!err && typeof decoded !== 'undefined') {
-                    const token: Token = (decoded as Token);
-                    const token_permissions = token.permissions ? token.permissions: [];
-                    if (permissions.every(val => token_permissions.includes(val))) {
-                        req.token = token;
+        const authToken = req.header("Authorization")?.split(" ")[1]
+        if (authToken) {
+            jwt.verify(authToken, config.auth.secret, (err, decoded) => {
+                if (!err && typeof decoded !== "undefined") {
+                    const token: Token = decoded as Token
+                    const tokenPermissions = token.permissions
+                        ? token.permissions
+                        : []
+                    if (
+                        permissions.every((val) =>
+                            tokenPermissions.includes(val)
+                        )
+                    ) {
+                        req.token = token
                         next()
                     } else {
-                        res.status(403).send('invalid permissions');
+                        res.status(403).send("invalid permissions")
                     }
                 } else {
-                    res.status(403).send('invalid bearer token');
+                    res.status(403).send("invalid bearer token")
                 }
-            });
+            })
         } else {
-            res.status(403).send('invalid bearer token')
+            res.status(403).send("invalid bearer token")
         }
     }
 }

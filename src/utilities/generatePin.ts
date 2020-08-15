@@ -4,5 +4,5 @@
  */
 export default function generatePin(): number {
     const randomNum = 100000 + Math.random() * 899999
-    return Number.parseInt(randomNum.toString())
+    return Number.parseInt(randomNum.toString(), 10)
 }
