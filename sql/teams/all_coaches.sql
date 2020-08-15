@@ -1,4 +1,4 @@
-
+-- Gets all coaches in the database --
 SELECT users.id, first_name, last_name FROM users
 INNER JOIN teams
     ON  users.id = teams.coach_id

@@ -3,6 +3,7 @@
         "id": 1,
         "name": "Berkeley Aquatic Club",
         "coach_id": 4,
-        "sport": "swim"
+        "sport": "swim",
+        "pin": 696969
     }
 ]
