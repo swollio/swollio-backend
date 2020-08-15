@@ -4,6 +4,8 @@ import Athlete from "../schema/athlete"
 import requirePermission from "../middleware/auth"
 import Result from "../schema/result"
 import Survey from "../schema/survey"
+import getAllAthletes from "../workflows/athlete/getAllAthletes"
+import addAthlete from "../workflows/athlete/addAthlete"
 
 const router = express.Router()
 router.use(requirePermission([]))
@@ -11,17 +13,15 @@ router.use(requirePermission([]))
 /**
  * Return a list of all athletes in the database. This method should only be
  * accessible to admins.
- *
  */
-router.get("/", (req, res) => {
-    db["athletes.all"]()
-        .then((result) => {
-            res.status(200).send(result.rows)
-        })
-        .catch((error) => {
-            console.log(error)
-            res.status(500).send()
-        })
+router.get("/", async (_req, res) => {
+    try {
+        const athletes = await getAllAthletes()
+        return res.status(200).send(athletes)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err)
+    }
 })
 
 /**
@@ -37,52 +37,22 @@ router.get("/", (req, res) => {
  * }
  */
 router.post("/", async (req, res) => {
-    console.log(req.body)
+    const { pin } = req.body
     const athlete = req.body as Athlete
-
-    // Get the team id of the given pin
-    let teamId
-    let athleteId
+    const userId = req.token.user_id
 
     try {
-        teamId = (await db["teams.get_id_by_pin"]([athlete.pin])).rows[0].id
-
-        if (!teamId) return res.status(404).send("No team with given pin")
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send(err)
-    }
-
-    // After athlete is verified, add the athlete
-    try {
-        athleteId = (
-            await db["athletes.add_one"]([
-                req.token.user_id,
-                athlete.age,
-                athlete.height,
-                athlete.weight,
-                athlete.gender,
-            ])
-        ).rows[0].id
-
-        if (!athleteId) return res.status(500).send("Could not make athlete")
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send(err)
-    }
-
-    // After we get the athlete and team ids, add the athlete to the team
-
-    try {
-        await db["teams.add_athlete"]([teamId, athleteId])
+        await addAthlete(userId, athlete, pin)
         return res.status(200).send("success!")
-    } catch (error) {
-        console.log(error)
-        return res.status(500).send(error)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err)
     }
 })
 
-// Find athlete
+/**
+ * Calls the get athlete workflow, and returns athlete given the id
+ */
 router.get("/:id", (req, res) => {
     db["athletes.filter_by_id"]([req.params.id])
         .then((result) => {
