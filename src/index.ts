@@ -45,7 +45,7 @@ async function setupDatabase() {
   }
 
   for (const team of teams) {
-    await db['teams.add_one']([team.name, team.sport, team.coach_id]);
+    await db['teams.add_one']([team.name, team.sport, team.coach_id, team.pin]);
   }
 
   for (const athlete of athletes) {

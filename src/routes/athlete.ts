@@ -22,21 +22,65 @@ router.get('/', (req, res) => {
     });
 });
 
-
-router.post('/', (req, res) => {
+/**
+ * This route will add an athlete to the athletes table, and add this athlete to
+ * the team that has the pin passed in by the athlete. The body of this request must
+ * contain the following:
+ * {
+ *  - age: number
+ *  - height: number
+ *  - weight: number
+ *  - gender: male | female
+ *  - pin: number (of pin in teams table)
+ * }
+ */
+router.post('/', async (req, res) => {
+    console.log(req.body)
     const athlete = req.body as Athlete;
-    db['athletes.add_one']([
-        req.token.user_id,
-        athlete.age,
-        athlete.height,
-        athlete.weight,
-        athlete.gender
-    ]).then(result => {
-        res.status(200).send('success');
-    }).catch((error) => {
+
+    // Get the team id of the given pin
+    let team_id, athlete_id;
+    
+    try {
+        team_id = (await db['teams.get_id_by_pin']([athlete.pin])).rows[0].id
+
+        if (!team_id)
+            return res.status(404).send("No team with given pin")
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err)
+    }
+
+    // After athlete is verified, add the athlete
+    try {
+        athlete_id = 
+            (await db['athletes.add_one']([
+                req.token.user_id,
+                athlete.age,
+                athlete.height,
+                athlete.weight,
+                athlete.gender
+            ])).rows[0].id
+        
+        if (!athlete_id)
+            return res.status(500).send("Could not make athlete")
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err)
+    }
+
+    // After we get the athlete and team ids, add the athlete to the team
+    
+    try {
+        await db['teams.add_athlete']([team_id, athlete_id])
+        return res.status(200).send("success!")
+    }
+    catch(error) {
         console.log(error)
-        res.status(500).send();
-    });
+        return res.status(500).send(error)
+    }
 });
 
 

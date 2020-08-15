@@ -3,18 +3,22 @@ import { requirePermission } from '../middleware/auth';
 import Workout from '../schema/workout'
 import Team from '../schema/team'
 import db from '../utilities/database'
+import generatePin from "../utilities/generatePin"
 
 const router = express.Router()
 router.use(requirePermission([]))
 
-// List all teams
+// Create a team
 router.post('/', (req, res) => {
     // console.log(req.token);
     let team = req.body as Team;
+    team.pin = generatePin()
+
     db['teams.add_one']([
         team.name,
         team.sport,
         req.token.user_id,
+        team.pin
     ]).then(result => {
         res.status(200).send('success')
     }).catch((error) => {
@@ -23,6 +27,7 @@ router.post('/', (req, res) => {
     });
 });
 
+// List all teams
 router.get('/', (req, res) => {
     db['teams.all']().then(result => {
         res.status(200).send(result.rows);
@@ -59,16 +64,16 @@ router.get('/:team_id/coaches', (req, res) => {
     });
 });
 
-// Add an athlete for a team
-router.post('/:team_id/athletes/:athlete_id', (req, res) => {
-    db['teams.add_athlete']([req.params.team_id, req.params.athlete_id])
-    .then(result => {
-        res.status(200).send('success');
-    }).catch((error) => {
-        console.log(error);
-        res.status(500).send('unknown error');
-    });
-});
+// // Add an athlete for a team
+// router.post('/:team_id/athletes/:athlete_id', (req, res) => {
+//     db['teams.add_athlete']([req.params.team_id, req.params.athlete_id])
+//     .then(result => {
+//         res.status(200).send('success');
+//     }).catch((error) => {
+//         console.log(error);
+//         res.status(500).send('unknown error');
+//     });
+// });
 
 // Delete athlete
 router.delete('/:team_id/athletes/:athlete_id', (req, res) => {

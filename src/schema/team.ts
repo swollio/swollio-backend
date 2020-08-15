@@ -2,6 +2,7 @@ import Workout from './workout'
 
 export default interface Team {
 	id: number,
+	pin: number,
 	name: string
 	sport: string,
 	coach: string,

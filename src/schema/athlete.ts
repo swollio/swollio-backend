@@ -5,5 +5,6 @@ export default interface Athlete {
     age: number,
     height: number,	
     weight: number,
-	gender: "male" | "female"
+    gender: "male" | "female",
+    pin?: number
 }
