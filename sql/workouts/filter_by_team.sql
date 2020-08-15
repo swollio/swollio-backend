@@ -1,2 +1,2 @@
-SELECT id, workouts.name, workouts.created, repeat FROM workouts
+SELECT id, name, start_date, end_date, repeat FROM workouts
 WHERE team_id = %1$L;
