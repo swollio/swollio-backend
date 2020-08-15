@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS workout_team_tags(
     REFERENCES workouts(id),
 
     FOREIGN KEY (team_tag_id)
-    REFERENCES teams_tags(id)
+    REFERENCES team_tags(id)
 );
