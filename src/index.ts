@@ -20,7 +20,7 @@ async function setupDatabase() {
   await db['setup.users']();
   await db['setup.athletes']();
   await db['setup.teams']();
-  await db['setup.tags']();
+  await db['setup.team_tags']();
 
   await db['setup.exercises']();
   await db['setup.equipment']();
@@ -32,12 +32,12 @@ async function setupDatabase() {
   await db['setup.assignments']();
   await db['setup.custom_assignments']();
 
-  await db['setup.workout_tags']();
+  await db['setup.workout_team_tags']();
   await db['setup.athletes_equipment']();
   await db['setup.athletes_teams']();
-  await db['setup.athletes_teams_tag']();
+  await db['setup.athlete_team_tags']();
   
-  await db['setup.workout_results'](); 
+  await db['setup.workout_results']();
 
   // Initializing mock data
   for (const user of users) {
@@ -53,13 +53,10 @@ async function setupDatabase() {
     await db['teams.add_athlete']([1, athlete.id]);
   }
 
-  for (const tag of tags) {
-    await db['tags.add_tag']([tag.tag]);
-  }
-
-  for (const tagInfo of athletes_teams_tags) {
-    await db['athletes_teams_tags.add_one']([tagInfo.athlete_id, tagInfo.team_id, tagInfo.tag_id]);
-  }
+  // Add this later
+  // for (const tagInfo of athletes_teams_tags) {
+  //   await db['tags.add_athlete_tag']([tagInfo.athlete_id, tagInfo.team_id, tagInfo.tag_id]);
+  // }
 
   for (const muscle of muscles) {
     await db['exercises.add_muscles']([muscle.name, muscle.nickname, muscle.region]);
@@ -82,6 +79,7 @@ async function setupDatabase() {
   }
 }
 
+// setupDatabase();
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

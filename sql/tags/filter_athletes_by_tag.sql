@@ -1,7 +1,10 @@
 -- Filters athletes of a specific team by tags --
 -- The first argument is the team id, and the second argument is the tag --
-SELECT filtered_teams.athlete_id FROM (
-	SELECT * FROM athletes_teams_tags
-	WHERE athletes_teams_tags.team_id = %1$L
-) AS filtered_teams
-WHERE filtered_teams.tag_id = %2$L;
+WITH team_tag AS (
+	SELECT id FROM team_tags
+	WHERE team_id = %1$L AND
+		  tag = %2$L
+)
+SELECT athlete_id FROM athlete_team_tags
+INNER JOIN team_tag
+ON team_tag.id = team_tag_id;

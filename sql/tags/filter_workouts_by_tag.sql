@@ -1,3 +1,3 @@
--- Filters the workouts by tag id --
-SELECT workout_tags.workout_id FROM workout_tags
-WHERE workout_tags.tag_id = %1$L;
+-- Filters the workouts by team_tag --
+SELECT workout_id FROM workout_team_tags
+WHERE team_tag_id= %1$L;
