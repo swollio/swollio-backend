@@ -1,6 +1,4 @@
 import express from "express"
-import db from "../utilities/database"
-import * as constants from "../utilities/constants"
 import getUsers from "../workflows/admin/getUsers"
 
 const router = express.Router()

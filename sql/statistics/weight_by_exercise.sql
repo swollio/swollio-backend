@@ -11,4 +11,4 @@ WITH results AS (
 SELECT exercises.name as exercise_name, grouped_results.* 
 FROM grouped_results
 INNER JOIN exercises
-ON exercises.id=grouped_results.exercise_id
+ON exercises.id=grouped_results.exercise_id;

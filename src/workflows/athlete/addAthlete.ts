@@ -35,7 +35,7 @@ export default async function addAthlete(
         if (!teamId) throw new Error("There is no team with this pin")
     } catch (err) {
         console.log(err)
-        throw new Error(err)
+        throw new Error(`Could not find team with pin ${pin}`)
     }
 
     // After athlete is verified, try to add the athlete
@@ -56,7 +56,7 @@ export default async function addAthlete(
             )
     } catch (err) {
         console.log(err)
-        throw new Error(err)
+        throw new Error("Could not add athlete to table")
     }
 
     // After we get the athlete and team ids, try to add the athlete to the team
@@ -64,6 +64,6 @@ export default async function addAthlete(
         await db["teams.add_athlete"]([teamId, athleteId])
     } catch (error) {
         console.log(error)
-        throw new Error(error)
+        throw new Error("Could not add athlete to team")
     }
 }

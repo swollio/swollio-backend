@@ -120,16 +120,20 @@ router.post("/:team_id/workouts", async (req, res) => {
     res.send("success")
 })
 
-
 // Create a team workouts
-router.post('/:team_id/exercises', async (req, res) => {
-    console.log('creating an exercise')
-    const exercise_id = (await db['exercises.add_custom_exercise']([req.body.name.toLowerCase(), req.params.team_id])).rows[0].id
-    await db['exercises.add_muscles_exercises'](
-        [req.body.muscles.map((m: any) => [m.id, exercise_id])]
-    )
-    res.json(exercise_id)
-});
+router.post("/:team_id/exercises", async (req, res) => {
+    console.log("creating an exercise")
+    const exerciseId = (
+        await db["exercises.add_custom_exercise"]([
+            req.body.name.toLowerCase(),
+            req.params.team_id,
+        ])
+    ).rows[0].id
+    await db["exercises.add_muscles_exercises"]([
+        req.body.muscles.map((m: any) => [m.id, exerciseId]),
+    ])
+    res.json(exerciseId)
+})
 
 // Find a team's workout
 router.get("/:team_id/workouts/:workout_id", async (req, res) => {

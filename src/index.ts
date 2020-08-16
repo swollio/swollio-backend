@@ -37,6 +37,7 @@ async function setupDatabase() {
     await db["setup.athlete_team_tags"]()
 
     await db["setup.workout_results"]()
+    await db["setup.workout_surveys"]()
 
     // Initializing mock data
     for (const user of users) {
@@ -99,7 +100,6 @@ async function setupDatabase() {
     ])
 }
 
-setupDatabase()
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`)
