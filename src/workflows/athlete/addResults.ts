@@ -25,6 +25,6 @@ export default async function addResults(
         await db["results.insert_many"](formattedResults)
     } catch (err) {
         console.log(err)
-        throw new Error(err)
+        throw new Error("Add Results Error: Could not add results to database")
     }
 }

@@ -10,6 +10,6 @@ export default async function getAllAthletes(): Promise<Athlete[]> {
         return athletes.rows as Athlete[]
     } catch (err) {
         console.log(err)
-        throw new Error(err)
+        throw new Error("Get All Athletes Error: Could not get all athletes")
     }
 }

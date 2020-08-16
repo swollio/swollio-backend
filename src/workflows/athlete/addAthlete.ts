@@ -32,10 +32,13 @@ export default async function addAthlete(
         teamId = (await db["teams.get_id_by_pin"]([pin])).rows[0].id
 
         // If there is no id, then throw an error
-        if (!teamId) throw new Error("There is no team with this pin")
+        if (!teamId)
+            throw new Error("Add Athlete Error: There is no team with this pin")
     } catch (err) {
         console.log(err)
-        throw new Error(`Could not find team with pin ${pin}`)
+        throw new Error(
+            `Add Athlete Error: Could not find team with pin ${pin}`
+        )
     }
 
     // After athlete is verified, try to add the athlete
@@ -52,11 +55,11 @@ export default async function addAthlete(
 
         if (!athleteId)
             throw new Error(
-                "Could not add athlete. Maybe they already have an account?"
+                "Add Athlete Error: Could not add athlete to database. Maybe they already have an account?"
             )
     } catch (err) {
         console.log(err)
-        throw new Error("Could not add athlete to table")
+        throw new Error("Add Athlete Error: Could not add athlete to table")
     }
 
     // After we get the athlete and team ids, try to add the athlete to the team
@@ -64,6 +67,6 @@ export default async function addAthlete(
         await db["teams.add_athlete"]([teamId, athleteId])
     } catch (error) {
         console.log(error)
-        throw new Error("Could not add athlete to team")
+        throw new Error("Add Athlete Error: Could not add athlete to team")
     }
 }

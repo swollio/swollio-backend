@@ -25,7 +25,7 @@ router.get("/", async (_req, res) => {
         return res.status(200).send(athletes)
     } catch (err) {
         console.log(err)
-        return res.status(500).send("Could not get all athletes")
+        return res.status(500).send(err.message)
     }
 })
 
@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
         return res.status(200).send("success!")
     } catch (err) {
         console.log(err)
-        return res.status(500).send(err)
+        return res.status(500).send(err.message)
     }
 })
 
@@ -67,7 +67,7 @@ router.get("/:id", async (req, res) => {
         return res.status(200).send(athlete)
     } catch (err) {
         console.log(err)
-        return res.status(500).send("Could not find athlete")
+        return res.status(500).send(err.message)
     }
 })
 
@@ -86,7 +86,7 @@ router.get("/:id/workouts", async (req, res) => {
         return res.status(200).send(workouts)
     } catch (err) {
         console.log(err)
-        return res.status(500).send("Could not get all workouts for athlete")
+        return res.status(500).send(err.message)
     }
 })
 
@@ -102,7 +102,7 @@ router.get("/:id/workouts/:workout_id", async (req, res) => {
         return res.status(200).send(workout)
     } catch (err) {
         console.log(err)
-        return res.status(500).send("Could not get assignments for workout")
+        return res.status(500).send(err.message)
     }
 })
 
@@ -118,7 +118,7 @@ router.get("/:id/exercises/", async (req, res) => {
         return res.status(200).send(results)
     } catch (err) {
         console.log(err)
-        return res.status(500).send("Could not get athlete progress")
+        return res.status(500).send(err.message)
     }
 })
 
@@ -157,7 +157,7 @@ router.post("/:athleteId/results/:workoutId", async (req, res) => {
         return res.status(200).send("success!")
     } catch (err) {
         console.log(err)
-        return res.status(500).send("Could not add results to workout")
+        return res.status(500).send(err.message)
     }
 })
 
@@ -181,7 +181,7 @@ router.post("/:athleteId/surveys/:workoutId", async (req, res) => {
         return res.status(200).send("success!")
     } catch (err) {
         console.log(err)
-        return res.status(500).send("Unable to post survey")
+        return res.status(500).send(err.message)
     }
 })
 

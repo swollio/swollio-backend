@@ -13,7 +13,8 @@ export default async function addSurvey(
     survey: Survey
 ): Promise<void> {
     // Making sure we have valid survey data
-    if (!survey) throw new Error("No survey received!")
+    if (!survey)
+        throw new Error("Add Workout Survey Error: No survey received!")
 
     try {
         await db["surveys.add_one"]([
@@ -26,6 +27,8 @@ export default async function addSurvey(
         ])
     } catch (err) {
         console.log(err)
-        throw new Error(err)
+        throw new Error(
+            "Add Workout Survey Error: Could not add survey to workout"
+        )
     }
 }

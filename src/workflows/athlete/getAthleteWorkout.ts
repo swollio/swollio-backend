@@ -20,6 +20,8 @@ export default async function getAthleteWorkout(
         return workout.rows as ExerciseAssignment[]
     } catch (err) {
         console.log(err)
-        throw new Error(err)
+        throw new Error(
+            "Get Athlete Workout Error: Could not get Athlete Workout"
+        )
     }
 }

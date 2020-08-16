@@ -13,6 +13,8 @@ export default async function findAthlete(athleteId: number): Promise<Athlete> {
         return athlete.rows[0] as Athlete
     } catch (err) {
         console.log(err)
-        throw new Error(err)
+        throw new Error(
+            `Find Athlete Error: Could not find athlete with id ${athleteId}`
+        )
     }
 }

@@ -11,6 +11,6 @@ export default async function getUsers(): Promise<User[]> {
         return users.rows as User[]
     } catch (err) {
         console.log(err)
-        throw new Error(err)
+        throw new Error("Get Users Error: Could not get all users")
     }
 }

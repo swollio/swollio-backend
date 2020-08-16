@@ -14,6 +14,6 @@ export default async function getAthleteProgress(
         return results.rows as WorkoutStats[]
     } catch (err) {
         console.log(err)
-        throw new Error(err)
+        throw new Error("Get Progress Error: Could not get Progress")
     }
 }
