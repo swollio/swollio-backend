@@ -1,9 +1,16 @@
 import express from "express"
-import db from "../utilities/database"
 import Athlete from "../schema/athlete"
 import requirePermission from "../middleware/auth"
 import Result from "../schema/result"
 import Survey from "../schema/survey"
+import getAllAthletes from "../workflows/athlete/getAllAthletes"
+import addAthlete from "../workflows/athlete/addAthlete"
+import findAthlete from "../workflows/athlete/findAthlete"
+import listAthleteWorkouts from "../workflows/athlete/listAthleteWorkouts"
+import getAthleteWorkout from "../workflows/athlete/getAthleteWorkout"
+import getAthleteProgress from "../workflows/athlete/getProgress"
+import addResults from "../workflows/athlete/addResults"
+import addSurvey from "../workflows/athlete/addSurvey"
 
 const router = express.Router()
 router.use(requirePermission([]))
@@ -11,17 +18,15 @@ router.use(requirePermission([]))
 /**
  * Return a list of all athletes in the database. This method should only be
  * accessible to admins.
- *
  */
-router.get("/", (req, res) => {
-    db["athletes.all"]()
-        .then((result) => {
-            res.status(200).send(result.rows)
-        })
-        .catch((error) => {
-            console.log(error)
-            res.status(500).send()
-        })
+router.get("/", async (_req, res) => {
+    try {
+        const athletes = await getAllAthletes()
+        return res.status(200).send(athletes)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
+    }
 })
 
 /**
@@ -37,104 +42,84 @@ router.get("/", (req, res) => {
  * }
  */
 router.post("/", async (req, res) => {
-    console.log(req.body)
+    const { pin } = req.body
     const athlete = req.body as Athlete
-
-    // Get the team id of the given pin
-    let teamId
-    let athleteId
+    const userId = req.token.user_id
 
     try {
-        teamId = (await db["teams.get_id_by_pin"]([athlete.pin])).rows[0].id
-
-        if (!teamId) return res.status(404).send("No team with given pin")
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send(err)
-    }
-
-    // After athlete is verified, add the athlete
-    try {
-        athleteId = (
-            await db["athletes.add_one"]([
-                req.token.user_id,
-                athlete.age,
-                athlete.height,
-                athlete.weight,
-                athlete.gender,
-            ])
-        ).rows[0].id
-
-        if (!athleteId) return res.status(500).send("Could not make athlete")
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send(err)
-    }
-
-    // After we get the athlete and team ids, add the athlete to the team
-
-    try {
-        await db["teams.add_athlete"]([teamId, athleteId])
+        await addAthlete(userId, athlete, pin)
         return res.status(200).send("success!")
-    } catch (error) {
-        console.log(error)
-        return res.status(500).send(error)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
     }
 })
 
-// Find athlete
-router.get("/:id", (req, res) => {
-    db["athletes.filter_by_id"]([req.params.id])
-        .then((result) => {
-            res.status(200).send(result.rows[0])
-        })
-        .catch(() => {
-            res.status(500).send()
-        })
-})
+/**
+ * Calls the find athlete workflow, and returns the athlete with the given id
+ */
+router.get("/:id", async (req, res) => {
+    // Get the athleteId from the request parameters
+    const athleteId = Number.parseInt(req.params.id, 10)
 
-// List athlete workouts
-router.get("/:id/workouts", (req, res) => {
-    if (req.query.date === "today") {
-        db["workouts.filter_by_athlete_today"]([req.params.id])
-            .then((result) => {
-                res.status(200).send(result.rows)
-            })
-            .catch(() => {
-                res.status(500).send()
-            })
-    } else {
-        db["workouts.filter_by_athlete"]([req.params.id])
-            .then((result) => {
-                res.status(200).send(result.rows)
-            })
-            .catch(() => {
-                res.status(500).send()
-            })
+    try {
+        const athlete = await findAthlete(athleteId)
+        return res.status(200).send(athlete)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
     }
 })
 
-// Get athlete's workout
-router.get("/:id/workouts/:workout_id", (req, res) => {
-    db["assignments.filter_by_workout"]([req.params.workout_id])
-        .then((result) => {
-            res.status(200).send(result.rows)
-        })
-        .catch(() => {
-            res.status(500).send()
-        })
+/**
+ * Takes in the athlete's id and gets all the workouts
+ * for that athlete. This calls the listAthleteWorkouts workflow
+ *
+ * LOOK OVER THIS AGAIN AND MAKE SURE TYPE IS RIGHT
+ */
+router.get("/:id/workouts", async (req, res) => {
+    const athleteId = Number.parseInt(req.params.id, 10)
+    const date = req.query.date as string
+
+    try {
+        const workouts = await listAthleteWorkouts(athleteId, date)
+        return res.status(200).send(workouts)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
+    }
 })
 
-// Get athlete's progress over time
-router.get("/:id/exercises/", (req, res) => {
-    db["statistics.weight_by_exercise"]([req.params.id])
-        .then((result) => {
-            console.log(result.rows)
-            res.status(200).send(result.rows)
-        })
-        .catch(() => {
-            res.status(500).send()
-        })
+/**
+ * This calls the getAthleteWorkout workflow, which returns a list
+ * of exercise assignments for a given workout
+ */
+router.get("/:id/workouts/:workout_id", async (req, res) => {
+    const workoutId = Number.parseInt(req.params.workout_id, 10)
+
+    try {
+        const workout = await getAthleteWorkout(workoutId)
+        return res.status(200).send(workout)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
+    }
+})
+
+/**
+ * This calls the getAthleteProgress workflow, which will return
+ * all of the athlete's progress in each exercise
+ */
+router.get("/:id/exercises/", async (req, res) => {
+    const athleteId = Number.parseInt(req.params.id, 10)
+
+    try {
+        const results = await getAthleteProgress(athleteId)
+        return res.status(200).send(results)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
+    }
 })
 
 /*
@@ -162,54 +147,42 @@ router.get("/:id/exercises/", (req, res) => {
  *   weight: 160
  * }]
  */
-router.post("/:athleteId/results/:workout_id", async (req, res) => {
+router.post("/:athleteId/results/:workoutId", async (req, res) => {
     const results = req.body as Result[]
+    const athleteId = Number.parseInt(req.params.athleteId, 10)
+    const workoutId = Number.parseInt(req.params.workoutId, 10)
 
-    if (results.length === 0) {
-        res.status(200).send("success")
-        return
+    try {
+        await addResults(athleteId, workoutId, results)
+        return res.status(200).send("success!")
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
     }
-    await db["results.insert_many"]([
-        results.map((result) => [
-            req.params.athleteId,
-            result.exercise_id,
-            result.assignment_id,
-            req.params.workout_id,
-            result.date,
-            result.weight,
-            result.reps,
-            result.created,
-        ]),
-    ])
-    res.status(200).send("success")
 })
 
 /**
- * This route adds a survey to the workout_surveys table after a workout is completed
+ * This route adds a survey to the workout_surveys table after a workout is completed.
+ * The body should be a survey object, which looks like the following:
+ * {
+ *  - due_date: Date
+ *  - rating: number
+ *  - hours_sleep: number
+ *  - wellness: number
+ * }
  */
-router.post("/:athleteId/surveys/:workout_id", async (req, res) => {
+router.post("/:athleteId/surveys/:workoutId", async (req, res) => {
+    const athleteId = Number.parseInt(req.params.athleteId, 10)
+    const workoutId = Number.parseInt(req.params.workoutId, 10)
     const survey = req.body as Survey
 
-    console.log(req.body)
-
-    if (!survey) {
-        res.status(500).send("No survey received")
-        return
-    }
-
     try {
-        await db["surveys.add_one"]([
-            survey.athlete_id,
-            survey.workout_id,
-            survey.due_date,
-            survey.rating,
-            survey.hours_sleep,
-            survey.wellness,
-        ])
+        await addSurvey(athleteId, workoutId, survey)
+        return res.status(200).send("success!")
     } catch (err) {
         console.log(err)
+        return res.status(500).send(err.message)
     }
-    res.status(200).send("success")
 })
 
 export default router

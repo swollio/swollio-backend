@@ -24,7 +24,6 @@ WITH week_starts AS (
 		AND athlete_id = %1$L) 
 	AS completed
 	FROM upcoming
-
 )
 
 SELECT date, ARRAY_AGG(ROW_TO_JSON(upcoming_completed)) as workouts FROM upcoming_completed

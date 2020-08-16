@@ -1,6 +1,5 @@
 import express from "express"
-import db from "../utilities/database"
-import * as constants from "../utilities/constants"
+import getUsers from "../workflows/admin/getUsers"
 
 const router = express.Router()
 // router.use(requirePermission(['admin']))
@@ -9,37 +8,17 @@ router.get("/", (req, res) => {
     res.status(200).send({ hello: "world" })
 })
 
-router.get("/users", (req, res) => {
-    db["users.list"]()
-        .then((result) => {
-            res.status(200).send(result.rows)
-        })
-        .catch((error) => {
-            console.log(error)
-            res.status(500).send()
-        })
-})
-
-router.get("/instantiate/exercises", (req, res) => {
-    db["exercises.instantiate"]()
-        .then((result) => {
-            res.status(200).send(result.rows)
-        })
-        .catch((error) => {
-            console.log(error)
-            res.status(500).send()
-        })
-})
-
-router.get("/instantiate/muscles", (req, res) => {
-    constants.muscles.forEach((muscle) => {
-        db["exercises.insert_muscles"]([muscle.name])
-            .then((result) => res.status(200).send(result.rows))
-            .catch((error) => {
-                console.log(error)
-                res.status(500).send(error)
-            })
-    })
+/**
+ * Executes the getUsers workflow, and returns an array of users
+ */
+router.get("/users", async (req, res) => {
+    try {
+        const users = await getUsers()
+        return res.status(200).send(users)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
+    }
 })
 
 export default router

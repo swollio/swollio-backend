@@ -3,42 +3,42 @@
         "id": 1,
         "first_name": "Anshul",
         "last_name": "Kamath",
-        "email": "anshul@swoll.io",
-        "hash": "cf1561431bf0a01d59615e56793ef360"
+        "email": "anshulkam@gmail.com",
+        "password": "test123"
     },
     {
         "id": 2,
         "first_name": "Thomas",
         "last_name": "Barrett",
         "email": "thomas@swoll.io",
-        "hash": "f1ee157940ad02d2c7e1d120ee3b91ea"
+        "password": "test123"
     },
     {
         "id": 3,
         "first_name": "Will",
         "last_name": "Covino",
         "email": "william@swoll.io",
-        "hash": "fe1b019dcb8fc05316d764495eb689bd"
+        "password": "test123"
     },
     {
         "id": 4,
-        "first_name": "Jim",
-        "last_name": "Wood",
-        "email": "jim.wood@berkeleyaquaticclub.com",
-        "hash": "318f5f7fbd341409ae878b6b39daf0a4"
-    },
-    {
-        "id": 5,
         "first_name": "Patrick",
         "last_name": "Heffernan",
         "email": "pheffernan@notredame.edu",
-        "hash": "19c43a9c5b27ccf419b7b877d1343ca0"
+        "password": "test123"
     },
     {
-        "id": 6,
+        "id": 5,
         "first_name": "AJ",
         "last_name": "Profaca",
         "email": "ajprofaca@olddominion.edu",
-        "hash": "e5742872ff127331b384ddfa6cd30b50"
+        "password": "test123"
+    },
+    {
+        "id": 6,
+        "first_name": "Jim",
+        "last_name": "Wood",
+        "email": "jimwood@bac.com",
+        "password": "test123"
     }
 ]

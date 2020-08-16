@@ -1,54 +1,57 @@
 import express from "express"
-import jwt from "jsonwebtoken"
-import bcrypt from "bcrypt"
-import db from "../utilities/database"
-import config from "../config.json"
+import login from "../workflows/auth/login"
+import UserData from "../schema/userData"
+import signup from "../workflows/auth/signup"
 
 const router = express.Router()
 
+/**
+ * This route will call the login workflow, which will take the
+ * steps necessary to log the user in. Our response will send the
+ * bearer token for the user after they have been logged in. The body
+ * will contain the following:
+ * {
+ *  - email: string
+ *  - password: string
+ * }
+ */
 router.post("/login", async (req, res) => {
-    const user = await db["users.login"]([req.body.email])
-    if (user.rows.length === 0) {
-        res.status(403).send("incorrect email")
-        return
-    }
-    const userId = user.rows[0].id
-    const { hash } = user.rows[0]
-    const valid = await bcrypt.compare(req.body.password, hash)
-    if (valid) {
-        const token = jwt.sign(
-            {
-                user_id: userId,
-            },
-            config.auth.secret,
-            { expiresIn: "1 day" }
-        )
-        res.send(token)
-    } else {
-        res.status(403).send("incorrect email or password")
+    // Getting user data to pass into function
+    const { email, password } = req.body
+
+    // Try to login
+    try {
+        const token = await login(email, password)
+        return res.status(200).send(token)
+    } catch (err) {
+        console.log(err)
+        return res.status(403).send(err.message)
     }
 })
 
+/**
+ * This route will call the signup workflow, which will take the steps
+ * necessary to create a new user in the users table. The response will
+ * send the user a new bearer token after they have been added and logged in.
+ * The body will contain the following:
+ * {
+ *  - email: string
+ *  - password: string
+ *  - first_name: string
+ *  - last_name: string
+ * }
+ */
 router.post("/signup", async (req, res) => {
-    try {
-        const hash = await bcrypt.hash(req.body.password, 10)
-        const user = await db["users.signup"]([
-            req.body.first_name,
-            req.body.last_name,
-            req.body.email,
-            hash,
-        ])
+    // Formatting body data
+    const user = req.body as UserData
 
-        const token = jwt.sign(
-            {
-                user_id: user.rows[0].id,
-            },
-            config.auth.secret,
-            { expiresIn: "1 day" }
-        )
-        res.send(token)
-    } catch (error) {
-        res.status(403).send("unable to create account")
+    // Trying to sign up
+    try {
+        const token = await signup(user)
+        return res.status(200).send(token)
+    } catch (err) {
+        console.log(err)
+        return res.status(403).send(err.message)
     }
 })
 
