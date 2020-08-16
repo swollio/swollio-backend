@@ -10,6 +10,8 @@ import equipment from "./mock/equipment.json"
 import exercises from "./mock/exercises.json"
 import equipmentExercises from "./mock/equipment_exercises.json"
 import musclesExercise from "./mock/muscles_exercises.json"
+import signup from "./workflows/auth/signup"
+import addAthlete from "./workflows/athlete/addAthlete"
 
 /**
  * Creates all of the tables in the database and populates tables given by
@@ -41,12 +43,7 @@ async function setupDatabase() {
 
     // Initializing mock data
     for (const user of users) {
-        await db["users.signup"]([
-            user.first_name,
-            user.last_name,
-            user.email,
-            user.hash,
-        ])
+        await signup(user)
     }
 
     for (const team of teams) {
@@ -58,15 +55,8 @@ async function setupDatabase() {
         ])
     }
 
-    for (const athlete of athletes) {
-        await db["athletes.add_one"]([
-            athlete.user_id,
-            athlete.age,
-            athlete.height,
-            athlete.weight,
-            athlete.gender,
-        ])
-        await db["teams.add_athlete"]([1, athlete.id])
+    for (let i = 0; i < athletes.length; i++) {
+       await addAthlete((i + 1), athletes[i], 696969)
     }
 
     // Add this later
