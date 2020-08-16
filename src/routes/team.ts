@@ -99,7 +99,7 @@ router.post("/:team_id/workouts", async (req, res) => {
     const workout = req.body as Workout
     const result = await db["workouts.insert_one"]([
         req.params.team_id,
-        "Untitled Workout",
+        workout.name,
         `{${workout.repeat.map((x) => `"${x.toString()}"`).join(",")}}`,
         workout.start_date,
         workout.end_date || null,

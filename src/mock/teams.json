@@ -2,7 +2,7 @@
     {
         "id": 1,
         "name": "Berkeley Aquatic Club",
-        "coach_id": 4,
+        "coach_id": 6,
         "sport": "swim",
         "pin": 696969
     }
