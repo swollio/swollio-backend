@@ -31,7 +31,6 @@ async function setupDatabase() {
 
     await db["setup.workouts"]()
     await db["setup.assignments"]()
-    await db["setup.custom_assignments"]()
 
     await db["setup.workout_team_tags"]()
     await db["setup.athletes_equipment"]()

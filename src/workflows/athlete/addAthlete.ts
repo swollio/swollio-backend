@@ -27,13 +27,20 @@ export default async function addAthlete(
     let teamId
     let athleteId
 
+    // Verify that pin is valid
+    if (pin.toString().length !== 6)
+        throw new Error("Add Athlete Error: Pin does not have 6 digits")
+
     try {
         // Query for the team id
-        teamId = (await db["teams.get_id_by_pin"]([pin])).rows[0].id
+        const teamQuery = await db["teams.get_id_by_pin"]([pin])
 
         // If there is no id, then throw an error
-        if (!teamId)
+        if (teamQuery.rowCount === 0)
             throw new Error("Add Athlete Error: There is no team with this pin")
+
+        // Set the team id
+        teamId = teamQuery.rows[0].id
     } catch (err) {
         console.log(err)
         throw new Error(

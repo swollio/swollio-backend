@@ -27,7 +27,7 @@ export default async function login(
         const userData = await db["users.login"]([email])
 
         // Verify that the email is valid / we get actual user data back
-        if (userData.rows.length === 0)
+        if (userData.rowCount === 0)
             throw new Error("Login Error: Incorrect email")
 
         // Get the actual user object from the data
