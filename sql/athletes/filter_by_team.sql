@@ -4,7 +4,7 @@ WITH athlete_tags AS (
 	FROM team_tags
 	INNER JOIN athlete_team_tags
 		ON team_tag_id = id
-	WHERE team_id = 2
+	WHERE team_id = %1$L
 )
 SELECT athletes.id, first_name, last_name, age, height, weight, gender, ARRAY_AGG(tag) AS tags
 FROM athletes INNER JOIN athletes_teams
@@ -13,5 +13,5 @@ INNER JOIN users
 	ON athletes.user_id = users.id
 LEFT JOIN athlete_tags
 	ON athletes.id = athlete_tags.athlete_id
-WHERE athletes_teams.team_id = 2
+WHERE athletes_teams.team_id = %1$L
 GROUP BY athletes.id, first_name, last_name, age, height, weight, gender;

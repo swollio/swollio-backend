@@ -1,5 +1,4 @@
 import db from "../../utilities/database"
-import Workout from "../../schema/workout"
 import WorkoutInstance from "../../schema/workoutInstance"
 
 // Defining return types
