@@ -150,9 +150,7 @@ router.get("/:team_id/workouts", async (req, res) => {
  * shold contain a workout, which has the following keys:
  * {
  *  - name: string
- *  - repeat: number[]
- *  - start_date: string
- *  - end_date: string
+ *  - dates: string[]
  *  - assignments: Assignment[]
  * }
  */

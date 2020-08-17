@@ -14,6 +14,8 @@ export default async function createTeamWorkout(
 ): Promise<void> {
     let workoutId: number
 
+    console.log(workout)
+
     // Make sure there are assignments in the workout before we add anything
     // to the database
     if (workout.assignments.length === 0)
@@ -26,10 +28,7 @@ export default async function createTeamWorkout(
         const workoutQuery = await db["workouts.insert_one"]([
             teamId,
             workout.name,
-            // [1, 3, 5] -> "{1, 3, 5}"
-            `{${workout.repeat.map((x) => `"${x.toString()}"`).join(",")}}`,
-            workout.start_date,
-            workout.end_date || null,
+            `{${workout.dates.map((x) => `"${x}"`).join(",")}}`,
         ])
 
         // Store the id of the new workout that was created

@@ -1,27 +1,26 @@
-WITH week_starts AS (
-	SELECT DATE_TRUNC('week', CURRENT_DATE) + s.a * '1 week'::interval AS week_start FROM GENERATE_SERIES(0, 3) AS s(a)
-), upcoming AS (
-	SELECT workouts.id, (week_start + unnest(workouts.repeat) * '1 day'::interval) as date,
-		teams.name AS team_name,
-		workouts.id AS workout_id,
+WITH workouts_for_athlete AS (
+	SELECT 
+		workouts.id,
+		unnest(workouts.dates) as date,
 		workouts.name AS workout_name,
-		workouts.start_date,
-		workouts.end_date FROM workouts
+		teams.name AS team_name
+	FROM workouts
 	INNER JOIN athletes_teams
 		ON workouts.team_id = athletes_teams.team_id
 	INNER JOIN teams
 		ON workouts.team_id = teams.id
-	CROSS JOIN week_starts
-	WHERE (athlete_id = %1$L)
-	-- Start before the week ends and end before the week starts -
+	WHERE athlete_id = %1$L
+), workouts_for_athlete_completed AS (
+	SELECT workouts_for_athlete.*, 
+	EXISTS(
+		SELECT 1 
+		FROM workout_surveys 
+		WHERE id = workouts_for_athlete.id 
+		AND due_date = workouts_for_athlete.date 
+		AND athlete_id = %1$L) 
+	AS completed
+	FROM workouts_for_athlete
 )
 
-SELECT upcoming.*, 
-EXISTS(
-	SELECT 1 
-	FROM workout_surveys 
-	WHERE workout_id = upcoming.workout_id 
-	AND due_date = upcoming.date) 
-AS completed
-FROM upcoming
-WHERE date=CURRENT_DATE;
+SELECT * FROM workouts_for_athlete_completed
+WHERE date = CURRENT_DATE;
