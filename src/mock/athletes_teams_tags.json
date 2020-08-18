@@ -1,62 +1,117 @@
 [
     {
+        "athlete_team_tag_id": 1,
         "athlete_id": 1,
-        "team_id": 1,
-        "tag_id": 1
+        "team_tag_id": 1
     },
     {
+        "athlete_team_tag_id": 3,
         "athlete_id": 1,
-        "team_id": 1,
-        "tag_id": 8
+        "team_tag_id": 9
     },
     {
+        "athlete_team_tag_id": 3,
         "athlete_id": 1,
-        "team_id": 1,
-        "tag_id": 5
+        "team_tag_id": 7
     },
     {
+        "athlete_team_tag_id": 4,
         "athlete_id": 2,
-        "team_id": 1,
-        "tag_id": 3
+        "team_tag_id": 3
     },
     {
+        "athlete_team_tag_id": 5,
         "athlete_id": 2,
-        "team_id": 1,
-        "tag_id": 8
+        "team_tag_id": 4
     },
     {
+        "athlete_team_tag_id": 6,
         "athlete_id": 3,
-        "team_id": 1,
-        "tag_id": 2
+        "team_tag_id": 2
     },
     {
+        "athlete_team_tag_id": 7,
         "athlete_id": 3,
-        "team_id": 1,
-        "tag_id": 8
+        "team_tag_id": 7
     },
     {
+        "athlete_team_tag_id": 8,
         "athlete_id": 4,
-        "team_id": 1,
-        "tag_id": 3
+        "team_tag_id": 4
     },
     {
+        "athlete_team_tag_id": 9,
         "athlete_id": 4,
-        "team_id": 1,
-        "tag_id": 8
+        "team_tag_id": 3
     },
     {
+        "athlete_team_tag_id": 10,
         "athlete_id": 4,
-        "team_id": 1,
-        "tag_id": 5
+        "team_tag_id": 7
     },
     {
+        "athlete_team_tag_id": 12,
         "athlete_id": 5,
-        "team_id": 1,
-        "tag_id": 1
+        "team_tag_id": 6
     },
     {
+        "athlete_team_tag_id": 13,
         "athlete_id": 5,
-        "team_id": 1,
-        "tag_id": 8
+        "team_tag_id": 8
+    },
+    {
+        "athlete_team_tag_id": 14,
+        "athlete_id": 6,
+        "team_tag_id": 12
+    },
+    {
+        "athlete_team_tag_id": 15,
+        "athlete_id": 6,
+        "team_tag_id": 10
+    },
+    {
+        "athlete_team_tag_id": 16,
+        "athlete_id": 7,
+        "team_tag_id": 12
+    },
+    {
+        "athlete_team_tag_id": 17,
+        "athlete_id": 7,
+        "team_tag_id": 17
+    },
+    {
+        "athlete_team_tag_id": 1,
+        "athlete_id": 8,
+        "team_tag_id": 10
+    },
+    {
+        "athlete_team_tag_id": 18,
+        "athlete_id": 8,
+        "team_tag_id": 16
+    },
+    {
+        "athlete_team_tag_id": 19,
+        "athlete_id": 8,
+        "team_tag_id": 13
+    },
+    {
+        "athlete_team_tag_id": 20,
+        "athlete_id": 9,
+        "team_tag_id": 14
+    },
+    {
+        "athlete_team_tag_id": 21,
+        "athlete_id": 9,
+        "team_tag_id": 16
+    },
+    {
+        "athlete_team_tag_id": 22,
+        "athlete_id": 10,
+        "team_tag_id": 13
+    },
+    {
+        "athlete_team_tag_id": 23,
+        "athlete_id": 10,
+        "team_tag_id": 17
     }
 ]

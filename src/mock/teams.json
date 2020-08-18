@@ -2,8 +2,15 @@
     {
         "id": 1,
         "name": "Berkeley Aquatic Club",
-        "coach_id": 6,
+        "coach_id": 11,
         "sport": "swim",
-        "pin": 696969
+        "pin": 420690
+    },
+    {
+        "id": 2,
+        "name": "Caltech Beavers",
+        "coach_id": 12,
+        "sport": "swim",
+        "pin": 314159
     }
 ]

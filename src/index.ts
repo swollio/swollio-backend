@@ -6,9 +6,10 @@ import users from "./mock/users.json"
 import athletes from "./mock/athletes.json"
 import teams from "./mock/teams.json"
 import muscles from "./mock/muscles.json"
-import equipment from "./mock/equipment.json"
 import exercises from "./mock/exercises.json"
 import musclesExercise from "./mock/muscles_exercises.json"
+import teamTags from "./mock/team_tags.json"
+import athleteTeamTags from "./mock/athletes_teams_tags.json"
 import signup from "./workflows/auth/signup"
 import addAthlete from "./workflows/athlete/addAthlete"
 
@@ -23,8 +24,6 @@ async function setupDatabase() {
     await db["setup.team_tags"]()
 
     await db["setup.exercises"]()
-    await db["setup.equipment"]()
-    await db["setup.equipment_exercises"]()
     await db["setup.muscles"]()
     await db["setup.muscles_exercises"]()
 
@@ -32,7 +31,6 @@ async function setupDatabase() {
     await db["setup.assignments"]()
 
     await db["setup.workout_team_tags"]()
-    await db["setup.athletes_equipment"]()
     await db["setup.athletes_teams"]()
     await db["setup.athlete_team_tags"]()
 
@@ -54,7 +52,8 @@ async function setupDatabase() {
     }
 
     for (let i = 0; i < athletes.length; i++) {
-       await addAthlete((i + 1), athletes[i], 696969)
+        const pin = i < 5 ? 420690 : 314159
+        await addAthlete((i + 1), athletes[i], pin)
     }
 
     // Add this later
@@ -79,13 +78,17 @@ async function setupDatabase() {
         ])
     }
 
-    for (const equip of equipment) {
-        await db["exercises.add_equipment"]([equip.name])
-    }
-
     await db["exercises.add_muscles_exercises"]([
         musclesExercise.map((x) => [x.muscle_id, x.exercise_id]),
     ])
+
+    for (const teamTag of teamTags) {
+        await db["tags.add_team_tag"]([teamTag.team_id, teamTag.tag])
+    }
+
+    for (const athleteTeamTag of athleteTeamTags) {
+        await db["tags.add_athlete_tag"]([athleteTeamTag.athlete_id, athleteTeamTag.team_tag_id])
+    }
 }
 
 const PORT = process.env.PORT || 8080
