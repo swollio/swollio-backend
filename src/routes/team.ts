@@ -281,7 +281,7 @@ router.get("/:team_id/tags", async (req, res) => {
  */
 router.get("/:team_id/athletes/:athlete_id/tags", async (req, res) => {
     const athleteId = Number.parseInt(req.params.athlete_id, 10)
-    const teamId = Number.parseInt(req.params.team_tag_id, 10)
+    const teamId = Number.parseInt(req.params.team_id, 10)
 
     try {
         const tags = await getAllAthleteTags(athleteId, teamId)
