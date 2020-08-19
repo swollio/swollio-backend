@@ -1,7 +1,7 @@
 import Workout from "./workout"
 
 export default interface Team {
-    id: number
+    id?: number
     pin: number
     name: string
     sport: string

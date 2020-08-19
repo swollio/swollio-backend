@@ -1,5 +1,5 @@
 export default interface UserAthlete {
-    id: number // Athlete id
+    id?: number // Athlete id
     first_name: string
     last_name: string
     age: number

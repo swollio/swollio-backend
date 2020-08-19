@@ -1,5 +1,5 @@
 export default interface WorkoutInstance {
-    id: number
+    id?: number
     date: string // Date assigned for
     team_name: string
     workout_id: number

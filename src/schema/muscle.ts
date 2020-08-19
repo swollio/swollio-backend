@@ -1,5 +1,5 @@
 export default interface Muscle {
-    id: number
+    id?: number
     name: string
     nickname: string
     region: "leg" | "chest" | "back" | "shoulder" | "arm" | "abs"
