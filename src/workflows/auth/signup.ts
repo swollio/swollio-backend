@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
-import db from "../../utilities/database"
 import config from "../../config.json"
 import UserData from "../../schema/userData"
+import * as UserModel from "../../models/user"
 
 /**
  * This workflow will take the steps necessary to sign a user up. The workflow will go as follows:
@@ -13,28 +13,32 @@ import UserData from "../../schema/userData"
  *  5) Return the bearer token
  * @param user An object containing the data of the user that is signing up
  */
-export default async function signup(user: UserData): Promise<string> {
+export default async function signup(userData: UserData): Promise<string> {
     // Encrypt / hash the password:
     let hash
     try {
-        hash = await bcrypt.hash(user.password, 10)
+        hash = await bcrypt.hash(userData.password, 10)
     } catch (err) {
         console.log(err)
         throw new Error("Signup Error: Could not create the hash")
     }
 
+    // Checking validity of hash
+    if (!hash || hash === "")
+        throw new Error("workflows:auth:signup Unable to get hash")
+
     // Add the user to the database
     let userId
     try {
-        const queryResult = await db["users.signup"]([
-            user.first_name,
-            user.last_name,
-            user.email,
+        const user = await UserModel.createOne({
+            ...userData,
             hash,
-        ])
+        })
 
-        // Getting the user id of the newly inserted user
-        userId = queryResult.rows[0].id
+        // Checking validity of user
+        if (!user.id) throw new Error("workflows:auth:signup User had no ID")
+
+        userId = user.id
     } catch (err) {
         console.log(err)
         throw new Error("Signup Error: Could not add user to database")
