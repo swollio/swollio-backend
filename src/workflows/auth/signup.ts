@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import config from "../../config.json"
 import UserData from "../../schema/userData"
-import * as Users from "../../models/user"
+import * as UserModel from "../../models/user"
 
 /**
  * This workflow will take the steps necessary to sign a user up. The workflow will go as follows:
@@ -30,7 +30,7 @@ export default async function signup(userData: UserData): Promise<string> {
     // Add the user to the database
     let userId
     try {
-        const user = await Users.createOne({
+        const user = await UserModel.createOne({
             ...userData,
             hash,
         })

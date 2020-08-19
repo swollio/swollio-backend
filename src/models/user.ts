@@ -31,25 +31,6 @@ export async function createOne(user: User): Promise<User> {
 }
 
 /**
- * Gets the id, first name, last name, and email of all users in
- * the user database and returns them as a User[]
- *
- * @returns {Promise<User[]>} The array of all the users in the database
- */
-export async function readAll(): Promise<User[]> {
-    try {
-        const users = await pool.query(`
-            SELECT id, first_name, last_name, email
-            FROM users;
-        `)
-
-        return users.rows
-    } catch (error) {
-        throw new Error(`models:user:readAll ${error.message}`)
-    }
-}
-
-/**
  * Gets the id, first_name, last_name, email, and hash of the user with the
  * given id and returns them all as a User object
  *
@@ -74,8 +55,51 @@ export async function readOne(userId: number): Promise<User | null> {
 }
 
 /**
+ * Gets the data of the user with the given email and returns it. If
+ * there is no user with the given email, return null
+ *
+ * @param email The email used to get the user data from the table
+ * @returns {Promise<User | null>} The user with the given email of null of no such user exists
+ */
+export async function readByEmail(email: string): Promise<User | null> {
+    try {
+        const user = await pool.query(`
+            SELECT id, email, first_name, last_name, hash
+            FROM users
+            WHERE email = '${email}';
+        `)
+
+        // Make sure that we have data from the query
+        if (user.rowCount === 0) return null
+
+        return user.rows[0]
+    } catch (error) {
+        throw new Error(`models:user:readByEmail:: ${error.message}`)
+    }
+}
+
+/**
+ * Gets the id, first name, last name, and email of all users in
+ * the user database and returns them as a User[]
+ *
+ * @returns {Promise<User[]>} The array of all the users in the database
+ */
+export async function readAll(): Promise<User[]> {
+    try {
+        const users = await pool.query(`
+            SELECT id, first_name, last_name, email
+            FROM users;
+        `)
+
+        return users.rows
+    } catch (error) {
+        throw new Error(`models:user:readAll ${error.message}`)
+    }
+}
+
+/**
  * Updates a user with the given id in the database with the data that is passed in to the function.
- * Allows for partial updates, so only the fields that are passed in will be updated.
+ * Allows for partial updates, so only the fields that are passed in will be updated
  *
  * @param user The new user type with the data that needs to be updated. Must have an id
  */

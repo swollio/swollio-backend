@@ -1,8 +1,7 @@
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
-import db from "../../utilities/database"
 import config from "../../config.json"
-import User from "../../schema/user"
+import * as UserModel from "../../models/user"
 
 /**
  * This function goes through the workflow of logging a user into their account.
@@ -24,17 +23,12 @@ export default async function login(
     // Using the email, try to get the user data from the database
     let user
     try {
-        const userData = await db["users.login"]([email])
+        user = await UserModel.readByEmail(email)
 
         // Verify that the email is valid / we get actual user data back
-        if (userData.rowCount === 0)
-            throw new Error("Login Error: Incorrect email")
-
-        // Get the actual user object from the data
-        user = userData.rows[0] as User
-    } catch (err) {
-        console.log(err)
-        throw new Error("Login Error: Cannot get user data. Check email.")
+        if (!user) throw new Error(`User data is null (email invalid)`)
+    } catch (error) {
+        throw new Error(`workflows:auth:login:: ${error.message}`)
     }
 
     const userId = user.id // Data to put into the token (payload)
@@ -42,7 +36,7 @@ export default async function login(
     const valid = bcrypt.compare(hash, password) // Boolean to determine if password passed in is valid
 
     // If the password passed in is not valid, throw an error saying something is wrong
-    if (!valid) throw new Error("Login Error: Incorrect email or password")
+    if (!valid) throw new Error("workflows:auth:login:: Incorrect password")
 
     // If that isn't the case, then we will create a bearer token encoding the user id and return it
     const token = jwt.sign(
