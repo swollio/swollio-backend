@@ -1,7 +1,5 @@
 import express from "express"
-import getExercises from "../workflows/exercise/getExercises"
-import findExercise from "../workflows/exercise/findExercise"
-import findSimilarExercises from "../workflows/exercise/findSimilarExercise"
+import * as ExerciseModel from "../models/exercise"
 
 const router = express.Router()
 
@@ -12,10 +10,10 @@ const router = express.Router()
  * as a search parameter: URL/exercises?search=<name>
  */
 router.get("/", async (req, res) => {
-    const exerciseName = (req.query.search as string)?.toLowerCase()
+    const query = (req.query.search as string)?.toLowerCase()
 
     try {
-        const exercises = await getExercises(exerciseName)
+        const exercises = await ExerciseModel.search(query)
         return res.status(200).send(exercises)
     } catch (err) {
         console.log(err)
@@ -32,7 +30,7 @@ router.get("/:id", async (req, res) => {
     const exerciseId = Number.parseInt(req.params.id, 10)
 
     try {
-        const exercise = await findExercise(exerciseId)
+        const exercise = await ExerciseModel.one(exerciseId)
         return res.status(200).send(exercise)
     } catch (err) {
         console.log(err)
@@ -49,8 +47,8 @@ router.get("/:id/similar", async (req, res) => {
     const exerciseId = Number.parseInt(req.params.id, 10)
 
     try {
-        const similarExercises = await findSimilarExercises(exerciseId)
-        return res.status(200).send(similarExercises)
+        const similar = await ExerciseModel.similar(exerciseId)
+        return res.status(200).send(similar)
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)

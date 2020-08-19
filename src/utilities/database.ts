@@ -30,3 +30,4 @@ function loadDatabase() {
 
 const db = loadDatabase()
 export default db
+export { pool }

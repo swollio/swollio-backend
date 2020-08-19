@@ -3,7 +3,6 @@ import requirePermission from "../middleware/auth"
 
 import Workout from "../schema/workout"
 import Team from "../schema/team"
-import Exercise from "../schema/exercise"
 
 import createTeam from "../workflows/teams/createTeam"
 import getTeams from "../workflows/teams/getTeams"
@@ -16,10 +15,11 @@ import createTeamWorkout from "../workflows/teams/createTeamWorkouts"
 import addAthleteTag from "../workflows/teams/addAthleteTag"
 import getAllTeamTags from "../workflows/teams/getAllTeamTags"
 import getAllAthleteTags from "../workflows/teams/getAllAthleteTags"
-import createTeamExercise from "../workflows/teams/createTeamExercise"
 import getTeamWorkout from "../workflows/teams/getTeamWorkout"
 import deleteWorkout from "../workflows/teams/deleteWorkout"
 import addTeamTag from "../workflows/teams/addTeamTag"
+
+import * as ExerciseModel from "../models/exercise"
 
 const router = express.Router()
 router.use(requirePermission([]))
@@ -179,14 +179,17 @@ router.post("/:team_id/workouts", async (req, res) => {
  */
 router.post("/:team_id/exercises", async (req, res) => {
     const teamId = Number.parseInt(req.params.team_id, 10)
-    const customExercise = req.body as Exercise
+    const data = {
+        name: req.body.name,
+        muscles: req.body.muscles,
+    }
 
     try {
-        const exerciseId = await createTeamExercise(teamId, customExercise)
-        return res.status(200).json(exerciseId)
+        const exercise = await ExerciseModel.create(teamId, data)
+        return res.status(200).json(exercise)
     } catch (err) {
-        console.log(err)
-        return res.status(500).send(err.message)
+        console.log(err.toString())
+        return res.status(500).send(err.toString())
     }
 })
 

@@ -43,11 +43,10 @@ export default async function createTeamWorkout(
         await db["assignments.insert_many"]([
             workout.assignments.map((assignment) => [
                 workoutId,
-                assignment.exercise_id,
+                assignment.exercise.id,
                 `{${assignment.rep_count
                     .map((x) => `"${x.toString()}"`)
                     .join(",")}}`,
-                assignment.weight_scheme,
             ]),
         ])
     } catch (err) {

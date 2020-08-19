@@ -1,6 +1,7 @@
+import Muscle from "./muscle"
+
 export default interface Exercise {
-    id: number
+    id?: number
     name: string
-    muscles: []
-    team_id: number
+    muscles: Muscle[]
 }

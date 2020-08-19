@@ -12,6 +12,8 @@ import musclesExercise from "./mock/muscles_exercises.json"
 import signup from "./workflows/auth/signup"
 import addAthlete from "./workflows/athlete/addAthlete"
 
+import * as WorkoutModel from './models/workout'
+
 /**
  * Creates all of the tables in the database and populates tables given by
  * mock objects
@@ -88,8 +90,10 @@ async function setupDatabase() {
     ])
 }
 
+
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`)
     console.log("Press Ctrl+C to quit.")
 })
+
