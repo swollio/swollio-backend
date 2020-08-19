@@ -1,0 +1,92 @@
+[
+    {
+        "team_tag_id": 1,
+        "team_id": 1,
+        "tag": "sprint"
+    },
+    {
+        "team_tag_id": 2,
+        "team_id": 1,
+        "tag": "mid-distance"
+    },
+    {
+        "team_tag_id": 3,
+        "team_id": 1,
+        "tag": "distance"
+    },
+    {
+        "team_tag_id": 4,
+        "team_id": 1,
+        "tag": "butterfly"
+    },
+    {
+        "team_tag_id": 5,
+        "team_id": 1,
+        "tag": "backstroke"
+    },
+    {
+        "team_tag_id": 6,
+        "team_id": 1,
+        "tag": "breaststroke"
+    },
+    {
+        "team_tag_id": 7,
+        "team_id": 1,
+        "tag": "freestyle"
+    },
+    {
+        "team_tag_id": 8,
+        "team_id": 1,
+        "tag": "IM"
+    },
+    {
+        "team_tag_id": 9,
+        "team_id": 1,
+        "tag": "taper"
+    },
+    {
+        "team_tag_id": 10,
+        "team_id": 2,
+        "tag": "sprint"
+    },
+    {
+        "team_tag_id": 11,
+        "team_id": 2,
+        "tag": "mid-distance"
+    },
+    {
+        "team_tag_id": 12,
+        "team_id": 2,
+        "tag": "distance"
+    },
+    {
+        "team_tag_id": 13,
+        "team_id": 2,
+        "tag": "butterfly"
+    },
+    {
+        "team_tag_id": 14,
+        "team_id": 2,
+        "tag": "backstroke"
+    },
+    {
+        "team_tag_id": 15,
+        "team_id": 2,
+        "tag": "breaststroke"
+    },
+    {
+        "team_tag_id": 16,
+        "team_id": 2,
+        "tag": "freestyle"
+    },
+    {
+        "team_tag_id": 17,
+        "team_id": 2,
+        "tag": "IM"
+    },
+    {
+        "team_tag_id": 18,
+        "team_id": 2,
+        "tag": "taper"
+    }
+]

@@ -36,9 +36,51 @@
     },
     {
         "id": 6,
+        "first_name": "Adam",
+        "last_name": "Kogan",
+        "email": "akogan@caltech.edu",
+        "password": "test123"
+    },
+    {
+        "id": 7,
+        "first_name": "Olivia",
+        "last_name": "Grobowski",
+        "email": "ogrobowski@caltech.edu",
+        "password": "test123"
+    },
+    {
+        "id": 8,
+        "first_name": "Reid",
+        "last_name": "Banciella",
+        "email": "rbaciella@caltech.edu",
+        "password": "test123"
+    },
+    {
+        "id": 9,
+        "first_name": "Telescope",
+        "last_name": "Girl",
+        "email": "iswafford@caltech.edu",
+        "password": "test123"
+    },
+    {
+        "id": 10,
+        "first_name": "Shoonhsin",
+        "last_name": "Li",
+        "email": "sli@caltech.edu",
+        "password": "test123"
+    },
+    {
+        "id": 11,
         "first_name": "Jim",
         "last_name": "Wood",
         "email": "jimwood@bac.com",
+        "password": "test123"
+    },
+    {
+        "id": 12,
+        "first_name": "Andy",
+        "last_name": "Brabson",
+        "email": "abrabson@caltech.edu",
         "password": "test123"
     }
 ]

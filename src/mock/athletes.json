@@ -3,7 +3,7 @@
         "id": 1,
         "user_id": 1,
         "age": 19,
-        "height": 60,
+        "height": 72,
         "weight": 60,
         "gender": "male"
     },
@@ -11,7 +11,7 @@
         "id": 2,
         "user_id": 2,
         "age": 20,
-        "height": 66,
+        "height": 78,
         "weight": 200,
         "gender": "male"
     },
@@ -19,24 +19,64 @@
         "id": 3,
         "user_id": 3,
         "age": 20,
-        "height": 58,
+        "height": 68,
         "weight": 100,
         "gender": "male"
     },
     {
         "id": 4,
-        "user_id": 5,
+        "user_id": 4,
         "age": 20,
-        "height": 510,
+        "height": 70,
         "weight": 120,
         "gender": "male"
     },
     {
         "id": 5,
-        "user_id": 6,
+        "user_id": 5,
         "age": 20,
-        "height": 56,
+        "height": 66,
         "weight": 100,
+        "gender": "male"
+    },
+    {
+        "id": 6,
+        "user_id": 6,
+        "age": 21,
+        "height": 69,
+        "weight": 140,
+        "gender": "male"
+    },
+    {
+        "id": 7,
+        "user_id": 7,
+        "age": 20,
+        "height": 68,
+        "weight": 140,
+        "gender": "female"
+    },
+    {
+        "id": 8,
+        "user_id": 8,
+        "age": 19,
+        "height": 70,
+        "weight": 150,
+        "gender": "male"
+    },
+    {
+        "id": 9,
+        "user_id": 9,
+        "age": 20,
+        "height": 68,
+        "weight": 140,
+        "gender": "female"
+    },
+    {
+        "id": 10,
+        "user_id": 10,
+        "age": 19,
+        "height": 71,
+        "weight": 165,
         "gender": "male"
     }
 ]
