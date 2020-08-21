@@ -3,6 +3,7 @@
  * All database specific types and data are fully encapsulated.
  */
 
+import sql from "sql-template-strings"
 import { pool } from "../utilities/database"
 import User from "../schema/user"
 import CurrentUser from "../schema/currentUser"
@@ -16,15 +17,14 @@ import CurrentUser from "../schema/currentUser"
  */
 export async function createOne(user: User): Promise<User> {
     try {
-        const values = `('${user.first_name}', '${user.last_name}', '${user.email}', '${user.hash}')`
-        const userResult = await pool.query(`
+        const userResult = await pool.query(sql`
             INSERT INTO users
             (first_name, last_name, email, hash)
-            VALUES ${values}
-            RETURNING id;
+            VALUES (${user.first_name}, ${user.last_name}, ${user.email}, ${user.hash})
+            RETURNING id, first_name, last_name, email, hash;
         `)
 
-        return { id: userResult.rows[0].id, ...user }
+        return userResult.rows[0]
     } catch (error) {
         throw new Error(`models:user:createOne ${error.message}`)
     }
@@ -38,7 +38,7 @@ export async function createOne(user: User): Promise<User> {
  */
 export async function readOne(userId: number): Promise<User | null> {
     try {
-        const users = await pool.query(`
+        const users = await pool.query(sql`
             SELECT id, first_name, last_name, email, hash
             FROM users
             WHERE id = ${userId};
@@ -63,10 +63,10 @@ export async function readOne(userId: number): Promise<User | null> {
  */
 export async function readByEmail(email: string): Promise<User | null> {
     try {
-        const user = await pool.query(`
+        const user = await pool.query(sql`
             SELECT id, email, first_name, last_name, hash
             FROM users
-            WHERE email = '${email}';
+            WHERE email = ${email};
         `)
 
         // Make sure that we have data from the query
@@ -86,7 +86,7 @@ export async function readByEmail(email: string): Promise<User | null> {
  */
 export async function readAll(): Promise<User[]> {
     try {
-        const users = await pool.query(`
+        const users = await pool.query(sql`
             SELECT id, first_name, last_name, email
             FROM users;
         `)
@@ -111,19 +111,13 @@ export async function update(user: {
     hash?: string
 }): Promise<void> {
     try {
-        // If the key is defined, then return 'value', else return null
-        const firstNameUpdate = user.first_name ? `'${user.first_name}'` : null
-        const lastNameUpdate = user.last_name ? `'${user.last_name}'` : null
-        const emailUpdate = user.email ? `'${user.email}'` : null
-        const hashUpdate = user.hash ? `'${user.hash}'` : null
-
-        await pool.query(`
+        await pool.query(sql`
             UPDATE users
             SET
-                first_name = COALESCE(${firstNameUpdate}, first_name),
-                last_name = COALESCE(${lastNameUpdate}, last_name),
-                email = COALESCE(${emailUpdate}, email),
-                hash = COALESCE(${hashUpdate}, hash)
+                first_name = COALESCE(${user.first_name}, first_name),
+                last_name = COALESCE(${user.last_name}, last_name),
+                email = COALESCE(${user.email}, email),
+                hash = COALESCE(${user.hash}, hash)
             WHERE id = ${user.user_id}
         `)
     } catch (error) {
@@ -140,7 +134,7 @@ export async function update(user: {
  */
 export async function destroy(userId: number): Promise<User | null> {
     try {
-        const user = await pool.query(`
+        const user = await pool.query(sql`
             DELETE FROM users
             WHERE id=${userId}
             RETURNING id, first_name, last_name, email, hash;
@@ -164,7 +158,7 @@ export async function destroy(userId: number): Promise<User | null> {
  */
 export async function current(userId: number): Promise<CurrentUser | null> {
     try {
-        const currentUser = await pool.query(`
+        const currentUser = await pool.query(sql`
             SELECT 
                 users.id as user_id, 
                 first_name, 

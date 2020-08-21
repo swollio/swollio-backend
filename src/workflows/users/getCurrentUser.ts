@@ -17,6 +17,9 @@ export default async function getCurrentUser(
 
         return currentUser as CurrentUser
     } catch (error) {
-        throw new Error(`workflows:user:getCurrentUser:: ${error.message}`)
+        // If there is already a ::, throw the old message. If not, throw the new message
+        const colonIndex = error.message.indexOf("::")
+        if (colonIndex !== -1) throw new Error(error.message)
+        throw new Error(`workflows:users:getCurrentUser:: ${error.message}`)
     }
 }

@@ -43,11 +43,12 @@ router.get("/", async (_req, res) => {
  */
 router.post("/", async (req, res) => {
     const { pin } = req.body
+    delete req.body.pin
+    req.body.user_id = req.token.user_id
     const athlete = req.body as Athlete
-    const userId = req.token.user_id
 
     try {
-        await addAthlete(userId, athlete, pin)
+        await addAthlete(athlete, pin)
         return res.status(200).send("success!")
     } catch (err) {
         console.log(err)

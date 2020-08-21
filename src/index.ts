@@ -55,7 +55,7 @@ async function setupDatabase() {
 
     for (let i = 0; i < athletes.length; i++) {
         const pin = i < 5 ? 420690 : 314159
-        await addAthlete((i + 1), athletes[i], pin)
+        await addAthlete(athletes[i], pin)
     }
 
     // Add this later
@@ -93,7 +93,7 @@ async function setupDatabase() {
     }
 }
 
-
+setupDatabase()
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`)
