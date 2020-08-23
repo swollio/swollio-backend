@@ -8,6 +8,7 @@
   },
   "private": true,
   "scripts": {
+    "setup_template": "tsc && node ./build/utilities/setupTemplate.js",
     "lint": "eslint --fix .",
     "test": "jest",
     "test:watch": "npm run build && jest --watch",

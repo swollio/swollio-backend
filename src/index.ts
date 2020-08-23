@@ -13,8 +13,6 @@ import athleteTeamTags from "./mock/athletes_teams_tags.json"
 import signup from "./workflows/auth/signup"
 import addAthlete from "./workflows/athlete/addAthlete"
 
-import * as WorkoutModel from './models/workout'
-
 /**
  * Creates all of the tables in the database and populates tables given by
  * mock objects
