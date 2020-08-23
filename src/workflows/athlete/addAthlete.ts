@@ -1,5 +1,6 @@
 import db from "../../utilities/database"
 import Athlete from "../../schema/athlete"
+import * as AthleteModel from "../../models/athlete"
 
 /**
  * This workflow creates an athlete, which entails the following:
@@ -19,17 +20,16 @@ import Athlete from "../../schema/athlete"
  * @param pin The pin of the team that the athlete is being added to
  */
 export default async function addAthlete(
-    userId: number,
     athlete: Athlete,
     pin: number
 ): Promise<void> {
     // Try to get the team id of the given pin
     let teamId
-    let athleteId
+    let athleteReturned
 
     // Verify that pin is valid
     if (pin.toString().length !== 6)
-        throw new Error("Add Athlete Error: Pin does not have 6 digits")
+        throw new Error("Pin does not have 6 digits")
 
     try {
         // Query for the team id
@@ -37,43 +37,34 @@ export default async function addAthlete(
 
         // If there is no id, then throw an error
         if (teamQuery.rowCount === 0)
-            throw new Error("Add Athlete Error: There is no team with this pin")
+            throw new Error("There is no team with this pin")
 
         // Set the team id
         teamId = teamQuery.rows[0].id
-    } catch (err) {
-        console.log(err)
-        throw new Error(
-            `Add Athlete Error: Could not find team with pin ${pin}`
-        )
+    } catch (error) {
+        // If there is already a ::, throw the old message. If not, throw the new message
+        const colonIndex = error.message.indexOf("::")
+        if (colonIndex !== -1) throw new Error(error.message)
+        throw new Error(`workflows:athlete:addAthlete:: ${error.message}`)
     }
 
     // After athlete is verified, try to add the athlete
     try {
-        athleteId = (
-            await db["athletes.add_one"]([
-                userId,
-                athlete.age,
-                athlete.height,
-                athlete.weight,
-                athlete.gender,
-            ])
-        ).rows[0].id
-
-        if (!athleteId)
-            throw new Error(
-                "Add Athlete Error: Could not add athlete to database. Maybe they already have an account?"
-            )
-    } catch (err) {
-        console.log(err)
-        throw new Error("Add Athlete Error: Could not add athlete to table")
+        athleteReturned = await AthleteModel.createOne(athlete)
+    } catch (error) {
+        // If there is already a ::, throw the old message. If not, throw the new message
+        const colonIndex = error.message.indexOf("::")
+        if (colonIndex !== -1) throw new Error(error.message)
+        throw new Error(`workflows:athlete:addAthlete:: ${error.message}`)
     }
 
     // After we get the athlete and team ids, try to add the athlete to the team
     try {
-        await db["teams.add_athlete"]([teamId, athleteId])
+        await db["teams.add_athlete"]([teamId, athleteReturned.id])
     } catch (error) {
-        console.log(error)
-        throw new Error("Add Athlete Error: Could not add athlete to team")
+        // If there is already a ::, throw the old message. If not, throw the new message
+        const colonIndex = error.message.indexOf("::")
+        if (colonIndex !== -1) throw new Error(error.message)
+        throw new Error(`workflows:athlete:addAthlete:: ${error.message}`)
     }
 }

@@ -29,7 +29,7 @@ export async function createOne(user: User): Promise<User> {
             RETURNING id;
         `)
 
-        return { id: userResult.rows[0].id, ...user }
+        return userResult.rows[0]
     } catch (error) {
         throw new Error(`models:user:createOne ${error.message}`)
     }
@@ -118,10 +118,10 @@ export async function update(user: {
     try {
         // If the key is defined, then return 'value', else return null
         const userId = user.user_id
-        const firstNameUpdate = user.first_name ? `'${user.first_name}'` : null
-        const lastNameUpdate = user.last_name ? `'${user.last_name}'` : null
-        const emailUpdate = user.email ? `'${user.email}'` : null
-        const hashUpdate = user.hash ? `'${user.hash}'` : null
+        const firstNameUpdate = user.first_name
+        const lastNameUpdate = user.last_name
+        const emailUpdate = user.email
+        const hashUpdate = user.hash
 
         await pool.query(sql`
             UPDATE users

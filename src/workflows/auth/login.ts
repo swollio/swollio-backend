@@ -28,6 +28,9 @@ export default async function login(
         // Verify that the email is valid / we get actual user data back
         if (!user) throw new Error(`User data is null (email invalid)`)
     } catch (error) {
+        // If there is already a ::, throw the old message. If not, throw the new message
+        const colonIndex = error.message.indexOf("::")
+        if (colonIndex !== -1) throw new Error(error.message)
         throw new Error(`workflows:auth:login:: ${error.message}`)
     }
 

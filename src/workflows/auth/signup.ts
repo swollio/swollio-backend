@@ -18,9 +18,8 @@ export default async function signup(userData: UserData): Promise<string> {
     let hash
     try {
         hash = await bcrypt.hash(userData.password, 10)
-    } catch (err) {
-        console.log(err)
-        throw new Error("Signup Error: Could not create the hash")
+    } catch (error) {
+        throw new Error("workflows:auth:signup:: Could not create the hash")
     }
 
     // Checking validity of hash
@@ -36,12 +35,14 @@ export default async function signup(userData: UserData): Promise<string> {
         })
 
         // Checking validity of user
-        if (!user.id) throw new Error("workflows:auth:signup User had no ID")
+        if (!user.id) throw new Error("User has no ID")
 
         userId = user.id
-    } catch (err) {
-        console.log(err)
-        throw new Error("Signup Error: Could not add user to database")
+    } catch (error) {
+        // If there is already a ::, throw the old message. If not, throw the new message
+        const colonIndex = error.message.indexOf("::")
+        if (colonIndex !== -1) throw new Error(error.message)
+        throw new Error(`workflows:auth:signup:: ${error.message}`)
     }
 
     // Genereate the bearer token and return it

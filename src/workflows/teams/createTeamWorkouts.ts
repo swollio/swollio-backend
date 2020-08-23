@@ -1,4 +1,3 @@
-import db from "../../utilities/database"
 import Workout from "../../schema/workout"
 import * as WorkoutModel from "../../models/workout"
 
