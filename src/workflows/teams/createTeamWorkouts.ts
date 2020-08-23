@@ -15,10 +15,9 @@ export default async function createTeamWorkout(
 ): Promise<void> {
     let workoutId: number
 
-    console.log(workout);
+    console.log(workout)
 
-    await WorkoutModel.create(teamId, workout);
-    return;
+    await WorkoutModel.create(teamId, workout)
 
     /*
     // After verification, add the workout to the workouts table
@@ -52,5 +51,5 @@ export default async function createTeamWorkout(
         throw new Error(
             `createTeamWorkouts Error: Could not add assignments to workout`
         )
-    }*/
+    } */
 }

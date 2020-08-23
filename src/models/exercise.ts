@@ -3,8 +3,8 @@
  * All database specific types and data are fully encapsulated.
  */
 import { Pool } from "pg"
-import Exercise from "../schema/exercise"
 import sql from "sql-template-strings"
+import Exercise from "../schema/exercise"
 
 /**
  * Return a promise resolving to either the Exercise of the given id if it
@@ -13,16 +13,14 @@ import sql from "sql-template-strings"
  * @param id - the id of the exercise
  */
 export default class ExerciseModel {
-    
     pool: Pool
 
     constructor(pool: Pool) {
-        this.pool = pool;
+        this.pool = pool
     }
 
     async setup(values: Exercise[]): Promise<void> {
         try {
-
             await this.pool.query(`
                 CREATE TABLE IF NOT EXISTS exercises (
                     id SERIAL PRIMARY KEY,
@@ -41,8 +39,7 @@ export default class ExerciseModel {
                     nickname TEXT NOT NULL,
                     region TEXT NOT NULL
                 );
-            `);
-            
+            `)
         } catch (err) {
             throw new Error(`models:exercise:remove: ${err.message}`)
         }
@@ -98,7 +95,7 @@ export default class ExerciseModel {
             `)
 
             console.log(result.rows)
-            
+
             return result.rows
         } catch (error) {
             throw new Error("models:exercise:all: invalid query")
@@ -112,10 +109,7 @@ export default class ExerciseModel {
      * @param exercise - the exercise to insert into the database
      * @return - a promise resolving to an exercise with an id.
      */
-    async create(
-        team_id: number,
-        exercise: Exercise
-    ): Promise<Exercise> {
+    async create(team_id: number, exercise: Exercise): Promise<Exercise> {
         try {
             const { name } = exercise
             const muscleIds = exercise.muscles.map((m) => m.id).join(", ")
@@ -248,5 +242,4 @@ export default class ExerciseModel {
             throw new Error(`models:exercise:similar: ${err.message}`)
         }
     }
-
 }

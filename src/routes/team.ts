@@ -22,7 +22,8 @@ import addTeamTag from "../workflows/teams/addTeamTag"
 
 import { pool } from "../utilities/database"
 import ExerciseModel from "../models/exercise"
-const Exercises = new ExerciseModel(pool);
+
+const Exercises = new ExerciseModel(pool)
 
 const router = express.Router()
 router.use(requirePermission([]))

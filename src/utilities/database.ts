@@ -5,7 +5,6 @@ import glob from "glob-promise"
 import format from "pg-format"
 import config from "../config.json"
 
-
 const pool = new Pool(config.sql)
 
 /**

@@ -11,7 +11,7 @@ export default async function getTeamWorkouts(
     teamId: number
 ): Promise<Workout[]> {
     try {
-        return WorkoutModel.all({team_id: teamId});
+        return WorkoutModel.all(teamId)
     } catch (err) {
         console.log(err)
         throw new Error(

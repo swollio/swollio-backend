@@ -3,7 +3,7 @@ import { pool } from "../utilities/database"
 import ExerciseModel from "../models/exercise"
 
 const router = express.Router()
-const Exercises = new ExerciseModel(pool);
+const Exercises = new ExerciseModel(pool)
 
 /**
  * This route calls the getExercises workflow, which will either

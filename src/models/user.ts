@@ -3,10 +3,10 @@
  * All database specific types and data are fully encapsulated.
  */
 
+import sql from "sql-template-strings"
 import { pool } from "../utilities/database"
 import User from "../schema/user"
 import CurrentUser from "../schema/currentUser"
-import sql from "sql-template-strings"
 
 /**
  * Create a user in the users table with the given information and return a
@@ -16,16 +16,16 @@ import sql from "sql-template-strings"
  * @returns {Promise<User>} A promise resolving to the user object that is stored in the database
  */
 export async function createOne(user: User): Promise<User> {
-    const first_name = user.first_name;
-    const last_name = user.last_name;
-    const email = user.email;
-    const hash = user.hash;
+    const firstName = user.first_name
+    const lastName = user.last_name
+    const { email } = user
+    const { hash } = user
 
     try {
         const userResult = await pool.query(sql`
             INSERT INTO users
             (first_name, last_name, email, hash)
-            VALUES (${first_name}, ${last_name}, ${email}, ${hash})
+            VALUES (${firstName}, ${lastName}, ${email}, ${hash})
             RETURNING id;
         `)
 
@@ -117,7 +117,7 @@ export async function update(user: {
 }): Promise<void> {
     try {
         // If the key is defined, then return 'value', else return null
-        const userId = user.user_id;
+        const userId = user.user_id
         const firstNameUpdate = user.first_name ? `'${user.first_name}'` : null
         const lastNameUpdate = user.last_name ? `'${user.last_name}'` : null
         const emailUpdate = user.email ? `'${user.email}'` : null

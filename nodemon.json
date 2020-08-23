@@ -1,6 +1,6 @@
 {
     "watch": ["src", "sql"],
     "ext": "ts, sql",
-    "exec": "npm run build && npm run test && node ./build/index.js",
+    "exec": "npm run build && npm run lint && npm run test && node ./build/index.js",
     "delay": 2500
 }
