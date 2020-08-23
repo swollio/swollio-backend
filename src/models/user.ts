@@ -16,12 +16,17 @@ import CurrentUser from "../schema/currentUser"
  * @returns {Promise<User>} A promise resolving to the user object that is stored in the database
  */
 export async function createOne(user: User): Promise<User> {
+    const firstName = user.first_name
+    const lastName = user.last_name
+    const { email } = user
+    const { hash } = user
+
     try {
         const userResult = await pool.query(sql`
             INSERT INTO users
             (first_name, last_name, email, hash)
-            VALUES (${user.first_name}, ${user.last_name}, ${user.email}, ${user.hash})
-            RETURNING id, first_name, last_name, email, hash;
+            VALUES (${firstName}, ${lastName}, ${email}, ${hash})
+            RETURNING id;
         `)
 
         return userResult.rows[0]
@@ -111,14 +116,21 @@ export async function update(user: {
     hash?: string
 }): Promise<void> {
     try {
+        // If the key is defined, then return 'value', else return null
+        const userId = user.user_id
+        const firstNameUpdate = user.first_name
+        const lastNameUpdate = user.last_name
+        const emailUpdate = user.email
+        const hashUpdate = user.hash
+
         await pool.query(sql`
             UPDATE users
             SET
-                first_name = COALESCE(${user.first_name}, first_name),
-                last_name = COALESCE(${user.last_name}, last_name),
-                email = COALESCE(${user.email}, email),
-                hash = COALESCE(${user.hash}, hash)
-            WHERE id = ${user.user_id}
+                first_name = COALESCE(${firstNameUpdate}, first_name),
+                last_name = COALESCE(${lastNameUpdate}, last_name),
+                email = COALESCE(${emailUpdate}, email),
+                hash = COALESCE(${hashUpdate}, hash)
+            WHERE id = ${userId}
         `)
     } catch (error) {
         throw new Error(`models:user:update:: ${error.message}`)

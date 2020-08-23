@@ -1,5 +1,6 @@
 import db from "../../utilities/database"
 import Workout from "../../schema/workout"
+import * as WorkoutModel from "../../models/workout"
 
 /**
  * This workflow will get all the workouts for a team using
@@ -10,8 +11,7 @@ export default async function getTeamWorkouts(
     teamId: number
 ): Promise<Workout[]> {
     try {
-        const workouts = await db["workouts.filter_by_team"]([teamId])
-        return workouts.rows as Workout[]
+        return WorkoutModel.all(teamId)
     } catch (err) {
         console.log(err)
         throw new Error(

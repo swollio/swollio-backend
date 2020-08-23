@@ -17,7 +17,14 @@ export default async function createTeamWorkout(
 
     console.log(workout)
 
-    await WorkoutModel.create(teamId, workout)
+    if (workout.id) {
+        await WorkoutModel.update({
+            id: workout.id,
+            name: workout.name,
+            dates: workout.dates,
+            assignments: workout.assignments,
+        })
+    }
 
     /*
     // After verification, add the workout to the workouts table

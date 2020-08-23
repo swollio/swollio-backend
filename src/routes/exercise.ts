@@ -1,7 +1,9 @@
 import express from "express"
-import * as ExerciseModel from "../models/exercise"
+import { pool } from "../utilities/database"
+import ExerciseModel from "../models/exercise"
 
 const router = express.Router()
+const Exercises = new ExerciseModel(pool)
 
 /**
  * This route calls the getExercises workflow, which will either
@@ -13,7 +15,7 @@ router.get("/", async (req, res) => {
     const query = (req.query.search as string)?.toLowerCase()
 
     try {
-        const exercises = await ExerciseModel.search(query)
+        const exercises = await Exercises.search(query)
         return res.status(200).send(exercises)
     } catch (err) {
         console.log(err)
@@ -30,7 +32,7 @@ router.get("/:id", async (req, res) => {
     const exerciseId = Number.parseInt(req.params.id, 10)
 
     try {
-        const exercise = await ExerciseModel.one(exerciseId)
+        const exercise = await Exercises.one(exerciseId)
         return res.status(200).send(exercise)
     } catch (err) {
         console.log(err)
@@ -47,7 +49,7 @@ router.get("/:id/similar", async (req, res) => {
     const exerciseId = Number.parseInt(req.params.id, 10)
 
     try {
-        const similar = await ExerciseModel.similar(exerciseId)
+        const similar = await Exercises.similar(exerciseId)
         return res.status(200).send(similar)
     } catch (err) {
         console.log(err)
