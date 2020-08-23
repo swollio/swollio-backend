@@ -6,6 +6,7 @@
 import { pool } from "../utilities/database"
 import User from "../schema/user"
 import CurrentUser from "../schema/currentUser"
+import sql from "sql-template-strings"
 
 /**
  * Create a user in the users table with the given information and return a
@@ -15,12 +16,16 @@ import CurrentUser from "../schema/currentUser"
  * @returns {Promise<User>} A promise resolving to the user object that is stored in the database
  */
 export async function createOne(user: User): Promise<User> {
+    const first_name = user.first_name;
+    const last_name = user.last_name;
+    const email = user.email;
+    const hash = user.hash;
+
     try {
-        const values = `('${user.first_name}', '${user.last_name}', '${user.email}', '${user.hash}')`
-        const userResult = await pool.query(`
+        const userResult = await pool.query(sql`
             INSERT INTO users
             (first_name, last_name, email, hash)
-            VALUES ${values}
+            VALUES (${first_name}, ${last_name}, ${email}, ${hash})
             RETURNING id;
         `)
 
@@ -38,7 +43,7 @@ export async function createOne(user: User): Promise<User> {
  */
 export async function readOne(userId: number): Promise<User | null> {
     try {
-        const users = await pool.query(`
+        const users = await pool.query(sql`
             SELECT id, first_name, last_name, email, hash
             FROM users
             WHERE id = ${userId};
@@ -63,10 +68,10 @@ export async function readOne(userId: number): Promise<User | null> {
  */
 export async function readByEmail(email: string): Promise<User | null> {
     try {
-        const user = await pool.query(`
+        const user = await pool.query(sql`
             SELECT id, email, first_name, last_name, hash
             FROM users
-            WHERE email = '${email}';
+            WHERE email = ${email};
         `)
 
         // Make sure that we have data from the query
@@ -86,7 +91,7 @@ export async function readByEmail(email: string): Promise<User | null> {
  */
 export async function readAll(): Promise<User[]> {
     try {
-        const users = await pool.query(`
+        const users = await pool.query(sql`
             SELECT id, first_name, last_name, email
             FROM users;
         `)
@@ -112,19 +117,20 @@ export async function update(user: {
 }): Promise<void> {
     try {
         // If the key is defined, then return 'value', else return null
+        const userId = user.user_id;
         const firstNameUpdate = user.first_name ? `'${user.first_name}'` : null
         const lastNameUpdate = user.last_name ? `'${user.last_name}'` : null
         const emailUpdate = user.email ? `'${user.email}'` : null
         const hashUpdate = user.hash ? `'${user.hash}'` : null
 
-        await pool.query(`
+        await pool.query(sql`
             UPDATE users
             SET
                 first_name = COALESCE(${firstNameUpdate}, first_name),
                 last_name = COALESCE(${lastNameUpdate}, last_name),
                 email = COALESCE(${emailUpdate}, email),
                 hash = COALESCE(${hashUpdate}, hash)
-            WHERE id = ${user.user_id}
+            WHERE id = ${userId}
         `)
     } catch (error) {
         throw new Error(`models:user:update:: ${error.message}`)
@@ -140,7 +146,7 @@ export async function update(user: {
  */
 export async function destroy(userId: number): Promise<User | null> {
     try {
-        const user = await pool.query(`
+        const user = await pool.query(sql`
             DELETE FROM users
             WHERE id=${userId}
             RETURNING id, first_name, last_name, email, hash;
@@ -164,7 +170,7 @@ export async function destroy(userId: number): Promise<User | null> {
  */
 export async function current(userId: number): Promise<CurrentUser | null> {
     try {
-        const currentUser = await pool.query(`
+        const currentUser = await pool.query(sql`
             SELECT 
                 users.id as user_id, 
                 first_name, 

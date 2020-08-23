@@ -12,6 +12,7 @@ import getTeamCoaches from "../workflows/teams/getTeamCoaches"
 import deleteAthlete from "../workflows/teams/deleteAthlete"
 import getTeamWorkouts from "../workflows/teams/getTeamWorkouts"
 import createTeamWorkout from "../workflows/teams/createTeamWorkouts"
+import updateTeamWorkout from "../workflows/teams/updateTeamWorkout"
 import addAthleteTag from "../workflows/teams/addAthleteTag"
 import getAllTeamTags from "../workflows/teams/getAllTeamTags"
 import getAllAthleteTags from "../workflows/teams/getAllAthleteTags"
@@ -19,7 +20,9 @@ import getTeamWorkout from "../workflows/teams/getTeamWorkout"
 import deleteWorkout from "../workflows/teams/deleteWorkout"
 import addTeamTag from "../workflows/teams/addTeamTag"
 
-import * as ExerciseModel from "../models/exercise"
+import { pool } from "../utilities/database"
+import ExerciseModel from "../models/exercise"
+const Exercises = new ExerciseModel(pool);
 
 const router = express.Router()
 router.use(requirePermission([]))
@@ -168,6 +171,30 @@ router.post("/:team_id/workouts", async (req, res) => {
 })
 
 /**
+ * This route calls the createTeamWorkout workflow, which will
+ * add a workout to the workouts table, and then add all assignments
+ * to in the workout to the assignments table. The body of this request
+ * shold contain a workout, which has the following keys:
+ * {
+ *  - name: string
+ *  - dates: string[]
+ *  - assignments: Assignment[]
+ * }
+ */
+router.put("/:team_id/workouts", async (req, res) => {
+    const teamId = Number.parseInt(req.params.team_id, 10)
+    const workout = req.body as Workout
+
+    try {
+        await updateTeamWorkout(teamId, workout)
+        return res.status(200).send("success!")
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
+    }
+})
+
+/**
  * This route calls the createTeamExercise workflow, which
  * will create a custom exercise in the database. The exercise
  * will be added with the team id from the request parameters and
@@ -185,7 +212,7 @@ router.post("/:team_id/exercises", async (req, res) => {
     }
 
     try {
-        const exercise = await ExerciseModel.create(teamId, data)
+        const exercise = await Exercises.create(teamId, data)
         return res.status(200).json(exercise)
     } catch (err) {
         console.log(err.toString())
