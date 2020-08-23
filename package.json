@@ -16,7 +16,7 @@
     "deploy": "gcloud app deploy"
   },
   "jest": {
-    "verbose": true,
+    "verbose": false,
     "rootDir": "build"
   },
   "author": "Thomas Barrett",

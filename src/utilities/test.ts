@@ -9,33 +9,45 @@ import Muscle from "../schema/muscle"
 
 const TEMPLATE_DATABASE = "swollio-template"
 
+interface MockData {
+    muscles?: Muscle[]
+    exercises?: Exercise[]
+}
+
 export async function createTestDatabase(
     database: string,
-    mockData: { muscles: Muscle[]; exercises: Exercise[] }
+    mockData: MockData
 ): Promise<void> {
     await util.promisify(exec)(`dropdb ${database} --if-exists`)
     await util.promisify(exec)(
         `createdb ${database} --template=${TEMPLATE_DATABASE}`
     )
 
-    const client = new Client({
-        host: "localhost",
-        database,
-    })
+    // Create a SQL client to connect to new database
+    const client = new Client({ host: "localhost", database })
     try {
+        // Connect the client to the database
         await client.connect()
-        await client.query(sql`
-            INSERT INTO muscles SELECT * FROM 
-            JSON_POPULATE_RECORDSET(NULL::muscles, ${JSON.stringify(
-                mockData.muscles
-            )})
-        `)
-        await client.query(sql`
-            INSERT INTO exercises SELECT * FROM 
-            JSON_POPULATE_RECORDSET(NULL::exercises, ${JSON.stringify(
-                mockData.exercises
-            )})
-        `)
+
+        // Bulk insert all mock muscle data if it exists
+        if (mockData.muscles) {
+            await client.query(sql`
+                INSERT INTO muscles SELECT * FROM 
+                JSON_POPULATE_RECORDSET(NULL::muscles, ${JSON.stringify(
+                    mockData.muscles
+                )})
+            `)
+        }
+
+        // Bulk insert all mock exercise data if it exists
+        if (mockData.exercises) {
+            await client.query(sql`
+                INSERT INTO exercises SELECT * FROM 
+                JSON_POPULATE_RECORDSET(NULL::exercises, ${JSON.stringify(
+                    mockData.exercises
+                )})
+            `)
+        }
     } catch (err) {
         console.log(err.toString())
     } finally {

@@ -19,32 +19,6 @@ export default class ExerciseModel {
         this.pool = pool
     }
 
-    async setup(values: Exercise[]): Promise<void> {
-        try {
-            await this.pool.query(`
-                CREATE TABLE IF NOT EXISTS exercises (
-                    id SERIAL PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    weight INT NOT NULL DEFAULT 2,
-                    reps INT NOT NULL DEFAULT 2,
-                    legitimacy INT NOT NULL DEFAULT 2,
-                    team_id INT DEFAULT NULL REFERENCES teams(id) ON DELETE CASCADE
-                );
-            `)
-
-            await this.pool.query(`
-                CREATE TABLE IF NOT EXISTS muscles (
-                    id SERIAL PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    nickname TEXT NOT NULL,
-                    region TEXT NOT NULL
-                );
-            `)
-        } catch (err) {
-            throw new Error(`models:exercise:remove: ${err.message}`)
-        }
-    }
-
     async one(id: number): Promise<Exercise | null> {
         try {
             const result = await this.pool.query(sql`
