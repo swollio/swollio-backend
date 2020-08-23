@@ -1,7 +1,6 @@
 import express from "express"
 import findAthlete from "../workflows/athlete/findAthlete"
 import getUsers from "../workflows/admin/getUsers"
-import * as AthleteModel from "../models/athlete"
 
 const router = express.Router()
 // router.use(requirePermission(['admin']))
