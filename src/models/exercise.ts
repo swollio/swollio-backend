@@ -52,14 +52,17 @@ export default class ExerciseModel {
                 SELECT
                     exercises.id,
                     exercises.name,
-                    ARRAY_AGG(ROW_TO_JSON(muscles)) as muscles
+                    (
+                        SELECT COALESCE(
+                            ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(muscles))), 
+                            '[]'::json
+                        ) FROM muscles 
+                        INNER JOIN muscles_exercises
+                        ON muscle_id = id
+                        WHERE exercise_id = exercises.id
+                    ) as muscles
                 FROM exercises
-                INNER JOIN muscles_exercises
-                    ON muscles_exercises.exercise_id = exercises.id
-                INNER JOIN muscles
-                    ON muscles_exercises.muscle_id = muscles.id
                 WHERE exercises.id=${id}
-                GROUP BY exercises.id;
             `)
 
             return result.rows.length === 0 ? null : result.rows[0]
