@@ -4,14 +4,13 @@ import sql from "sql-template-strings"
 
 import { Client } from "pg"
 
-import Exercise from "../schema/exercise"
-import Muscle from "../schema/muscle"
+import * as Exercise from "../models/exercise"
 
 const TEMPLATE_DATABASE = "swollio-template"
 
 interface MockData {
-    muscles?: Muscle[]
-    exercises?: Exercise[]
+    muscles?: Exercise.MuscleRow[]
+    exercises?: Exercise.ExerciseRow[]
 }
 
 export async function createTestDatabase(

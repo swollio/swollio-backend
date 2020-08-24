@@ -74,9 +74,6 @@ async function setupExercises(client: Client) {
         CREATE TABLE IF NOT EXISTS exercises (
             id SERIAL PRIMARY KEY,
             name TEXT NOT NULL,
-            weight INT NOT NULL DEFAULT 2,
-            reps INT NOT NULL DEFAULT 2,
-            legitimacy INT NOT NULL DEFAULT 2,
             team_id INT DEFAULT NULL REFERENCES teams(id) ON DELETE CASCADE
         );
         `)

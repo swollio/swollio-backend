@@ -7,8 +7,35 @@ import sql from "sql-template-strings"
 import Exercise from "../schema/exercise"
 
 /**
+ * Schema for `muscles` database
+ */
+export interface MuscleRow {
+    id: number
+    name: string
+    nickname: string
+    region: string
+}
+
+/**
+ * Schema for `muscles_exercises` database
+ */
+export interface MusclesExerciseRow {
+    muscle_id: number
+    exercise_id: number
+}
+
+/**
+ * Schema for `exercises` database
+ */
+export interface ExerciseRow {
+    id: number
+    name: string
+    team_id: number | null
+}
+
+/**
  * Return a promise resolving to either the Exercise of the given id if it
- * exists or null if it does not.
+ * exists or null if it does not......
  *
  * @param id - the id of the exercise
  */
@@ -56,19 +83,19 @@ export default class ExerciseModel {
                 SELECT
                     exercises.id,
                     exercises.name,
-                    ARRAY_AGG(ROW_TO_JSON(muscles)) as muscles
+                    (
+                        SELECT COALESCE(
+                            ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(muscles))), 
+                            '[]'::json
+                        ) FROM muscles 
+                        INNER JOIN muscles_exercises
+                        ON muscle_id = id
+                        WHERE exercise_id = exercises.id
+                    ) as muscles
                 FROM exercises
-                INNER JOIN muscles_exercises
-                    ON muscles_exercises.exercise_id = exercises.id
-                INNER JOIN muscles
-                    ON muscles_exercises.muscle_id = muscles.id
-                GROUP BY exercises.id
-                ORDER BY exercises.id
                 OFFSET ${offset} ROWS
                 FETCH NEXT ${pageSize} ROWS ONLY;
             `)
-
-            console.log(result.rows)
 
             return result.rows
         } catch (error) {
