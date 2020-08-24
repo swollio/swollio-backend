@@ -40,149 +40,215 @@ const dataset2: TestDatabase.MockData = {
 describe("ExerciseModel.all", () => {
     it("should return [] when there are no exercises", async () => {
         const Exercises = await createExerciseModel({})
-        expect(await Exercises.all()).toEqual([])
-        await destroyExerciseModel(Exercises)
+        try {
+            expect(await Exercises.all()).toEqual([])
+        } finally {
+            await destroyExerciseModel(Exercises)
+        }
     })
 
     it("should return exercises with no muscles", async () => {
         const Exercises = await createExerciseModel(dataset1)
-        expect(await Exercises.all()).toEqual([
-            {
-                id: 1,
-                name: "exercise1",
-                muscles: [],
-            },
-        ])
-        await destroyExerciseModel(Exercises)
+        try {
+            expect(await Exercises.all()).toEqual([
+                {
+                    id: 1,
+                    name: "exercise1",
+                    muscles: [],
+                },
+            ])
+        } finally {
+            await destroyExerciseModel(Exercises)
+        }
     })
 
     it("should return all exercises", async () => {
         const Exercises = await createExerciseModel(dataset2)
-        expect(await Exercises.all()).toEqual([
-            {
-                id: 1,
-                name: "exercise1",
-                muscles: [
-                    { id: 1, name: "muscle1", nickname: "m1", region: "abs" },
-                    { id: 2, name: "muscle2", nickname: "m2", region: "arm" },
-                ],
-            },
-            {
-                id: 2,
-                name: "exercise2",
-                muscles: [
-                    { id: 1, name: "muscle1", nickname: "m1", region: "abs" },
-                ],
-            },
-            { id: 3, name: "exercise3", muscles: [] },
-        ])
-        await destroyExerciseModel(Exercises)
+        try {
+            expect(await Exercises.all()).toEqual([
+                {
+                    id: 1,
+                    name: "exercise1",
+                    muscles: [
+                        {
+                            id: 1,
+                            name: "muscle1",
+                            nickname: "m1",
+                            region: "abs",
+                        },
+                        {
+                            id: 2,
+                            name: "muscle2",
+                            nickname: "m2",
+                            region: "arm",
+                        },
+                    ],
+                },
+                {
+                    id: 2,
+                    name: "exercise2",
+                    muscles: [
+                        {
+                            id: 1,
+                            name: "muscle1",
+                            nickname: "m1",
+                            region: "abs",
+                        },
+                    ],
+                },
+                { id: 3, name: "exercise3", muscles: [] },
+            ])
+        } finally {
+            await destroyExerciseModel(Exercises)
+        }
     })
 })
 
 describe("ExerciseModel.one: ", () => {
     it("should return null", async () => {
         const Exercises = await createExerciseModel({})
-        expect(await Exercises.one(1)).toEqual(null)
-        await destroyExerciseModel(Exercises)
+        try {
+            expect(await Exercises.one(1)).toEqual(null)
+        } finally {
+            await destroyExerciseModel(Exercises)
+        }
     })
 
     it("should return exercise with no muscles", async () => {
         const Exercises = await createExerciseModel(dataset1)
-        expect(await Exercises.one(1)).toEqual({
-            id: 1,
-            name: "exercise1",
-            muscles: [],
-        })
-        await destroyExerciseModel(Exercises)
+        try {
+            expect(await Exercises.one(1)).toEqual({
+                id: 1,
+                name: "exercise1",
+                muscles: [],
+            })
+        } finally {
+            await destroyExerciseModel(Exercises)
+        }
     })
 
     it("should return exactly one exercise", async () => {
         const Exercises = await createExerciseModel(dataset2)
-        expect(await Exercises.one(2)).toEqual({
-            id: 2,
-            name: "exercise2",
-            muscles: [
-                { id: 1, name: "muscle1", nickname: "m1", region: "abs" },
-            ],
-        })
-        await destroyExerciseModel(Exercises)
+        try {
+            expect(await Exercises.one(2)).toEqual({
+                id: 2,
+                name: "exercise2",
+                muscles: [
+                    { id: 1, name: "muscle1", nickname: "m1", region: "abs" },
+                ],
+            })
+        } finally {
+            await destroyExerciseModel(Exercises)
+        }
     })
 })
 
 describe("ExerciseModel.search: ", () => {
     it("should return []", async () => {
         const Exercises = await createExerciseModel({})
-        expect(await Exercises.search("bar")).toEqual([])
-        await destroyExerciseModel(Exercises)
+        try {
+            expect(await Exercises.search("bar")).toEqual([])
+        } finally {
+            await destroyExerciseModel(Exercises)
+        }
     })
 
     it("should return exercises with similar name", async () => {
         const Exercises = await createExerciseModel(dataset1)
-        expect(await Exercises.search("exercise")).toEqual([
-            {
-                id: 1,
-                name: "exercise1",
-                muscles: [],
-            },
-        ])
-        await destroyExerciseModel(Exercises)
+        try {
+            expect(await Exercises.search("exercise")).toEqual([
+                {
+                    id: 1,
+                    name: "exercise1",
+                    muscles: [],
+                },
+            ])
+        } finally {
+            await destroyExerciseModel(Exercises)
+        }
     })
 
     it("should return all exercises with similar name", async () => {
         const Exercises = await createExerciseModel(dataset2)
-        expect(await Exercises.search("exercise")).toEqual([
-            {
-                id: 1,
-                name: "exercise1",
-                muscles: [
-                    { id: 1, name: "muscle1", nickname: "m1", region: "abs" },
-                    { id: 2, name: "muscle2", nickname: "m2", region: "arm" },
-                ],
-            },
-            {
-                id: 2,
-                name: "exercise2",
-                muscles: [
-                    { id: 1, name: "muscle1", nickname: "m1", region: "abs" },
-                ],
-            },
-            { id: 3, name: "exercise3", muscles: [] },
-        ])
-        await destroyExerciseModel(Exercises)
+        try {
+            expect(await Exercises.search("exercise")).toEqual([
+                {
+                    id: 1,
+                    name: "exercise1",
+                    muscles: [
+                        {
+                            id: 1,
+                            name: "muscle1",
+                            nickname: "m1",
+                            region: "abs",
+                        },
+                        {
+                            id: 2,
+                            name: "muscle2",
+                            nickname: "m2",
+                            region: "arm",
+                        },
+                    ],
+                },
+                {
+                    id: 2,
+                    name: "exercise2",
+                    muscles: [
+                        {
+                            id: 1,
+                            name: "muscle1",
+                            nickname: "m1",
+                            region: "abs",
+                        },
+                    ],
+                },
+                { id: 3, name: "exercise3", muscles: [] },
+            ])
+        } finally {
+            await destroyExerciseModel(Exercises)
+        }
     })
 
     it("should not return exercises with dis-similar name", async () => {
         const Exercises = await createExerciseModel(dataset2)
-        expect(await Exercises.search("2")).toEqual([
-            {
-                id: 2,
-                name: "exercise2",
-                muscles: [
-                    { id: 1, name: "muscle1", nickname: "m1", region: "abs" },
-                ],
-            },
-        ])
-        await destroyExerciseModel(Exercises)
-    })
-})
-/*
-describe("ExerciseModel.create: ", () => {
-    it("should insert exercise", async () => {
-        const Exercises = await createExerciseModel({})
-        await Exercises.create(null, {
-            name: "exercise1",
-            muscles: [],
-        })
-        expect(await Exercises.all()).toEqual([
-            {
-                id: 1,
-                name: "exercise1",
-                muscles: [],
-            },
-        ])
-        await destroyExerciseModel(Exercises)
+        try {
+            expect(await Exercises.search("2")).toEqual([
+                {
+                    id: 2,
+                    name: "exercise2",
+                    muscles: [
+                        {
+                            id: 1,
+                            name: "muscle1",
+                            nickname: "m1",
+                            region: "abs",
+                        },
+                    ],
+                },
+            ])
+        } finally {
+            await destroyExerciseModel(Exercises)
+        }
     })
 })
 
-*/
+describe("ExerciseModel.create: ", () => {
+    it("should insert exercise", async () => {
+        const Exercises = await createExerciseModel({})
+        try {
+            await Exercises.create(null, {
+                name: "exercise1",
+                muscles: [],
+            })
+            expect(await Exercises.all()).toEqual([
+                {
+                    id: 1,
+                    name: "exercise1",
+                    muscles: [],
+                },
+            ])
+        } finally {
+            await destroyExerciseModel(Exercises)
+        }
+    })
+})

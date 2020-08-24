@@ -71,36 +71,42 @@ const dataset: TestDatabase.MockData = {
 describe("WorkoutModel.all", () => {
     it("should return [] when there are no workouts", async () => {
         const Workouts = await createWorkoutModel(dataset)
-        expect(await Workouts.all(1)).toEqual([
-            {
-                id: 1,
-                name: "Untitled Workout",
-                dates: [],
-                assignments: [
-                    {
-                        id: 1,
-                        exercise: { id: 1, name: "exercise1", muscles: [] },
-                        rep_count: [10, 8, 6],
-                    },
-                    {
-                        id: 2,
-                        exercise: { id: 2, name: "exercise2", muscles: [] },
-                        rep_count: [10, 8, 6],
-                    },
-                    {
-                        id: 3,
-                        exercise: { id: 3, name: "exercise3", muscles: [] },
-                        rep_count: [10, 8, 6],
-                    },
-                ],
-            },
-        ])
-        await destroyWorkoutModel(Workouts)
+        try {
+            expect(await Workouts.all(1)).toEqual([
+                {
+                    id: 1,
+                    name: "Untitled Workout",
+                    dates: [],
+                    assignments: [
+                        {
+                            id: 1,
+                            exercise: { id: 1, name: "exercise1", muscles: [] },
+                            rep_count: [10, 8, 6],
+                        },
+                        {
+                            id: 2,
+                            exercise: { id: 2, name: "exercise2", muscles: [] },
+                            rep_count: [10, 8, 6],
+                        },
+                        {
+                            id: 3,
+                            exercise: { id: 3, name: "exercise3", muscles: [] },
+                            rep_count: [10, 8, 6],
+                        },
+                    ],
+                },
+            ])
+        } finally {
+            await destroyWorkoutModel(Workouts)
+        }
     })
 
-    it("should return all workouts for a team", async () => {
+    it("should return [] when the team does not exist", async () => {
         const Workouts = await createWorkoutModel({})
-        expect(await Workouts.all(100)).toEqual([])
-        await destroyWorkoutModel(Workouts)
+        try {
+            expect(await Workouts.all(100)).toEqual([])
+        } finally {
+            await destroyWorkoutModel(Workouts)
+        }
     })
 })
