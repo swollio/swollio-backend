@@ -8,6 +8,14 @@ import { pool } from "../utilities/database"
 import User from "../schema/user"
 import CurrentUser from "../schema/currentUser"
 
+export interface UserRow {
+    id: number
+    first_name: string
+    last_name: string
+    email: string
+    hash: string
+}
+
 /**
  * Create a user in the users table with the given information and return a
  * promise resolving to the new user instance with its generated ID

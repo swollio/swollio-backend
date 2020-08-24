@@ -1,27 +1,57 @@
 import sql from "sql-template-strings"
-import { pool } from "../utilities/database"
+import { Client } from "pg"
 import Workout from "../schema/workout"
 import Assignment from "../schema/assignment"
 
 /**
- * Return the Workout with the given id if it exists, or `null` otherwise.
- *
- * @param id - the id of the workout to return.
+ * Schema for `assignments` database
  */
-export async function one(id: number): Promise<Workout | null> {
-    try {
-        const results = await pool.query(sql`
+export interface AssignmentRow {
+    id: number
+    workout_id: number
+    exercise_id: number
+    rep_count: number[]
+}
+
+/**
+ * Schema for `workouts` database
+ */
+export interface WorkoutRow {
+    id: number
+    team_id: number
+    name: string
+    dates: string[]
+}
+
+export default class ExerciseModel {
+    client: Client
+
+    constructor(client: Client) {
+        this.client = client
+    }
+
+    /**
+     * Return the Workout with the given id if it exists, or `null` otherwise.
+     *
+     * @param id - the id of the workout to return.
+     */
+    async one(id: number): Promise<Workout | null> {
+        try {
+            const results = await this.client.query(sql`
             WITH exercises AS (
                 SELECT
                     exercises.id,
                     exercises.name,
-                    ARRAY_AGG(ROW_TO_JSON(muscles)) as muscles
+                    (
+                        SELECT COALESCE(
+                            ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(muscles))), 
+                            '[]'::json
+                        ) FROM muscles 
+                        INNER JOIN muscles_exercises
+                        ON muscle_id = id
+                        WHERE exercise_id = exercises.id
+                    ) as muscles
                 FROM exercises
-                INNER JOIN muscles_exercises
-                    ON muscles_exercises.exercise_id = exercises.id
-                INNER JOIN muscles
-                    ON muscles_exercises.muscle_id = muscles.id
-                GROUP BY exercises.id
             ) 
             
             SELECT 
@@ -43,33 +73,36 @@ export async function one(id: number): Promise<Workout | null> {
             WHERE workouts.id=${id}
             GROUP BY workouts.id;
         `)
-        if (results.rows.length === 0) return null
-        return results.rows[0]
-    } catch (err) {
-        throw new Error(`models:workout:one: ${err.message}`)
+            if (results.rows.length === 0) return null
+            return results.rows[0]
+        } catch (err) {
+            throw new Error(`models:workout:one: ${err.message}`)
+        }
     }
-}
 
-export async function all(
-    teamId: number,
-    pageIndex = 0,
-    pageSize = 10
-): Promise<Workout[]> {
-    try {
-        const offset = pageIndex * pageSize
+    async all(
+        teamId: number,
+        pageIndex = 0,
+        pageSize = 10
+    ): Promise<Workout[]> {
+        try {
+            const offset = pageIndex * pageSize
 
-        const results = await pool.query(sql`
+            const results = await this.client.query(sql`
             WITH exercises AS (
                 SELECT
                     exercises.id,
                     exercises.name,
-                    ARRAY_AGG(ROW_TO_JSON(muscles)) as muscles
+                    (
+                        SELECT COALESCE(
+                            ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(muscles))), 
+                            '[]'::json
+                        ) FROM muscles 
+                        INNER JOIN muscles_exercises
+                        ON muscle_id = id
+                        WHERE exercise_id = exercises.id
+                    ) as muscles
                 FROM exercises
-                INNER JOIN muscles_exercises
-                    ON muscles_exercises.exercise_id = exercises.id
-                INNER JOIN muscles
-                    ON muscles_exercises.muscle_id = muscles.id
-                GROUP BY exercises.id
             ) 
             
             SELECT 
@@ -94,103 +127,99 @@ export async function all(
             FETCH NEXT ${pageSize} ROWS ONLY;
         `)
 
-        return results.rows
-    } catch (err) {
-        throw new Error(`models:workout:all: ${err.message}`)
+            return results.rows
+        } catch (err) {
+            throw new Error(`models:workout:all: ${err.message}`)
+        }
     }
-}
 
-export async function remove(id: number): Promise<void> {
-    try {
-        await pool.query(sql`
+    async remove(id: number): Promise<void> {
+        try {
+            await this.client.query(sql`
             DELETE FROM workouts WHERE id=${id}
         `)
-    } catch (err) {
-        throw new Error(`models:workout:remove: ${err.message}`)
+        } catch (err) {
+            throw new Error(`models:workout:remove: ${err.message}`)
+        }
     }
-}
 
-export async function create(
-    teamId: number,
-    workout: Workout
-): Promise<Workout> {
-    const client = await pool.connect()
-    const { name } = workout
-    const { dates } = workout
-    const assignments = JSON.stringify(
-        workout.assignments.map((a) => ({
-            exercise_id: a.exercise.id,
-            rep_count: a.rep_count,
-        }))
-    )
+    async create(teamId: number, workout: Workout): Promise<Workout> {
+        const { name } = workout
+        const { dates } = workout
+        const assignments = JSON.stringify(
+            workout.assignments.map((a) => ({
+                exercise_id: a.exercise.id,
+                rep_count: a.rep_count,
+            }))
+        )
 
-    try {
-        // Start transaction
-        await client.query("BEGIN")
+        try {
+            // Start transaction
+            await this.client.query("BEGIN")
 
-        // Insert workout into the workouts table
-        const workoutResult = await client.query(sql`
+            // Insert workout into the workouts table
+            const workoutResult = await this.client.query(sql`
             INSERT INTO workouts (name, team_id, dates)
             VALUES (${name}, ${teamId}, ${dates}::timestamp[])
             RETURNING id
         `)
 
-        const workoutId = workoutResult.rows[0].id
+            const workoutId = workoutResult.rows[0].id
 
-        // Insert all assignments into the assignments table
-        const assignmentResult = await client.query(sql`
+            // Insert all assignments into the assignments table
+            const assignmentResult = await this.client.query(sql`
             INSERT INTO assignments (workout_id, exercise_id, rep_count)
             SELECT ${workoutId}, exercise_id, rep_count FROM 
             JSON_POPULATE_RECORDSET(NULL::assignments, ${assignments})
             RETURNING id
         `)
 
-        // Finish transaction
-        await client.query("COMMIT")
+            // Finish transaction
+            await this.client.query("COMMIT")
 
-        return {
-            ...workout,
-            id: workoutId,
-            assignments: workout.assignments.map((assignment, i) => ({
-                id: assignmentResult.rows[i].id,
-                ...assignment,
-            })),
+            return {
+                ...workout,
+                id: workoutId,
+                assignments: workout.assignments.map((assignment, i) => ({
+                    id: assignmentResult.rows[i].id,
+                    ...assignment,
+                })),
+            }
+        } catch (error) {
+            await this.client.query("ROLLBACK")
+            throw new Error(
+                `models:workout:create: invalid query (${error.message})`
+            )
         }
-    } catch (error) {
-        await client.query("ROLLBACK")
-        throw new Error(
-            `models:workout:create: invalid query (${error.message})`
-        )
-    } finally {
-        client.release()
     }
-}
 
-export async function update(workout: {
-    id: number
-    name?: string
-    dates?: string[]
-    assignments?: Assignment[]
-}): Promise<Workout> {
-    const updatedAssignments = workout.assignments
-        ? workout.assignments.filter((a) => a.id)
-        : []
-    const createdAssignments = workout.assignments
-        ? workout.assignments.filter((a) => !a.id)
-        : []
+    async update(workout: {
+        id: number
+        name?: string
+        dates?: string[]
+        assignments?: Assignment[]
+    }): Promise<Workout> {
+        const updatedAssignments = workout.assignments
+            ? workout.assignments.filter((a) => a.id)
+            : []
+        const createdAssignments = workout.assignments
+            ? workout.assignments.filter((a) => !a.id)
+            : []
 
-    const workoutId = workout.id
-    const name = workout.name ? `'${workout.name}'` : "NULL"
-    const dates = workout.dates
-        ? `ARRAY[${workout.dates.map((d) => `'${d}'`).join(", ")}]::timestamp[]`
-        : "NULL"
+        const workoutId = workout.id
+        const name = workout.name ? `'${workout.name}'` : "NULL"
+        const dates = workout.dates
+            ? `ARRAY[${workout.dates
+                  .map((d) => `'${d}'`)
+                  .join(", ")}]::timestamp[]`
+            : "NULL"
 
-    /**
-     * updated_assignment_table is a temporary table that contains all
-     * updated assignments.
-     */
-    const updatedAssignmentTable = updatedAssignments.length
-        ? `SELECT 
+        /**
+         * updated_assignment_table is a temporary table that contains all
+         * updated assignments.
+         */
+        const updatedAssignmentTable = updatedAssignments.length
+            ? `SELECT 
             column1 as id,
             column2 as workout_id,
             column3 as exercise_id,
@@ -208,7 +237,7 @@ export async function update(workout: {
                 .join(",")}
         ) AS _
         `
-        : `SELECT
+            : `SELECT
             id,
             workout_id,
             exercise_id,
@@ -216,11 +245,11 @@ export async function update(workout: {
         FROM assignments
         WHERE 1 = 0`
 
-    /**
-     * created_assignment_table creates a list of assignments and returns their ids.
-     */
-    const createdAssignmentTable = createdAssignments.length
-        ? `SELECT 
+        /**
+         * created_assignment_table creates a list of assignments and returns their ids.
+         */
+        const createdAssignmentTable = createdAssignments.length
+            ? `SELECT 
             column1 as workout_id,
             column2 as exercise_id,
             column3 as rep_count
@@ -236,15 +265,15 @@ export async function update(workout: {
                     .join(",")}
         ) AS _
         `
-        : `SELECT
+            : `SELECT
             workout_id,
             exercise_id,
             rep_count 
         FROM assignments
         WHERE 1 = 0`
 
-    try {
-        const result = await pool.query(sql`
+        try {
+            const result = await this.client.query(sql`
 
         WITH updated_assignments AS (
             ${updatedAssignmentTable}
@@ -287,9 +316,10 @@ export async function update(workout: {
         FROM update_workout;
     `)
 
-        console.log(result.rows[0])
-        return result.rows[0]
-    } catch (err) {
-        throw new Error("models:workout:update: invalid query")
+            console.log(result.rows[0])
+            return result.rows[0]
+        } catch (err) {
+            throw new Error("models:workout:update: invalid query")
+        }
     }
 }
