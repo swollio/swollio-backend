@@ -2,7 +2,7 @@
  * This file contains the database model for exercises.
  * All database specific types and data are fully encapsulated.
  */
-import { Pool } from "pg"
+import { Client } from "pg"
 import sql from "sql-template-strings"
 import Exercise from "../schema/exercise"
 
@@ -40,15 +40,15 @@ export interface ExerciseRow {
  * @param id - the id of the exercise
  */
 export default class ExerciseModel {
-    pool: Pool
+    client: Client
 
-    constructor(pool: Pool) {
-        this.pool = pool
+    constructor(client: Client) {
+        this.client = client
     }
 
     async one(id: number): Promise<Exercise | null> {
         try {
-            const result = await this.pool.query(sql`
+            const result = await this.client.query(sql`
                 SELECT
                     exercises.id,
                     exercises.name,
@@ -82,7 +82,7 @@ export default class ExerciseModel {
         try {
             const offset = pageIndex * pageSize
 
-            const result = await this.pool.query(sql`
+            const result = await this.client.query(sql`
                 SELECT
                     exercises.id,
                     exercises.name,
@@ -113,31 +113,36 @@ export default class ExerciseModel {
      * @param exercise - the exercise to insert into the database
      * @return - a promise resolving to an exercise with an id.
      */
-    async create(team_id: number, exercise: Exercise): Promise<Exercise> {
+    async create(teamId: number | null, exercise: Exercise): Promise<Exercise> {
         try {
             const { name } = exercise
-            const muscleIds = exercise.muscles.map((m) => m.id).join(", ")
+            const muscleIds = exercise.muscles.map((m) => m.id)
+
+            // Insert workout into the workouts table
+            const exerciseResult = await this.client.query(sql`
+                INSERT INTO exercises (name, team_id)
+                VALUES (${name}, ${teamId})
+                RETURNING id
+            `)
+
+            const exerciseId = exerciseResult.rows[0].id
 
             // This query performs a compound insert of both the exercise itself as
             // well as the muscles worked by the exercise.
-            const result = await this.pool.query(sql`
-                WITH exercise AS (
-                    INSERT INTO exercises (name, team_id)
-                    VALUES ('${name}', ${team_id})
-                    RETURNING id
-                ), _ AS (
-                    INSERT INTO muscles_exercises (muscle_id, exercise_id)
-                    SELECT UNNEST(ARRAY[${muscleIds}]::integer[]), id FROM exercise
-                )
-                
-                SELECT id FROM exercise;
+            await this.client.query(sql`
+                INSERT INTO muscles_exercises (muscle_id, exercise_id)
+                SELECT muscle_ids.*, ${exerciseId}
+                FROM UNNEST(${muscleIds}::integer[]) as muscle_ids
             `)
 
+            await this.client.query("COMMIT")
+
             return {
-                id: result.rows[0].id,
+                id: exerciseId,
                 ...exercise,
             }
         } catch (err) {
+            await this.client.query("ROLLBACK")
             throw new Error(`models:exercise:create: ${err.message}`)
         }
     }
@@ -150,7 +155,7 @@ export default class ExerciseModel {
      */
     async remove(id: number): Promise<void> {
         try {
-            await this.pool.query(sql`
+            await this.client.query(sql`
                 DELETE FROM exercises WHERE id=${id}
             `)
         } catch (err) {
@@ -171,18 +176,22 @@ export default class ExerciseModel {
     ): Promise<Exercise[]> {
         try {
             const offset = pageIndex * pageSize
-            const result = await this.pool.query(sql`
-                SELECT 
+            const result = await this.client.query(sql`
+                SELECT
                     exercises.id,
                     exercises.name,
-                    ARRAY_AGG(ROW_TO_JSON(muscles)) as muscles
-                FROM exercises 
-                INNER JOIN muscles_exercises 
-                    ON muscles_exercises.exercise_id = exercises.id
-                INNER JOIN muscles
-                    ON muscles_exercises.muscle_id = muscles.id
+                    (
+                        SELECT COALESCE(
+                            ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(muscles))), 
+                            '[]'::json
+                        ) FROM muscles 
+                        INNER JOIN muscles_exercises
+                        ON muscle_id = id
+                        WHERE exercise_id = exercises.id
+                    ) as muscles
+                FROM exercises
                 WHERE exercises.name 
-                LIKE '%' || '${query}' || '%'
+                LIKE '%' || ${query} || '%'
                 GROUP BY exercises.id
                 OFFSET ${offset} ROWS
                 FETCH NEXT ${pageSize} ROWS ONLY
@@ -208,7 +217,7 @@ export default class ExerciseModel {
     ): Promise<Exercise[]> {
         try {
             const offset = pageIndex * pageSize
-            const result = await this.pool.query(sql`
+            const result = await this.client.query(sql`
                 WITH primary_muscles AS (
                     SELECT muscles.id FROM muscles
                     INNER JOIN muscles_exercises 

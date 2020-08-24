@@ -1,8 +1,3 @@
-/**
- * This file contains the database model for workouts.
- * All database specific types and data are fully encapsulated.
- */
-
 import sql from "sql-template-strings"
 import { pool } from "../utilities/database"
 import Workout from "../schema/workout"
