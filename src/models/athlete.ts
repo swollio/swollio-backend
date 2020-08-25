@@ -62,4 +62,50 @@ export default class AthleteModel {
             throw new Error(`models:athlete:createOne:: ${error.message}`)
         }
     }
+
+    async update(athlete: {
+        id: number
+        age?: number
+        height?: number
+        weight?: number
+        gender?: string
+    }): Promise<void> {
+        try {
+            // If the key is defined, then return 'value', else return null
+            const athleteId = athlete.id
+            const ageUpdate = athlete.age
+            const heightUpdate = athlete.height
+            const weightUpdate = athlete.weight
+            const genderUpdate = athlete.gender
+
+            await this.client.query(sql`
+            UPDATE athletes
+            SET
+                age = COALESCE(${ageUpdate}, age),
+                height = COALESCE(${heightUpdate}, height),
+                weight = COALESCE(${weightUpdate}, weight),
+                gender = COALESCE(${genderUpdate}, gender)
+            WHERE id = ${athleteId}
+        `)
+        } catch (error) {
+            throw new Error(`models:athlete:update:: ${error.message}`)
+        }
+    }
+
+    /**
+     * Deletes the athlete with the given id from the athletes table. The user
+     * remains untouched.
+     *
+     * @param id The id of the athlete to delete
+     */
+    async destroy(athleteId: number): Promise<void> {
+        try {
+            await this.client.query(sql`
+                DELETE FROM athletes
+                WHERE id=${athleteId}
+            `)
+        } catch (error) {
+            throw new Error(`models:athlete:delete:: ${error.message}`)
+        }
+    }
 }

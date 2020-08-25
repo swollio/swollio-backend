@@ -153,3 +153,131 @@ describe("AthleteModel.readOne", () => {
         }
     })
 })
+
+describe("AthleteModel.update", () => {
+    it("should successfully update age ", async () => {
+        const Athletes = await createAthleteModel({
+            users: [user1, user2, user3],
+            athletes: [athlete1, athlete2],
+        })
+        try {
+            await Athletes.update({
+                id: 1,
+                age: 25,
+            })
+            const result = await Athletes.client.query(
+                "SELECT age FROM athletes WHERE id=1"
+            )
+            expect(result.rows[0].age).toEqual(25)
+        } finally {
+            await destroyAthleteModel(Athletes)
+        }
+    })
+
+    it("should successfully update height ", async () => {
+        const Athletes = await createAthleteModel({
+            users: [user1, user2, user3],
+            athletes: [athlete1, athlete2],
+        })
+        try {
+            await Athletes.update({
+                id: 1,
+                height: 100,
+            })
+            const result = await Athletes.client.query(
+                "SELECT height FROM athletes WHERE id=1"
+            )
+            expect(result.rows[0].height).toEqual(100)
+        } finally {
+            await destroyAthleteModel(Athletes)
+        }
+    })
+
+    it("should successfully update weight ", async () => {
+        const Athletes = await createAthleteModel({
+            users: [user1, user2, user3],
+            athletes: [athlete1, athlete2],
+        })
+        try {
+            await Athletes.update({
+                id: 1,
+                weight: 100,
+            })
+            const result = await Athletes.client.query(
+                "SELECT weight FROM athletes WHERE id=1"
+            )
+            expect(result.rows[0].weight).toEqual(100)
+        } finally {
+            await destroyAthleteModel(Athletes)
+        }
+    })
+
+    it("should successfully update gender", async () => {
+        const Athletes = await createAthleteModel({
+            users: [user1, user2, user3],
+            athletes: [athlete1, athlete2],
+        })
+        try {
+            await Athletes.update({
+                id: 1,
+                gender: "female",
+            })
+
+            const result = await Athletes.client.query(
+                "SELECT gender FROM athletes WHERE id=1"
+            )
+            expect(result.rows[0].gender).toEqual("female")
+        } finally {
+            await destroyAthleteModel(Athletes)
+        }
+    })
+
+    it("should successfully update multiple fields at once", async () => {
+        const Athletes = await createAthleteModel({
+            users: [user1, user2, user3],
+            athletes: [athlete1, athlete2],
+        })
+        try {
+            await Athletes.update({
+                id: 1,
+                age: 25,
+                height: 60,
+                weight: 100,
+                gender: "female",
+            })
+
+            const result = await Athletes.client.query(
+                "SELECT age, height, weight, gender FROM athletes WHERE id=1"
+            )
+            expect(result.rows[0]).toEqual({
+                age: 25,
+                height: 60,
+                weight: 100,
+                gender: "female",
+            })
+        } finally {
+            await destroyAthleteModel(Athletes)
+        }
+    })
+})
+
+describe("AthleteModel.destroy", () => {
+    it("should successfully delete athlete", async () => {
+        const Athletes = await createAthleteModel({
+            users: [user1, user2, user3],
+            athletes: [athlete1, athlete2],
+        })
+        try {
+            await Athletes.destroy(1)
+            const result1 = await Athletes.client.query("SELECT id FROM users")
+            expect(result1.rows).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }])
+
+            const result2 = await Athletes.client.query(
+                "SELECT id FROM athletes"
+            )
+            expect(result2.rows).toEqual([{ id: 2 }])
+        } finally {
+            await destroyAthleteModel(Athletes)
+        }
+    })
+})

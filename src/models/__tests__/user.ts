@@ -112,11 +112,11 @@ describe("UserModel.readOne", () => {
     })
 })
 
-describe("UserModel.readByEmail", () => {
+describe("UserModel.readOneByEmail", () => {
     it("should return user1 when called with email=user1.email", async () => {
         const Users = await createUserModel({ users: [user1, user2, user3] })
         try {
-            const user = await Users.readByEmail(user1.email)
+            const user = await Users.readOneByEmail(user1.email)
             expect(user).toEqual(user1)
         } finally {
             await destroyUserModel(Users)
@@ -126,7 +126,7 @@ describe("UserModel.readByEmail", () => {
     it("should return user2 when called with email=user2.email", async () => {
         const Users = await createUserModel({ users: [user1, user2, user3] })
         try {
-            const user = await Users.readByEmail(user2.email)
+            const user = await Users.readOneByEmail(user2.email)
             expect(user).toEqual(user2)
         } finally {
             await destroyUserModel(Users)
@@ -136,7 +136,7 @@ describe("UserModel.readByEmail", () => {
     it("should return null when called with non-existant id", async () => {
         const Users = await createUserModel({ users: [user1, user2, user3] })
         try {
-            const user = await Users.readByEmail("nonexistant@mail.com")
+            const user = await Users.readOneByEmail("nonexistant@mail.com")
             expect(user).toEqual(null)
         } finally {
             await destroyUserModel(Users)

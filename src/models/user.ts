@@ -81,7 +81,7 @@ export default class UserModel {
      * @param email The email used to get the user data from the table
      * @returns {Promise<User | null>} The user with the given email of null of no such user exists
      */
-    async readByEmail(email: string): Promise<User | null> {
+    async readOneByEmail(email: string): Promise<User | null> {
         try {
             const user = await this.client.query(sql`
             SELECT id, email, first_name, last_name, hash
