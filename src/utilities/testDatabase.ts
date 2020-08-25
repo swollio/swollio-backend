@@ -7,6 +7,7 @@ import { Client } from "pg"
 import * as Exercise from "../models/exercise"
 import * as Workout from "../models/workout"
 import * as User from "../models/user"
+import * as Athlete from "../models/athlete"
 
 const TEMPLATE_DATABASE = "swollio-template"
 
@@ -26,6 +27,7 @@ export interface MockData {
     workouts?: Workout.WorkoutRow[]
     users?: User.UserRow[]
     teams?: TeamRow[]
+    athletes?: Athlete.AthleteRow[]
 }
 
 export async function create(
@@ -60,6 +62,17 @@ export async function create(
             SELECT id, pin, name, coach_id, sport FROM 
             JSON_POPULATE_RECORDSET(NULL::teams, ${JSON.stringify(
                 mockData.teams
+            )})
+        `)
+        }
+
+        // Bulk insert all mock teams data if it exists
+        if (mockData.athletes !== undefined) {
+            await client.query(sql`
+            INSERT INTO athletes (id, user_id, age, height, weight, gender)
+            SELECT id, user_id, age, height, weight, gender FROM 
+            JSON_POPULATE_RECORDSET(NULL::athletes, ${JSON.stringify(
+                mockData.athletes
             )})
         `)
         }
