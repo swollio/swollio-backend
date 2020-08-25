@@ -14,30 +14,30 @@ async function destroyWorkoutModel(Workouts: WorkoutModel) {
     await TestDatabase.destroy(database)
 }
 
+const user1 = {
+    id: 1,
+    first_name: "john",
+    last_name: "doe",
+    email: "johndoe@gmail.com",
+    hash: "sksksk",
+}
+
+const team1 = {
+    id: 1,
+    pin: 123456,
+    name: "team1",
+    coach_id: 1,
+    sport: "sport1",
+}
+
 const dataset: TestDatabase.MockData = {
     exercises: [
         { id: 1, name: "exercise1", team_id: null },
         { id: 2, name: "exercise2", team_id: null },
         { id: 3, name: "exercise3", team_id: null },
     ],
-    users: [
-        {
-            id: 1,
-            first_name: "john",
-            last_name: "doe",
-            email: "johndoe@gmail.com",
-            hash: "sksksk",
-        },
-    ],
-    teams: [
-        {
-            id: 1,
-            pin: 123456,
-            name: "team1",
-            coach_id: 1,
-            sport: "sport1",
-        },
-    ],
+    users: [user1],
+    teams: [team1],
     assignments: [
         {
             id: 1,
@@ -69,7 +69,55 @@ const dataset: TestDatabase.MockData = {
 }
 
 describe("WorkoutModel.all", () => {
-    it("should return [] when there are no workouts", async () => {
+    it("should return [] when the team does not exist", async () => {
+        const Workouts = await createWorkoutModel({})
+        try {
+            expect(await Workouts.all(100)).toEqual([])
+        } finally {
+            await destroyWorkoutModel(Workouts)
+        }
+    })
+
+    it("should return [] when the team has no exercises", async () => {
+        const Workouts = await createWorkoutModel({
+            users: [user1],
+            teams: [team1],
+        })
+        try {
+            expect(await Workouts.all(team1.id)).toEqual([])
+        } finally {
+            await destroyWorkoutModel(Workouts)
+        }
+    })
+
+    it("should return a workout even when it has no assignments", async () => {
+        const Workouts = await createWorkoutModel({
+            users: [user1],
+            teams: [team1],
+            workouts: [
+                {
+                    id: 1,
+                    name: "Untitled Workout",
+                    dates: [],
+                    team_id: 1,
+                },
+            ],
+        })
+        try {
+            expect(await Workouts.all(team1.id)).toEqual([
+                {
+                    id: 1,
+                    name: "Untitled Workout",
+                    dates: [],
+                    assignments: [],
+                },
+            ])
+        } finally {
+            await destroyWorkoutModel(Workouts)
+        }
+    })
+
+    it("should return all workouts for a team", async () => {
         const Workouts = await createWorkoutModel(dataset)
         try {
             expect(await Workouts.all(1)).toEqual([
@@ -96,15 +144,6 @@ describe("WorkoutModel.all", () => {
                     ],
                 },
             ])
-        } finally {
-            await destroyWorkoutModel(Workouts)
-        }
-    })
-
-    it("should return [] when the team does not exist", async () => {
-        const Workouts = await createWorkoutModel({})
-        try {
-            expect(await Workouts.all(100)).toEqual([])
         } finally {
             await destroyWorkoutModel(Workouts)
         }
