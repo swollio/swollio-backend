@@ -35,7 +35,7 @@ export default class ExerciseModel {
      *
      * @param id - the id of the workout to return.
      */
-    async one(id: number): Promise<Workout | null> {
+    async readOne(id: number): Promise<Workout | null> {
         try {
             const results = await this.client.query(sql`
             WITH exercises AS (
@@ -58,20 +58,21 @@ export default class ExerciseModel {
                 workouts.id,
                 workouts.name,
                 workouts.dates,
-                ARRAY_AGG(
-                    JSON_BUILD_OBJECT(
-                        'id', assignments.id,
-                        'exercise', exercises,
-                        'rep_count', assignments.rep_count
-                    )
+                (
+                    SELECT COALESCE(
+                        ARRAY_TO_JSON(ARRAY_AGG(JSON_BUILD_OBJECT(
+                            'id', assignments.id,
+                            'exercise', exercises,
+                            'rep_count', assignments.rep_count
+                        ))), 
+                        '[]'::json
+                    ) FROM assignments 
+                    INNER JOIN exercises
+                        ON assignments.exercise_id = exercises.id
+                    WHERE workout_id = workouts.id
                 ) as assignments
             FROM workouts
-            INNER JOIN assignments
-                ON assignments.workout_id = workouts.id
-            INNER JOIN exercises
-                ON assignments.exercise_id = exercises.id
-            WHERE workouts.id=${id}
-            GROUP BY workouts.id;
+            WHERE workouts.id = ${id}
         `)
             if (results.rows.length === 0) return null
             return results.rows[0]
@@ -80,7 +81,7 @@ export default class ExerciseModel {
         }
     }
 
-    async all(
+    async readAllWithTeamId(
         teamId: number,
         pageIndex = 0,
         pageSize = 10
@@ -109,20 +110,21 @@ export default class ExerciseModel {
                 workouts.id,
                 workouts.name,
                 workouts.dates,
-                ARRAY_AGG(
-                    JSON_BUILD_OBJECT(
-                        'id', assignments.id,
-                        'exercise', exercises,
-                        'rep_count', assignments.rep_count
-                    )
+                (
+                    SELECT COALESCE(
+                        ARRAY_TO_JSON(ARRAY_AGG(JSON_BUILD_OBJECT(
+                            'id', assignments.id,
+                            'exercise', exercises,
+                            'rep_count', assignments.rep_count
+                        ))), 
+                        '[]'::json
+                    ) FROM assignments 
+                    INNER JOIN exercises
+                        ON assignments.exercise_id = exercises.id
+                    WHERE workout_id = workouts.id
                 ) as assignments
             FROM workouts
-            INNER JOIN assignments
-                ON assignments.workout_id = workouts.id
-            INNER JOIN exercises
-                ON assignments.exercise_id = exercises.id
             WHERE workouts.team_id = ${teamId}
-            GROUP BY workouts.id
             OFFSET ${offset} ROWS
             FETCH NEXT ${pageSize} ROWS ONLY;
         `)
@@ -133,7 +135,7 @@ export default class ExerciseModel {
         }
     }
 
-    async remove(id: number): Promise<void> {
+    async destroy(id: number): Promise<void> {
         try {
             await this.client.query(sql`
             DELETE FROM workouts WHERE id=${id}

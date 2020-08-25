@@ -68,11 +68,11 @@ const dataset: TestDatabase.MockData = {
     ],
 }
 
-describe("WorkoutModel.all", () => {
+describe("WorkoutModel.readAllWithTeamId", () => {
     it("should return [] when the team does not exist", async () => {
         const Workouts = await createWorkoutModel({})
         try {
-            expect(await Workouts.all(100)).toEqual([])
+            expect(await Workouts.readAllWithTeamId(100)).toEqual([])
         } finally {
             await destroyWorkoutModel(Workouts)
         }
@@ -84,7 +84,7 @@ describe("WorkoutModel.all", () => {
             teams: [team1],
         })
         try {
-            expect(await Workouts.all(team1.id)).toEqual([])
+            expect(await Workouts.readAllWithTeamId(team1.id)).toEqual([])
         } finally {
             await destroyWorkoutModel(Workouts)
         }
@@ -104,7 +104,7 @@ describe("WorkoutModel.all", () => {
             ],
         })
         try {
-            expect(await Workouts.all(team1.id)).toEqual([
+            expect(await Workouts.readAllWithTeamId(team1.id)).toEqual([
                 {
                     id: 1,
                     name: "Untitled Workout",
@@ -120,7 +120,7 @@ describe("WorkoutModel.all", () => {
     it("should return all workouts for a team", async () => {
         const Workouts = await createWorkoutModel(dataset)
         try {
-            expect(await Workouts.all(1)).toEqual([
+            expect(await Workouts.readAllWithTeamId(1)).toEqual([
                 {
                     id: 1,
                     name: "Untitled Workout",
