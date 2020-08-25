@@ -8,16 +8,9 @@ import * as Exercise from "../models/exercise"
 import * as Workout from "../models/workout"
 import * as User from "../models/user"
 import * as Athlete from "../models/athlete"
+import * as Team from "../models/team"
 
 const TEMPLATE_DATABASE = "swollio-template"
-
-interface TeamRow {
-    id: number
-    pin: number
-    name: string
-    coach_id: number
-    sport: string
-}
 
 export interface MockData {
     muscles?: Exercise.MuscleRow[]
@@ -26,7 +19,7 @@ export interface MockData {
     assignments?: Workout.AssignmentRow[]
     workouts?: Workout.WorkoutRow[]
     users?: User.UserRow[]
-    teams?: TeamRow[]
+    teams?: Team.TeamRow[]
     athletes?: Athlete.AthleteRow[]
 }
 

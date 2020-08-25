@@ -38,14 +38,6 @@ const user3 = {
     hash: "$2y$10$0FebiME5wX5zbkJOhFnLU.j0Is8tlz2tRub5pXXUery95T/U3zkiW",
 }
 
-const user4 = {
-    id: 4,
-    first_name: "harold",
-    last_name: "potter",
-    email: "hpotter@gryffindor.com",
-    hash: "$2y$10$.8N0AuC6YHR6b/TDU6r42.qc9ACVxjoZXcm0X/eJht0QfcStJudPe",
-}
-
 const athlete1 = {
     id: 1,
     user_id: 1,
