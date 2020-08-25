@@ -156,11 +156,11 @@ describe("UserModel.readAll", () => {
     })
 })
 
-describe("UserModel.update", () => {
+describe("UserModel.updateOne", () => {
     it("should successfully update first_name ", async () => {
         const Users = await createUserModel({ users: [user1, user2, user3] })
         try {
-            await Users.update({
+            await Users.updateOne({
                 id: 1,
                 first_name: "test",
             })
@@ -176,7 +176,7 @@ describe("UserModel.update", () => {
     it("should successfully update last_name ", async () => {
         const Users = await createUserModel({ users: [user1, user2, user3] })
         try {
-            await Users.update({
+            await Users.updateOne({
                 id: 1,
                 last_name: "test",
             })
@@ -192,7 +192,7 @@ describe("UserModel.update", () => {
     it("should successfully update email ", async () => {
         const Users = await createUserModel({ users: [user1, user2, user3] })
         try {
-            await Users.update({
+            await Users.updateOne({
                 id: 1,
                 email: "test@mail.com",
             })
@@ -209,7 +209,7 @@ describe("UserModel.update", () => {
         const Users = await createUserModel({ users: [user1, user2, user3] })
         try {
             await expect(
-                Users.update({
+                Users.updateOne({
                     id: 1,
                     email: "dmalfoy@slytherin.com",
                 })
@@ -227,7 +227,7 @@ describe("UserModel.update", () => {
     it("should successfully update hash", async () => {
         const Users = await createUserModel({ users: [user1, user2, user3] })
         try {
-            await Users.update({
+            await Users.updateOne({
                 id: 1,
                 hash:
                     "$2y$10$/gay/noVkqrqpoMNm8HqjucZzB7sRwP9.KS6PfeRnrZnRMmxKIVOe",
@@ -247,7 +247,7 @@ describe("UserModel.update", () => {
     it("should successfully update multiple fields at once", async () => {
         const Users = await createUserModel({ users: [user1, user2, user3] })
         try {
-            await Users.update({
+            await Users.updateOne({
                 id: 1,
                 first_name: "harold",
                 hash:
@@ -268,11 +268,11 @@ describe("UserModel.update", () => {
     })
 })
 
-describe("UserModel.destroy", () => {
+describe("UserModel.destroyOne", () => {
     it("should successfully delete user", async () => {
         const Users = await createUserModel({ users: [user1, user2, user3] })
         try {
-            await Users.destroy(1)
+            await Users.destroyOne(1)
             const result = await Users.client.query("SELECT id FROM users")
             expect(result.rows).toEqual([{ id: 2 }, { id: 3 }])
         } finally {

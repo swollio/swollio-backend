@@ -1,5 +1,6 @@
+import { pool } from "../../utilities/database"
 import Workout from "../../schema/workout"
-import * as WorkoutModel from "../../models/workout"
+import WorkoutModel from "../../models/workout"
 
 /**
  * This workflow will get all the workouts for a team using
@@ -9,12 +10,16 @@ import * as WorkoutModel from "../../models/workout"
 export default async function getTeamWorkouts(
     teamId: number
 ): Promise<Workout[]> {
+    const client = await pool.connect()
+    const Workouts = new WorkoutModel(client)
     try {
-        return WorkoutModel.all(teamId)
+        return Workouts.readAllWithTeamId(teamId)
     } catch (err) {
         console.log(err)
         throw new Error(
             `getTeamWorkouts Error: Could not get team workouts for team ${teamId}`
         )
+    } finally {
+        client.release()
     }
 }

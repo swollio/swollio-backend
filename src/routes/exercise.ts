@@ -3,7 +3,6 @@ import { pool } from "../utilities/database"
 import ExerciseModel from "../models/exercise"
 
 const router = express.Router()
-const Exercises = new ExerciseModel(pool)
 
 /**
  * This route calls the getExercises workflow, which will either
@@ -14,12 +13,16 @@ const Exercises = new ExerciseModel(pool)
 router.get("/", async (req, res) => {
     const query = (req.query.search as string)?.toLowerCase()
 
+    const client = await pool.connect()
+    const Exercises = new ExerciseModel(client)
     try {
         const exercises = await Exercises.search(query)
         return res.status(200).send(exercises)
     } catch (err) {
         console.log(err)
         return res.status(200).send(err.message)
+    } finally {
+        client.release()
     }
 })
 
@@ -31,12 +34,16 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     const exerciseId = Number.parseInt(req.params.id, 10)
 
+    const client = await pool.connect()
+    const Exercises = new ExerciseModel(client)
     try {
-        const exercise = await Exercises.one(exerciseId)
+        const exercise = await Exercises.readOne(exerciseId)
         return res.status(200).send(exercise)
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
+    } finally {
+        client.release()
     }
 })
 
@@ -48,12 +55,16 @@ router.get("/:id", async (req, res) => {
 router.get("/:id/similar", async (req, res) => {
     const exerciseId = Number.parseInt(req.params.id, 10)
 
+    const client = await pool.connect()
+    const Exercises = new ExerciseModel(client)
     try {
         const similar = await Exercises.similar(exerciseId)
         return res.status(200).send(similar)
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
+    } finally {
+        client.release()
     }
 })
 

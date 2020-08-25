@@ -14,30 +14,6 @@ async function destroyTeamModel(Teams: TeamModel) {
     await TestDatabase.destroy(database)
 }
 
-const user1 = {
-    id: 1,
-    first_name: "harry",
-    last_name: "potter",
-    email: "hpotter@gryffindor.com",
-    hash: "$2y$10$Bf/KdAj7oC6.1CFtdbzqLuKTssBNUREurYdqH./aLZK7dE1Z183v6",
-}
-
-const user2 = {
-    id: 2,
-    first_name: "draco",
-    last_name: "malfoy",
-    email: "dmalfoy@slytherin.com",
-    hash: "$2y$10$omEtd4uX2Kb0gSB4ygfzxeWI97ULJkhF19W2qgKFFxURuByceDCj.",
-}
-
-const user3 = {
-    id: 3,
-    first_name: "ron",
-    last_name: "weasley",
-    email: "rweasley@gryffindor.com",
-    hash: "$2y$10$0FebiME5wX5zbkJOhFnLU.j0Is8tlz2tRub5pXXUery95T/U3zkiW",
-}
-
 const user4 = {
     id: 4,
     first_name: "minvera",
@@ -99,6 +75,110 @@ describe("TeamModel.readOne", () => {
         try {
             const team = await Teams.readOne(1)
             expect(team).toEqual(team1)
+        } finally {
+            await destroyTeamModel(Teams)
+        }
+    })
+})
+
+describe("TeamModel.updateOne", () => {
+    it("should update pin ", async () => {
+        const Teams = await createTeamModel({
+            users: [user4],
+            teams: [
+                {
+                    id: team1.id,
+                    pin: team1.pin,
+                    name: team1.name,
+                    coach_id: team1.coach.id,
+                    sport: team1.sport,
+                },
+            ],
+        })
+        try {
+            await Teams.updateOne(1, {
+                pin: 666666,
+            })
+            const result = await Teams.client.query(
+                "SELECT pin FROM teams WHERE id=1"
+            )
+            expect(result.rows[0].pin).toEqual(666666)
+        } finally {
+            await destroyTeamModel(Teams)
+        }
+    })
+
+    it("should update name ", async () => {
+        const Teams = await createTeamModel({
+            users: [user4],
+            teams: [
+                {
+                    id: team1.id,
+                    pin: team1.pin,
+                    name: team1.name,
+                    coach_id: team1.coach.id,
+                    sport: team1.sport,
+                },
+            ],
+        })
+        try {
+            await Teams.updateOne(1, {
+                name: "test",
+            })
+            const result = await Teams.client.query(
+                "SELECT name FROM teams WHERE id=1"
+            )
+            expect(result.rows[0].name).toEqual("test")
+        } finally {
+            await destroyTeamModel(Teams)
+        }
+    })
+
+    it("should update sport ", async () => {
+        const Teams = await createTeamModel({
+            users: [user4],
+            teams: [
+                {
+                    id: team1.id,
+                    pin: team1.pin,
+                    name: team1.name,
+                    coach_id: team1.coach.id,
+                    sport: team1.sport,
+                },
+            ],
+        })
+        try {
+            await Teams.updateOne(1, {
+                sport: "test",
+            })
+            const result = await Teams.client.query(
+                "SELECT sport FROM teams WHERE id=1"
+            )
+            expect(result.rows[0].sport).toEqual("test")
+        } finally {
+            await destroyTeamModel(Teams)
+        }
+    })
+})
+
+describe("TeamModel.destroyOne", () => {
+    it("should successfully delete team", async () => {
+        const Teams = await createTeamModel({
+            users: [user4],
+            teams: [
+                {
+                    id: team1.id,
+                    pin: team1.pin,
+                    name: team1.name,
+                    coach_id: team1.coach.id,
+                    sport: team1.sport,
+                },
+            ],
+        })
+        try {
+            await Teams.destroyOne(1)
+            const result = await Teams.client.query("SELECT id FROM teams")
+            expect(result.rows).toEqual([])
         } finally {
             await destroyTeamModel(Teams)
         }

@@ -1,5 +1,5 @@
 import sql from "sql-template-strings"
-import { Client } from "pg"
+import { ClientBase } from "pg"
 import Team from "../schema/team"
 
 export interface TeamRow {
@@ -11,9 +11,9 @@ export interface TeamRow {
 }
 
 export default class TeamModel {
-    client: Client
+    client: ClientBase
 
-    constructor(client: Client) {
+    constructor(client: ClientBase) {
         this.client = client
     }
 
@@ -49,6 +49,39 @@ export default class TeamModel {
             return result.rows[0]
         } catch (err) {
             throw new Error(`models:team:createOne: ${err.message}`)
+        }
+    }
+
+    async updateOne(
+        id: number,
+        team: {
+            pin?: number
+            name?: string
+            sport?: string
+        }
+    ): Promise<void> {
+        try {
+            await this.client.query(sql`
+                UPDATE teams
+                SET
+                    pin = COALESCE(${team.pin}, pin),
+                    name = COALESCE(${team.name}, name),
+                    sport = COALESCE(${team.sport}, sport)
+                WHERE id = ${id}
+            `)
+        } catch (err) {
+            throw new Error(`models:team:updateOne: ${err.message}`)
+        }
+    }
+
+    async destroyOne(id: number): Promise<void> {
+        try {
+            await this.client.query(sql`
+                DELETE FROM teams
+                WHERE id=${id}
+            `)
+        } catch (err) {
+            throw new Error(`models:team:destroyOne: ${err.message}`)
         }
     }
 }

@@ -154,14 +154,14 @@ describe("AthleteModel.readOne", () => {
     })
 })
 
-describe("AthleteModel.update", () => {
+describe("AthleteModel.updateOne", () => {
     it("should successfully update age ", async () => {
         const Athletes = await createAthleteModel({
             users: [user1, user2, user3],
             athletes: [athlete1, athlete2],
         })
         try {
-            await Athletes.update({
+            await Athletes.updateOne({
                 id: 1,
                 age: 25,
             })
@@ -180,7 +180,7 @@ describe("AthleteModel.update", () => {
             athletes: [athlete1, athlete2],
         })
         try {
-            await Athletes.update({
+            await Athletes.updateOne({
                 id: 1,
                 height: 100,
             })
@@ -199,7 +199,7 @@ describe("AthleteModel.update", () => {
             athletes: [athlete1, athlete2],
         })
         try {
-            await Athletes.update({
+            await Athletes.updateOne({
                 id: 1,
                 weight: 100,
             })
@@ -218,7 +218,7 @@ describe("AthleteModel.update", () => {
             athletes: [athlete1, athlete2],
         })
         try {
-            await Athletes.update({
+            await Athletes.updateOne({
                 id: 1,
                 gender: "female",
             })
@@ -238,7 +238,7 @@ describe("AthleteModel.update", () => {
             athletes: [athlete1, athlete2],
         })
         try {
-            await Athletes.update({
+            await Athletes.updateOne({
                 id: 1,
                 age: 25,
                 height: 60,
@@ -261,14 +261,14 @@ describe("AthleteModel.update", () => {
     })
 })
 
-describe("AthleteModel.destroy", () => {
+describe("AthleteModel.destroyOne", () => {
     it("should successfully delete athlete", async () => {
         const Athletes = await createAthleteModel({
             users: [user1, user2, user3],
             athletes: [athlete1, athlete2],
         })
         try {
-            await Athletes.destroy(1)
+            await Athletes.destroyOne(1)
             const result1 = await Athletes.client.query("SELECT id FROM users")
             expect(result1.rows).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }])
 

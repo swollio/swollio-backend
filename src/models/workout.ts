@@ -1,5 +1,5 @@
 import sql from "sql-template-strings"
-import { Client } from "pg"
+import { ClientBase } from "pg"
 import Workout from "../schema/workout"
 import Assignment from "../schema/assignment"
 
@@ -24,9 +24,9 @@ export interface WorkoutRow {
 }
 
 export default class ExerciseModel {
-    client: Client
+    client: ClientBase
 
-    constructor(client: Client) {
+    constructor(client: ClientBase) {
         this.client = client
     }
 
@@ -145,7 +145,7 @@ export default class ExerciseModel {
         }
     }
 
-    async create(teamId: number, workout: Workout): Promise<Workout> {
+    async createOne(teamId: number, workout: Workout): Promise<Workout> {
         const { name } = workout
         const { dates } = workout
         const assignments = JSON.stringify(
@@ -195,133 +195,79 @@ export default class ExerciseModel {
         }
     }
 
-    async update(workout: {
+    async updateOne(workout: {
         id: number
         name?: string
         dates?: string[]
         assignments?: Assignment[]
     }): Promise<Workout> {
-        const updatedAssignments = workout.assignments
-            ? workout.assignments.filter((a) => a.id)
-            : []
-        const createdAssignments = workout.assignments
-            ? workout.assignments.filter((a) => !a.id)
-            : []
-
-        const workoutId = workout.id
-        const name = workout.name ? `'${workout.name}'` : "NULL"
-        const dates = workout.dates
-            ? `ARRAY[${workout.dates
-                  .map((d) => `'${d}'`)
-                  .join(", ")}]::timestamp[]`
-            : "NULL"
-
-        /**
-         * updated_assignment_table is a temporary table that contains all
-         * updated assignments.
-         */
-        const updatedAssignmentTable = updatedAssignments.length
-            ? `SELECT 
-            column1 as id,
-            column2 as workout_id,
-            column3 as exercise_id,
-            column4 as rep_count
-        FROM (
-            VALUES 
-            ${updatedAssignments
-                .map((assignment) => {
-                    const assignmentId = assignment.id
-                    const repCountString = assignment.rep_count
-                        .map((reps) => reps.toString())
-                        .join(",")
-                    return `(${assignmentId}, ${workout.id}, ${assignment.exercise.id}, ARRAY[${repCountString}]::integer[])`
-                })
-                .join(",")}
-        ) AS _
-        `
-            : `SELECT
-            id,
-            workout_id,
-            exercise_id,
-            rep_count 
-        FROM assignments
-        WHERE 1 = 0`
-
-        /**
-         * created_assignment_table creates a list of assignments and returns their ids.
-         */
-        const createdAssignmentTable = createdAssignments.length
-            ? `SELECT 
-            column1 as workout_id,
-            column2 as exercise_id,
-            column3 as rep_count
-        FROM (
-            VALUES 
-                ${createdAssignments
-                    .map((assignment) => {
-                        const repCountString = assignment.rep_count
-                            .map((reps) => reps.toString())
-                            .join(",")
-                        return `(${workout.id}, ${assignment.exercise.id}, ARRAY[${repCountString}]::integer[])`
-                    })
-                    .join(",")}
-        ) AS _
-        `
-            : `SELECT
-            workout_id,
-            exercise_id,
-            rep_count 
-        FROM assignments
-        WHERE 1 = 0`
-
         try {
-            const result = await this.client.query(sql`
+            await this.client.query("BEGIN")
 
-        WITH updated_assignments AS (
-            ${updatedAssignmentTable}
-        ), created_assignments AS (
-            ${createdAssignmentTable}
-        ), 
-        
-        update_workout AS (
-            UPDATE workouts SET
-                name = COALESCE(${name}, name),
-                dates = COALESCE(${dates}, dates)
-            WHERE id = ${workoutId}
-            RETURNING id, name, dates
-        ),
-        
-        delete_assignments AS (
-            DELETE FROM assignments
-            WHERE workout_id = ${workoutId}
-            AND id NOT IN (SELECT id FROM updated_assignments)
-        ),
-        
-        create_assignments AS (
-            INSERT INTO assignments (workout_id, exercise_id, rep_count)
-                SELECT * FROM created_assignments
-            RETURNING id
-        ),
+            const workoutResult = await this.client.query(sql`
+                UPDATE workouts SET
+                    name = COALESCE(${workout.name}, name),
+                    dates = COALESCE(${workout.dates}, dates)
+                WHERE id = ${workout.id}
+                RETURNING id, name, dates
+            `)
 
-        update_assignments AS (
-            INSERT INTO assignments (id, workout_id, exercise_id, rep_count)
-                SELECT * FROM updated_assignments
-            ON CONFLICT (id)
-            DO UPDATE SET
-                exercise_id = excluded.exercise_id,
-                rep_count = excluded.rep_count
-        )
+            const updatedWorkout = workoutResult.rows[0] as WorkoutRow
 
-        SELECT 
-            id, name, dates, 
-            (SELECT ARRAY_AGG(ROW_TO_JSON(create_assignments)) FROM create_assignments) as assignments
-        FROM update_workout;
-    `)
+            await this.client.query(sql`
+                DELETE FROM assignments WHERE workout_id = ${workout.id}
+            `)
 
-            console.log(result.rows[0])
-            return result.rows[0]
-        } catch (err) {
-            throw new Error("models:workout:update: invalid query")
+            if (workout.assignments) {
+                const assignments = JSON.stringify(
+                    workout.assignments.map((a) => ({
+                        exercise_id: a.exercise.id,
+                        rep_count: a.rep_count,
+                    }))
+                )
+
+                await this.client.query(sql`
+                    INSERT INTO assignments (workout_id, exercise_id, rep_count)
+                    SELECT ${workout.id}, exercise_id, rep_count FROM 
+                    JSON_POPULATE_RECORDSET(NULL::assignments, ${assignments})
+                `)
+            }
+
+            await this.client.query("COMMIT")
+
+            return {
+                name: updatedWorkout.name,
+                dates: updatedWorkout.dates,
+                assignments: workout.assignments || [],
+            }
+        } catch (error) {
+            await this.client.query("ROLLBACK")
+            throw new Error(
+                `models:workout:updateOne: invalid query (${error.message})`
+            )
+        }
+    }
+
+    async destroyOne(workoutId: number): Promise<void> {
+        try {
+            await this.client.query("BEGIN")
+
+            await this.client.query(sql`
+                DELETE FROM assignments
+                WHERE workout_id=${workoutId}
+            `)
+
+            await this.client.query(sql`
+                DELETE FROM workouts
+                WHERE id=${workoutId}
+            `)
+
+            await this.client.query("COMMIT")
+        } catch (error) {
+            await this.client.query("ROLLBACK")
+            throw new Error(
+                `models:workout:destroyOne: invalid query (${error.message})`
+            )
         }
     }
 }

@@ -4,7 +4,7 @@
  */
 
 import sql from "sql-template-strings"
-import { Client } from "pg"
+import { ClientBase } from "pg"
 import User from "../schema/user"
 import CurrentUser from "../schema/currentUser"
 
@@ -17,9 +17,9 @@ export interface UserRow {
 }
 
 export default class UserModel {
-    client: Client
+    client: ClientBase
 
-    constructor(client: Client) {
+    constructor(client: ClientBase) {
         this.client = client
     }
 
@@ -123,7 +123,7 @@ export default class UserModel {
      *
      * @param user The new user type with the data that needs to be updated. Must have an id
      */
-    async update(user: {
+    async updateOne(user: {
         id: number
         first_name?: string
         last_name?: string
@@ -159,7 +159,7 @@ export default class UserModel {
      * @param id The id of the user to delete
      * @returns {Promise<User | null>} The user that is deleted or null if the user does not exist
      */
-    async destroy(userId: number): Promise<User | null> {
+    async destroyOne(userId: number): Promise<User | null> {
         try {
             const user = await this.client.query(sql`
             DELETE FROM users

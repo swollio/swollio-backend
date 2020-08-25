@@ -37,11 +37,11 @@ const dataset2: TestDatabase.MockData = {
     ],
 }
 
-describe("ExerciseModel.all", () => {
+describe("ExerciseModel.readAll", () => {
     it("should return [] when there are no exercises", async () => {
         const Exercises = await createExerciseModel({})
         try {
-            expect(await Exercises.all()).toEqual([])
+            expect(await Exercises.readAll()).toEqual([])
         } finally {
             await destroyExerciseModel(Exercises)
         }
@@ -50,7 +50,7 @@ describe("ExerciseModel.all", () => {
     it("should return exercises with no muscles", async () => {
         const Exercises = await createExerciseModel(dataset1)
         try {
-            expect(await Exercises.all()).toEqual([
+            expect(await Exercises.readAll()).toEqual([
                 {
                     id: 1,
                     name: "exercise1",
@@ -65,7 +65,7 @@ describe("ExerciseModel.all", () => {
     it("should return all exercises", async () => {
         const Exercises = await createExerciseModel(dataset2)
         try {
-            expect(await Exercises.all()).toEqual([
+            expect(await Exercises.readAll()).toEqual([
                 {
                     id: 1,
                     name: "exercise1",
@@ -104,11 +104,11 @@ describe("ExerciseModel.all", () => {
     })
 })
 
-describe("ExerciseModel.one: ", () => {
+describe("ExerciseModel.readOne: ", () => {
     it("should return null", async () => {
         const Exercises = await createExerciseModel({})
         try {
-            expect(await Exercises.one(1)).toEqual(null)
+            expect(await Exercises.readOne(1)).toEqual(null)
         } finally {
             await destroyExerciseModel(Exercises)
         }
@@ -117,7 +117,7 @@ describe("ExerciseModel.one: ", () => {
     it("should return exercise with no muscles", async () => {
         const Exercises = await createExerciseModel(dataset1)
         try {
-            expect(await Exercises.one(1)).toEqual({
+            expect(await Exercises.readOne(1)).toEqual({
                 id: 1,
                 name: "exercise1",
                 muscles: [],
@@ -130,7 +130,7 @@ describe("ExerciseModel.one: ", () => {
     it("should return exactly one exercise", async () => {
         const Exercises = await createExerciseModel(dataset2)
         try {
-            expect(await Exercises.one(2)).toEqual({
+            expect(await Exercises.readOne(2)).toEqual({
                 id: 2,
                 name: "exercise2",
                 muscles: [
@@ -232,15 +232,15 @@ describe("ExerciseModel.search: ", () => {
     })
 })
 
-describe("ExerciseModel.create: ", () => {
+describe("ExerciseModel.createOne: ", () => {
     it("should insert exercise", async () => {
         const Exercises = await createExerciseModel({})
         try {
-            await Exercises.create(null, {
+            await Exercises.createOne(null, {
                 name: "exercise1",
                 muscles: [],
             })
-            expect(await Exercises.all()).toEqual([
+            expect(await Exercises.readAll()).toEqual([
                 {
                     id: 1,
                     name: "exercise1",

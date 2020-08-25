@@ -1,5 +1,6 @@
+import { pool } from "../../utilities/database"
 import Athlete from "../../schema/athlete"
-import * as AthleteModel from "../../models/athlete"
+import AthleteModel from "../../models/athlete"
 
 /**
  * This workflow takes in an athlete id and gets that athlete's
@@ -8,8 +9,10 @@ import * as AthleteModel from "../../models/athlete"
  */
 export default async function findAthlete(athleteId: number): Promise<Athlete> {
     // Try to find the athlete and return it
+    const client = await pool.connect()
+    const Athletes = new AthleteModel(client)
     try {
-        const athlete = await AthleteModel.readOne(athleteId)
+        const athlete = await Athletes.readOne(athleteId)
         if (!athlete) throw new Error("No athlete with given id")
 
         return athlete
@@ -18,5 +21,7 @@ export default async function findAthlete(athleteId: number): Promise<Athlete> {
         const colonIndex = error.message.indexOf("::")
         if (colonIndex !== -1) throw new Error(error.message)
         throw new Error(`workflows:athlete:findAthlete:: ${error.message}`)
+    } finally {
+        client.release()
     }
 }

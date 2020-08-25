@@ -23,8 +23,6 @@ import addTeamTag from "../workflows/teams/addTeamTag"
 import { pool } from "../utilities/database"
 import ExerciseModel from "../models/exercise"
 
-const Exercises = new ExerciseModel(pool)
-
 const router = express.Router()
 router.use(requirePermission([]))
 
@@ -211,13 +209,16 @@ router.post("/:team_id/exercises", async (req, res) => {
         name: req.body.name,
         muscles: req.body.muscles,
     }
-
+    const client = await pool.connect()
+    const Exercises = new ExerciseModel(client)
     try {
-        const exercise = await Exercises.create(teamId, data)
+        const exercise = await Exercises.createOne(teamId, data)
         return res.status(200).json(exercise)
     } catch (err) {
         console.log(err.toString())
         return res.status(500).send(err.toString())
+    } finally {
+        client.release()
     }
 })
 

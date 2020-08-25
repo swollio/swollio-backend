@@ -1,5 +1,6 @@
+import { pool } from "../../utilities/database"
 import Workout from "../../schema/workout"
-import * as WorkoutModel from "../../models/workout"
+import WorkoutModel from "../../models/workout"
 
 /**
  * This workflow create a workout for a team using the given
@@ -12,11 +13,13 @@ export default async function createTeamWorkout(
     teamId: number,
     workout: Workout
 ): Promise<void> {
-    let workoutId: number
-
-    console.log(workout)
-
-    await WorkoutModel.create(teamId, workout)
+    const client = await pool.connect()
+    const Workouts = new WorkoutModel(client)
+    try {
+        await Workouts.createOne(teamId, workout)
+    } finally {
+        client.release()
+    }
 
     /*
     // After verification, add the workout to the workouts table

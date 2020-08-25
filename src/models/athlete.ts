@@ -1,5 +1,5 @@
 import sql from "sql-template-strings"
-import { Client } from "pg"
+import { ClientBase } from "pg"
 import Athlete from "../schema/athlete"
 
 export interface AthleteRow {
@@ -12,9 +12,9 @@ export interface AthleteRow {
 }
 
 export default class AthleteModel {
-    client: Client
+    client: ClientBase
 
-    constructor(client: Client) {
+    constructor(client: ClientBase) {
         this.client = client
     }
 
@@ -63,7 +63,7 @@ export default class AthleteModel {
         }
     }
 
-    async update(athlete: {
+    async updateOne(athlete: {
         id: number
         age?: number
         height?: number
@@ -98,7 +98,7 @@ export default class AthleteModel {
      *
      * @param id The id of the athlete to delete
      */
-    async destroy(athleteId: number): Promise<void> {
+    async destroyOne(athleteId: number): Promise<void> {
         try {
             await this.client.query(sql`
                 DELETE FROM athletes

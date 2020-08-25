@@ -2,8 +2,8 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import config from "../../config.json"
 import UserData from "../../schema/userData"
-import * as UserModel from "../../models/user"
-
+import UserModel from "../../models/user"
+import { pool } from "../../utilities/database"
 /**
  * This workflow will take the steps necessary to sign a user up. The workflow will go as follows:
  *  1) We encrypt the password that was passed in
@@ -27,33 +27,31 @@ export default async function signup(userData: UserData): Promise<string> {
         throw new Error("workflows:auth:signup Unable to get hash")
 
     // Add the user to the database
-    let userId
+    const client = await pool.connect()
+    const Users = new UserModel(client)
     try {
-        const user = await UserModel.createOne({
+        const user = await Users.createOne({
             ...userData,
             hash,
         })
 
-        // Checking validity of user
-        if (!user.id) throw new Error("User has no ID")
+        // Genereate the bearer token and return it
+        const token = jwt.sign(
+            {
+                user_id: user.id,
+            },
+            config.auth.secret,
+            { expiresIn: "1 day" }
+        )
 
-        userId = user.id
+        // Return this bearer token
+        return token
     } catch (error) {
         // If there is already a ::, throw the old message. If not, throw the new message
         const colonIndex = error.message.indexOf("::")
         if (colonIndex !== -1) throw new Error(error.message)
         throw new Error(`workflows:auth:signup:: ${error.message}`)
+    } finally {
+        client.release()
     }
-
-    // Genereate the bearer token and return it
-    const token = jwt.sign(
-        {
-            user_id: userId,
-        },
-        config.auth.secret,
-        { expiresIn: "1 day" }
-    )
-
-    // Return this bearer token
-    return token
 }

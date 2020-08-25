@@ -2,7 +2,7 @@
  * This file contains the database model for exercises.
  * All database specific types and data are fully encapsulated.
  */
-import { Client } from "pg"
+import { ClientBase } from "pg"
 import sql from "sql-template-strings"
 import Exercise from "../schema/exercise"
 
@@ -40,13 +40,13 @@ export interface ExerciseRow {
  * @param id - the id of the exercise
  */
 export default class ExerciseModel {
-    client: Client
+    client: ClientBase
 
-    constructor(client: Client) {
+    constructor(client: ClientBase) {
         this.client = client
     }
 
-    async one(id: number): Promise<Exercise | null> {
+    async readOne(id: number): Promise<Exercise | null> {
         try {
             const result = await this.client.query(sql`
                 SELECT
@@ -78,7 +78,7 @@ export default class ExerciseModel {
      * @param pageIndex - the page index
      * @param pageSize - the page size
      */
-    async all(pageIndex = 0, pageSize = 10): Promise<Exercise[]> {
+    async readAll(pageIndex = 0, pageSize = 10): Promise<Exercise[]> {
         try {
             const offset = pageIndex * pageSize
 
@@ -113,7 +113,10 @@ export default class ExerciseModel {
      * @param exercise - the exercise to insert into the database
      * @return - a promise resolving to an exercise with an id.
      */
-    async create(teamId: number | null, exercise: Exercise): Promise<Exercise> {
+    async createOne(
+        teamId: number | null,
+        exercise: Exercise
+    ): Promise<Exercise> {
         try {
             const { name } = exercise
             const muscleIds = exercise.muscles.map((m) => m.id)
@@ -153,7 +156,7 @@ export default class ExerciseModel {
      *
      * @param id - the id of the exercise
      */
-    async remove(id: number): Promise<void> {
+    async removeOne(id: number): Promise<void> {
         try {
             await this.client.query(sql`
                 DELETE FROM exercises WHERE id=${id}
