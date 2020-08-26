@@ -233,12 +233,12 @@ async function setupWorkoutSurveys(client: Client) {
  * This function creates a swollio-template database and populates it
  * with all of the tables that the swollio backend needs
  */
-async function setupTemplateDb(): Promise<void> {
+async function setupTemplateDb(databaseName: string): Promise<void> {
     await util.promisify(exec)("dropdb swollio-template --if-exists")
     await util.promisify(exec)("createdb swollio-template")
 
     const client = new Client({
-        database: "swollio-template",
+        database: databaseName,
     })
 
     try {
@@ -265,4 +265,6 @@ async function setupTemplateDb(): Promise<void> {
     }
 }
 
-setupTemplateDb().then(() => console.log("Template database is setup!"))
+setupTemplateDb(process.argv[2] || "swollio-template").then(() =>
+    console.log("Template database is setup!")
+)

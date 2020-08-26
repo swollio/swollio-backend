@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
     const client = await pool.connect()
     const Exercises = new ExerciseModel(client)
     try {
-        const exercises = await Exercises.search(query)
+        const exercises = await Exercises.search(query || "")
         return res.status(200).send(exercises)
     } catch (err) {
         console.log(err)
