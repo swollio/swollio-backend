@@ -16,7 +16,8 @@
         "build": "tsc",
         "start": "node build/index.js",
         "gcp-build": "tsc",
-        "deploy": "gcloud app deploy"
+        "deploy": "gcloud app deploy",
+        "dev": "nodemon"
     },
     "jest": {
         "verbose": false,

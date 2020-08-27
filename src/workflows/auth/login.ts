@@ -29,7 +29,7 @@ export default async function login(
 
         const userId = user.id // Data to put into the token (payload)
         const { hash } = user // Database hash to verify authentication
-        const valid = bcrypt.compare(hash, password) // Boolean to determine if password passed in is valid
+        const valid = await bcrypt.compare(password, hash || "") // Boolean to determine if password passed in is valid
 
         // If the password passed in is not valid, throw an error saying something is wrong
         if (!valid) throw new Error("workflows:auth:login:: Incorrect password")
