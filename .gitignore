@@ -4,3 +4,4 @@ build
 
 ## Db credentials
 src/config.json
+src/dev.config.json

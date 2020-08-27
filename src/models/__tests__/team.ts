@@ -1,3 +1,5 @@
+import { Client } from "pg"
+
 import * as TestDatabase from "../../utilities/testDatabase"
 import TeamModel from "../team"
 
@@ -10,7 +12,7 @@ async function createTeamModel(mockData: TestDatabase.MockData) {
 }
 
 async function destroyTeamModel(Teams: TeamModel) {
-    await Teams.client.end()
+    await (Teams.client as Client).end()
     await TestDatabase.destroy(database)
 }
 

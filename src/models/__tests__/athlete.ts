@@ -1,5 +1,7 @@
-import * as TestDatabase from "../../utilities/testDatabase"
+import { Client } from "pg"
 import AthleteModel from "../athlete"
+
+import * as TestDatabase from "../../utilities/testDatabase"
 
 const database = "test:models:athletes"
 
@@ -10,7 +12,7 @@ async function createAthleteModel(mockData: TestDatabase.MockData) {
 }
 
 async function destroyAthleteModel(Athletes: AthleteModel) {
-    await Athletes.client.end()
+    await (Athletes.client as Client).end()
     await TestDatabase.destroy(database)
 }
 

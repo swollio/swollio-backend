@@ -1,3 +1,5 @@
+import { Client } from "pg"
+
 import * as TestDatabase from "../../utilities/testDatabase"
 import WorkoutModel from "../workout"
 
@@ -10,7 +12,7 @@ async function createWorkoutModel(mockData: TestDatabase.MockData) {
 }
 
 async function destroyWorkoutModel(Workouts: WorkoutModel) {
-    await Workouts.client.end()
+    await (Workouts.client as Client).end()
     await TestDatabase.destroy(database)
 }
 
