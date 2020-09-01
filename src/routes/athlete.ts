@@ -81,7 +81,6 @@ router.get("/:id", async (req, res) => {
 router.get("/:id/workouts", async (req, res) => {
     const athleteId = Number.parseInt(req.params.id, 10)
     const date = req.query.date as string
-
     try {
         const workouts = await listAthleteWorkouts(athleteId, date)
         return res.status(200).send(workouts)
