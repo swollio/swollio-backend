@@ -3,6 +3,7 @@ import WorkoutInstance from "../../schema/workoutInstance"
 
 // Defining return types
 interface AthleteWorkouts {
+    workout_id: string
     date: string
     workouts: WorkoutInstance[]
 }
