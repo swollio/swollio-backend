@@ -38,7 +38,7 @@ workouts_for_athlete AS (
 	FROM workouts_for_athlete
 ),
 workout_with_assignments as (
-	SELECT date, workout_name AS name, team_name, completed, (
+	SELECT id as workout_id, date, workout_name AS name, team_name, completed, (
 		SELECT COALESCE(
 		    ARRAY_TO_JSON(ARRAY_AGG(JSON_BUILD_OBJECT(
 		        'id', assignments.id,
@@ -54,11 +54,11 @@ workout_with_assignments as (
 		ON workouts_for_athlete_completed.id = assignments.workout_id
 	)
 	FROM workouts_for_athlete_completed as athlete_workouts
-) SELECT date, ARRAY_TO_JSON(ARRAY_AGG(JSON_BUILD_OBJECT(
+) SELECT workout_id, date, ARRAY_TO_JSON(ARRAY_AGG(JSON_BUILD_OBJECT(
 	'name', name,
 	'team_name', team_name,
 	'completed', completed,
 	'assignments', assignments))) AS workouts
 FROM workout_with_assignments
 WHERE date >= CURRENT_DATE
-GROUP BY date;
+GROUP BY date, workout_id;
