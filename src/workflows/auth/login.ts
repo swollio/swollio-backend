@@ -52,5 +52,7 @@ export default async function login(
         const colonIndex = error.message.indexOf("::")
         if (colonIndex !== -1) throw new Error(error.message)
         throw new Error(`workflows:auth:login:: ${error.message}`)
+    } finally {
+        client.release()
     }
 }

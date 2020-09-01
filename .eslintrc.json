@@ -1,9 +1,14 @@
 {
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "project": "./tsconfig.json"
+        "project": "swollio-backend/tsconfig.json"
     },
-    "extends": ["airbnb-typescript", "prettier/@typescript-eslint", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
+    "extends": [
+        "airbnb-typescript",
+        "prettier/@typescript-eslint",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended"
+    ],
     "plugins": ["prettier"],
     "rules": {
         "prettier/prettier": "error",
@@ -14,10 +19,14 @@
         "nonblock-statement-body-position": "off", // To prevent eslint/prettier conflicts
         "curly": "off", //  Prevent eslint/prettier conflicts
         "no-await-in-loop": "off",
-        "import/extensions": ["error", "ignorePackages", {
-            "ts": "never",
-            "js": "never"
-        }]
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "ts": "never",
+                "js": "never"
+            }
+        ]
     },
     "env": {
         "jest": true
