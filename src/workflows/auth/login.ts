@@ -38,6 +38,8 @@ export default async function login(
         const token = jwt.sign(
             {
                 user_id: userId,
+                athlete_id: user.athlete_id,
+                team_id: user.team_id,
             },
             config.auth.secret,
             { expiresIn: "1 day" }
@@ -52,5 +54,7 @@ export default async function login(
         const colonIndex = error.message.indexOf("::")
         if (colonIndex !== -1) throw new Error(error.message)
         throw new Error(`workflows:auth:login:: ${error.message}`)
+    } finally {
+        client.release()
     }
 }

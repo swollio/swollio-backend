@@ -43,6 +43,7 @@
         "jsonwebtoken": "^8.5.1",
         "pg": "^8.3.0",
         "pg-format": "^1.0.4",
+        "pm2": "^4.4.1",
         "sql-template-strings": "^2.2.2"
     },
     "devDependencies": {

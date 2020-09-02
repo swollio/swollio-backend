@@ -14,6 +14,12 @@ app.use(cors({ origin: "*" }))
 app.use(bodyParser.json({ limit: "5mb" }))
 app.use(bodyParser.urlencoded({ extended: false }))
 
+// Prevent caching of all endpoints by google cloud
+app.use((req, res, next) => {
+    res.set("Cache-Control", "no-store")
+    next()
+})
+
 app.use("/users", usersRouter)
 app.use("/athletes", athleteRouter)
 app.use("/teams", teamRouter)

@@ -87,7 +87,10 @@ async function setupDatabase() {
     }
 
     for (const athleteTeamTag of athleteTeamTags) {
-        await db["tags.add_athlete_tag"]([athleteTeamTag.athlete_id, athleteTeamTag.team_tag_id])
+        await db["tags.add_athlete_tag"]([
+            athleteTeamTag.athlete_id,
+            athleteTeamTag.team_tag_id,
+        ])
     }
 }
 
@@ -96,4 +99,3 @@ app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`)
     console.log("Press Ctrl+C to quit.")
 })
-
