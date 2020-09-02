@@ -1,11 +1,11 @@
 import db from "../../utilities/database"
-import WorkoutInstance from "../../schema/workoutInstance"
+import WorkoutList from "../../schema/workoutList"
 
 // Defining return types
 interface AthleteWorkouts {
     workout_id: string
     date: string
-    workouts: WorkoutInstance[]
+    workouts: WorkoutList[]
 }
 
 /**
@@ -19,13 +19,15 @@ interface AthleteWorkouts {
 export default async function listAthleteWorkouts(
     athleteId: number,
     date: string
-): Promise<WorkoutInstance[] | AthleteWorkouts[]> {
+): Promise<WorkoutList[] | AthleteWorkouts[]> {
     try {
         if (date === "today") {
             const workouts = await db["workouts.filter_by_athlete_today"]([
                 athleteId,
             ])
-            return workouts.rows as WorkoutInstance[]
+            console.log(workouts.rows[0])
+            // Returning the first element because this contains the workouts for today
+            return workouts.rows[0] as WorkoutList[]
         }
 
         const workouts = await db["workouts.filter_by_athlete"]([athleteId])

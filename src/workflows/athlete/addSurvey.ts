@@ -27,8 +27,6 @@ export default async function addSurvey(
         ])
     } catch (err) {
         console.log(err)
-        throw new Error(
-            "Add Workout Survey Error: Could not add survey to workout"
-        )
+        throw new Error(`Add Workout Survey Error: ${err}`)
     }
 }
