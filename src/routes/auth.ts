@@ -24,8 +24,12 @@ router.post("/login", async (req, res) => {
         const token = await login(email, password)
         return res.status(200).send(token)
     } catch (err) {
-        console.log(err)
-        return res.status(403).send(err.message)
+        return res.status(401).send({
+            error: {
+                status: 401,
+                message: err.message,
+            },
+        })
     }
 })
 
@@ -50,8 +54,12 @@ router.post("/signup", async (req, res) => {
         const token = await signup(user)
         return res.status(200).send(token)
     } catch (err) {
-        console.log(err)
-        return res.status(403).send(err.message)
+        return res.status(401).send({
+            error: {
+                status: 401,
+                message: err.message,
+            },
+        })
     }
 })
 

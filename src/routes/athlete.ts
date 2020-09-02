@@ -49,7 +49,7 @@ router.post("/", async (req, res) => {
     const Athletes = new AthleteModel(client)
     try {
         await Athletes.createOne(athlete)
-        return res.status(200).send("success!")
+        return res.status(200).send({})
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
@@ -156,7 +156,7 @@ router.post("/:athleteId/results/:workoutId", async (req, res) => {
 
     try {
         await addResults(athleteId, workoutId, results)
-        return res.status(200).send("success!")
+        return res.status(200).send({})
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
@@ -180,7 +180,7 @@ router.post("/:athleteId/surveys/:workoutId", async (req, res) => {
 
     try {
         await addSurvey(athleteId, workoutId, survey)
-        return res.status(200).send("success!")
+        return res.status(200).send({})
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
