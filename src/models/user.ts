@@ -84,7 +84,9 @@ export default class UserModel {
     async readOneByEmail(email: string): Promise<User | null> {
         try {
             const user = await this.client.query(sql`
-            SELECT id, email, first_name, last_name, hash
+            SELECT id, email, first_name, last_name, hash,
+            (SELECT id FROM athletes WHERE athletes.user_id = users.id) as athlete_id,
+            (SELECT id FROM teams WHERE teams.coach_id = users.id) as team_id
             FROM users
             WHERE email = ${email};
         `)

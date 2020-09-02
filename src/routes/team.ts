@@ -20,7 +20,7 @@ import getTeamWorkout from "../workflows/teams/getTeamWorkout"
 import deleteWorkout from "../workflows/teams/deleteWorkout"
 import addTeamTag from "../workflows/teams/addTeamTag"
 
-import { pool } from "../utilities/database"
+import db, { pool } from "../utilities/database"
 import ExerciseModel from "../models/exercise"
 
 const router = express.Router()
@@ -324,16 +324,17 @@ router.get("/:team_id/athletes/:athlete_id/tags", async (req, res) => {
     }
 })
 
-// // Add an athlete for a team
-// router.post('/:team_id/athletes/:athlete_id', (req, res) => {
-//     db['teams.add_athlete']([req.params.team_id, req.params.athlete_id])
-//     .then(result => {
-//         res.status(200).send('success');
-//     }).catch((error) => {
-//         console.log(error);
-//         res.status(500).send('unknown error');
-//     });
-// });
+// Add an athlete for a team
+router.post("/:team_id/athletes/:athlete_id", (req, res) => {
+    db["teams.add_athlete"]([req.params.team_id, req.params.athlete_id])
+        .then((result) => {
+            res.status(200).send("success")
+        })
+        .catch((error) => {
+            console.log(error)
+            res.status(500).send("unknown error")
+        })
+})
 
 // // Get statistics to the team
 // router.get("/:team_id/statistics", (req, res) => {

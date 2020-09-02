@@ -4,13 +4,14 @@ import requirePermission from "../middleware/auth"
 import Result from "../schema/result"
 import Survey from "../schema/survey"
 import getAllAthletes from "../workflows/athlete/getAllAthletes"
-import addAthlete from "../workflows/athlete/addAthlete"
 import findAthlete from "../workflows/athlete/findAthlete"
 import listAthleteWorkouts from "../workflows/athlete/listAthleteWorkouts"
 import getAthleteWorkout from "../workflows/athlete/getAthleteWorkout"
 import getAthleteProgress from "../workflows/athlete/getProgress"
 import addResults from "../workflows/athlete/addResults"
 import addSurvey from "../workflows/athlete/addSurvey"
+import { pool } from "../utilities/database"
+import AthleteModel from "../models/athlete"
 
 const router = express.Router()
 router.use(requirePermission([]))
@@ -42,17 +43,18 @@ router.get("/", async (_req, res) => {
  * }
  */
 router.post("/", async (req, res) => {
-    const { pin } = req.body
-    delete req.body.pin
-    req.body.user_id = req.token.user_id
     const athlete = req.body as Athlete
 
+    const client = await pool.connect()
+    const Athletes = new AthleteModel(client)
     try {
-        await addAthlete(athlete, pin)
+        await Athletes.createOne(athlete)
         return res.status(200).send("success!")
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
+    } finally {
+        client.release()
     }
 })
 
