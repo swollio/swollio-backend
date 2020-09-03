@@ -1,15 +1,9 @@
-import db from "../../utilities/database"
+import { pool } from "../../utilities/database"
 import WorkoutList from "../../schema/workoutList"
-
-// Defining return types
-interface AthleteWorkouts {
-    workout_id: string
-    date: string
-    workouts: WorkoutList[]
-}
+import WorkoutModel from "../../models/workout"
 
 /**
- * This workflow gets all the workouts for an athlete.
+ * This workflow gets the workouts for an athlete.
  * @param athleteId The id of the athlete we want the workouts of
  * @param date The date of the workouts
  *
@@ -19,23 +13,28 @@ interface AthleteWorkouts {
 export default async function listAthleteWorkouts(
     athleteId: number,
     date: string
-): Promise<WorkoutList[] | AthleteWorkouts[]> {
+): Promise<WorkoutList[]> {
+    const client = await pool.connect()
+    const Workouts = new WorkoutModel(client)
     try {
         if (date === "today") {
-            const workouts = await db["workouts.filter_by_athlete_today"]([
+            const workouts = await Workouts.readAllWithAthleteId(
                 athleteId,
-            ])
-            console.log(workouts.rows[0])
+                true
+            )
+            console.log(workouts[0].workouts[0].assignments)
             // Returning the first element because this contains the workouts for today
-            return workouts.rows[0] as WorkoutList[]
+            return workouts as WorkoutList[]
         }
 
-        const workouts = await db["workouts.filter_by_athlete"]([athleteId])
-        return workouts.rows as AthleteWorkouts[]
+        const workouts = await await Workouts.readAllWithAthleteId(athleteId)
+        return workouts as WorkoutList[]
     } catch (err) {
         console.log(err)
         throw new Error(
             `List Athlete Workouts Error: Could not list workouts for athlete ${athleteId}`
         )
+    } finally {
+        client.release()
     }
 }

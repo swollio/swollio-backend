@@ -2,6 +2,7 @@ import sql from "sql-template-strings"
 import { ClientBase } from "pg"
 import Workout from "../schema/workout"
 import Assignment from "../schema/assignment"
+import WorkoutList from "../schema/workoutList"
 
 /**
  * Schema for `assignments` database
@@ -21,6 +22,14 @@ export interface WorkoutRow {
     team_id: number
     name: string
     dates: string[]
+}
+
+/**
+ * Schema for `athletes_teams` database
+ */
+export interface AthleteTeamsRow {
+    team_id: number
+    athlete_id: number
 }
 
 export default class ExerciseModel {
@@ -131,7 +140,7 @@ export default class ExerciseModel {
 
             return results.rows
         } catch (err) {
-            throw new Error(`models:workout:all: ${err.message}`)
+            throw new Error(`models:workout:allTeam: ${err.message}`)
         }
     }
 
@@ -268,6 +277,97 @@ export default class ExerciseModel {
             throw new Error(
                 `models:workout:destroyOne: invalid query (${error.message})`
             )
+        }
+    }
+
+    async readAllWithAthleteId(
+        athleteId: number,
+        today = false,
+        initIndex = 0,
+        initSize = 10
+    ): Promise<WorkoutList[]> {
+        let pageIndex
+        let pageSize
+
+        if (today) {
+            pageIndex = 0
+            pageSize = 1
+        } else {
+            pageIndex = initIndex
+            pageSize = initSize
+        }
+
+        try {
+            const offset = pageIndex * pageSize
+
+            const results = await this.client.query(sql`
+            WITH exercises AS (
+                SELECT
+                    exercises.id,
+                    exercises.name,
+                    (
+                        SELECT COALESCE(
+                            ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(muscles))), 
+                            '[]'::json
+                        ) FROM muscles 
+                        INNER JOIN muscles_exercises
+                        ON muscle_id = id
+                        WHERE exercise_id = exercises.id
+                    ) as muscles
+                FROM exercises
+            ), 
+            full_workouts AS (
+                SELECT 
+                    workouts.id,
+                    workouts.name,
+                    workouts.dates,
+                    teams.name as team_name,
+                    (
+                        SELECT COALESCE(
+                            ARRAY_TO_JSON(ARRAY_AGG(JSON_BUILD_OBJECT(
+                                'id', assignments.id,
+                                'exercise', exercises,
+                                'rep_count', assignments.rep_count
+                            ))), 
+                            '[]'::json
+                        ) FROM assignments 
+                        INNER JOIN exercises
+                            ON assignments.exercise_id = exercises.id
+                        WHERE workout_id = workouts.id
+                    ) as assignments
+                FROM workouts
+                INNER JOIN athletes_teams
+                        ON workouts.team_id = athletes_teams.team_id
+                INNER JOIN teams
+                        ON workouts.team_id = teams.id
+                WHERE athletes_teams.athlete_id = 1
+            ), 
+            full_workouts_unnested AS (
+                SELECT id, name, team_name, assignments, unnest(full_workouts.dates) as date
+                FROM full_workouts
+                ), full_workouts_unnested_completed AS (
+                SELECT full_workouts_unnested.*, EXISTS(
+                    SELECT 1
+                    FROM workout_surveys 
+                    WHERE id = full_workouts_unnested.id 
+                    AND due_date = date 
+                    AND athlete_id = 1
+                ) 
+                AS completed
+                FROM full_workouts_unnested
+            ) 
+            SELECT date, ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(full_workouts_unnested_completed))) AS workouts
+            FROM full_workouts_unnested_completed
+            WHERE date >= CURRENT_DATE
+            GROUP BY date
+            ORDER BY date            
+            OFFSET ${offset} ROWS
+            FETCH NEXT ${pageSize} ROWS ONLY;
+        `)
+
+            return results.rows
+        } catch (err) {
+            throw new Error(`models:workout:allAthlete: ${err.message}`)
         }
     }
 }

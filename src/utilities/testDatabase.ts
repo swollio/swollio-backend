@@ -21,6 +21,7 @@ export interface MockData {
     users?: User.UserRow[]
     teams?: Team.TeamRow[]
     athletes?: Athlete.AthleteRow[]
+    athletesTeams?: Workout.AthleteTeamsRow[]
 }
 
 export async function create(
@@ -68,6 +69,17 @@ export async function create(
                 mockData.athletes
             )})
         `)
+        }
+
+        // Insert all mock athlete_teams
+        if (mockData.athletesTeams !== undefined) {
+            await client.query(sql`
+            INSERT INTO athletes_teams (team_id, athlete_id)
+            SELECT team_id, athlete_id FROM 
+            JSON_POPULATE_RECORDSET(NULL::athletes_teams, ${JSON.stringify(
+                mockData.athletesTeams
+            )})
+            `)
         }
 
         // Bulk insert all mock muscle data if it exists
