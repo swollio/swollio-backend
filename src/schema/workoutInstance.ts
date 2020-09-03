@@ -1,7 +1,9 @@
-import WorkoutDetails from "./workoutDetails"
+import Assignment from "./assignment"
 
 export default interface WorkoutInstance {
     id: number
-    date: string
-    details: WorkoutDetails[]
+    team_name: string
+    name: string
+    completed: boolean
+    assignments: Assignment[]
 }

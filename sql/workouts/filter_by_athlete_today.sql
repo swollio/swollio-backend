@@ -54,11 +54,12 @@ workout_with_assignments as (
 		ON workouts_for_athlete_completed.id = assignments.workout_id
 	)
 	FROM workouts_for_athlete_completed as athlete_workouts
-) SELECT id, date, ARRAY_TO_JSON(ARRAY_AGG(JSON_BUILD_OBJECT(
+) SELECT date, ARRAY_TO_JSON(ARRAY_AGG(JSON_BUILD_OBJECT(
+	'id', id,
 	'name', name,
 	'team_name', team_name,
 	'completed', completed,
-	'assignments', assignments))) AS details
+	'assignments', assignments))) AS workouts
 FROM workout_with_assignments
-WHERE date = CURRENT_DATE
-GROUP BY date, id;
+WHERE date = CURRENT_DATE - 1
+GROUP BY date;
