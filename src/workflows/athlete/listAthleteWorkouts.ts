@@ -27,7 +27,7 @@ export default async function listAthleteWorkouts(
             return [] as WorkoutList[]
         }
 
-        const workouts = await await Workouts.readAllWithAthleteId(athleteId)
+        const workouts = await Workouts.readAllWithAthleteId(athleteId)
         return [] as WorkoutList[]
     } catch (err) {
         console.log(err)
