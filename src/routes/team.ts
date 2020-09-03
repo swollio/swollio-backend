@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
 
     try {
         await createTeam(userId, team)
-        return res.status(200).send("success!")
+        return res.status(200).send({})
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
@@ -122,7 +122,7 @@ router.delete("/:team_id/athletes/:athlete_id", async (req, res) => {
 
     try {
         await deleteAthlete(teamId, athleteId)
-        return res.status(200).send("success!")
+        return res.status(200).send({})
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
@@ -162,7 +162,7 @@ router.post("/:team_id/workouts", async (req, res) => {
 
     try {
         await createTeamWorkout(teamId, workout)
-        return res.status(200).send("success!")
+        return res.status(200).send({})
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
@@ -186,7 +186,7 @@ router.put("/:team_id/workouts", async (req, res) => {
 
     try {
         await updateTeamWorkout(teamId, workout)
-        return res.status(200).send("success!")
+        return res.status(200).send({})
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
@@ -250,7 +250,7 @@ router.delete("/:team_id/workouts/:workout_id", async (req, res) => {
 
     try {
         await deleteWorkout(teamId, workoutId)
-        return res.status(200).send("success!")
+        return res.status(200).send({})
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
@@ -283,7 +283,7 @@ router.post("/tags/:athlete_id/:team_tag_id", async (req, res) => {
     const athleteId = Number.parseInt(req.params.athlete_id, 10)
     try {
         await addAthleteTag(athleteId, teamTagId)
-        return res.status(200).send("success!")
+        return res.status(200).send({})
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
@@ -328,7 +328,7 @@ router.get("/:team_id/athletes/:athlete_id/tags", async (req, res) => {
 router.post("/:team_id/athletes/:athlete_id", (req, res) => {
     db["teams.add_athlete"]([req.params.team_id, req.params.athlete_id])
         .then((result) => {
-            res.status(200).send("success")
+            res.status(200).send({})
         })
         .catch((error) => {
             console.log(error)
