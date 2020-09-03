@@ -32,6 +32,15 @@ const team1 = {
     sport: "sport1",
 }
 
+const athlete1 = {
+    id: 1,
+    user_id: 1,
+    age: 21,
+    height: 72,
+    weight: 200,
+    gender: "red solo cup",
+}
+
 const dataset: TestDatabase.MockData = {
     exercises: [
         { id: 1, name: "exercise1", team_id: null },
@@ -40,6 +49,13 @@ const dataset: TestDatabase.MockData = {
     ],
     users: [user1],
     teams: [team1],
+    athletes: [athlete1],
+    athletesTeams: [
+        {
+            team_id: team1.id,
+            athlete_id: athlete1.id,
+        },
+    ],
     assignments: [
         {
             id: 1,
@@ -165,7 +181,7 @@ describe("WorkoutModel.readAllWithTeamId", () => {
         }
     })
 
-    it("should return [] when the team has no exercises", async () => {
+    it("should return [] when the team has no workouts", async () => {
         const Workouts = await createWorkoutModel({
             users: [user1],
             teams: [team1],
@@ -320,22 +336,102 @@ describe("WorkoutModel.updateOne", () => {
     })
 })
 
-describe("WorkoutModel.destroyOne", () => {
-    it("should delete the workout with id=1", async () => {
-        const Workouts = await createWorkoutModel(dataset)
-
+describe("WorkoutModel.readAllWithAthleteId", () => {
+    it("should return [] when the athlete does not exist", async () => {
+        const Workouts = await createWorkoutModel({})
         try {
-            await Workouts.destroyOne(1)
+            expect(await Workouts.readAllWithAthleteId(100)).toEqual([])
+        } finally {
+            await destroyWorkoutModel(Workouts)
+        }
+    })
 
-            const assignmentResult = await Workouts.client.query(
-                `SELECT * FROM assignments WHERE workout_id=1`
-            )
-            expect(assignmentResult.rows).toEqual([])
+    it("should return [] when the team has no workouts", async () => {
+        const Workouts = await createWorkoutModel({
+            users: [user1],
+            teams: [team1],
+            athletes: [athlete1],
+            athletesTeams: [
+                {
+                    team_id: team1.id,
+                    athlete_id: athlete1.id,
+                },
+            ],
+        })
+        try {
+            expect(await Workouts.readAllWithAthleteId(athlete1.id)).toEqual([])
+        } finally {
+            await destroyWorkoutModel(Workouts)
+        }
+    })
 
-            const workoutResult = await Workouts.client.query(
-                `SELECT * FROM workouts WHERE id=1`
-            )
-            expect(workoutResult.rows).toEqual([])
+    it("should return a workout even when it has no assignments", async () => {
+        const Workouts = await createWorkoutModel({
+            users: [user1],
+            teams: [team1],
+            athletes: [athlete1],
+            workouts: [
+                {
+                    id: 1,
+                    name: "Untitled Workout",
+                    dates: [],
+                    team_id: 1,
+                },
+            ],
+        })
+        try {
+            expect(await Workouts.readAllWithAthleteId(team1.id)).toEqual([
+                {
+                    id: 1,
+                    name: "Untitled Workout",
+                    dates: [],
+                    assignments: [],
+                },
+            ])
+        } finally {
+            await destroyWorkoutModel(Workouts)
+        }
+    })
+
+    it("should return all workouts for an athlete", async () => {
+        const Workouts = await createWorkoutModel(dataset)
+        try {
+            expect(await Workouts.readAllWithAthleteId(1)).toEqual([
+                {
+                    id: 1,
+                    name: "Untitled Workout",
+                    dates: [],
+                    assignments: [
+                        {
+                            id: 1,
+                            exercise: { id: 1, name: "exercise1", muscles: [] },
+                            rep_count: [10, 8, 6],
+                        },
+                        {
+                            id: 2,
+                            exercise: { id: 2, name: "exercise2", muscles: [] },
+                            rep_count: [10, 8, 6],
+                        },
+                        {
+                            id: 3,
+                            exercise: { id: 3, name: "exercise3", muscles: [] },
+                            rep_count: [10, 8, 6],
+                        },
+                    ],
+                },
+                {
+                    id: 2,
+                    name: "Untitled Workout",
+                    dates: [],
+                    assignments: [
+                        {
+                            id: 4,
+                            exercise: { id: 3, name: "exercise3", muscles: [] },
+                            rep_count: [10, 8, 6],
+                        },
+                    ],
+                },
+            ])
         } finally {
             await destroyWorkoutModel(Workouts)
         }

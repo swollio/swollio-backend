@@ -16,6 +16,12 @@ export default async function createTeamWorkout(
     const client = await pool.connect()
     const Workouts = new WorkoutModel(client)
     try {
+        // Filter out all 0s from workout assignments
+        workout.assignments.map((assignment) =>
+            assignment.rep_count.filter((rep) => rep > 0)
+        )
+        console.log("b")
+        console.log(workout.assignments)
         if (workout.id) {
             await Workouts.updateOne({
                 id: workout.id,
