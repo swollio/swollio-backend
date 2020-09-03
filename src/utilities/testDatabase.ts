@@ -123,8 +123,6 @@ export async function create(
         }
     } catch (err) {
         console.log(err)
-    } finally {
-        client.end()
     }
     return client
 }
