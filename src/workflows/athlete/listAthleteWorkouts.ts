@@ -24,11 +24,11 @@ export default async function listAthleteWorkouts(
             )
             console.log(workouts[0].workouts[0].assignments)
             // Returning the first element because this contains the workouts for today
-            return workouts as WorkoutList[]
+            return [] as WorkoutList[]
         }
 
         const workouts = await await Workouts.readAllWithAthleteId(athleteId)
-        return workouts as WorkoutList[]
+        return [] as WorkoutList[]
     } catch (err) {
         console.log(err)
         throw new Error(
