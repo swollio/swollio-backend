@@ -14,8 +14,6 @@ import { pool } from "../../utilities/database"
  * @param user An object containing the data of the user that is signing up
  */
 export default async function signup(userData: UserData): Promise<string> {
-
-
     // Encrypt / hash the password:
     let hash
     try {

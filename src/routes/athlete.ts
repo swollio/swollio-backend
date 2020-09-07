@@ -1,5 +1,5 @@
 import express from "express"
-import sql from "sql-template-strings"
+import { Validator } from "jsonschema"
 import Athlete from "../schema/athlete"
 import requirePermission from "../middleware/auth"
 import Result from "../schema/result"
@@ -13,8 +13,7 @@ import addResults from "../workflows/athlete/addResults"
 import addSurvey from "../workflows/athlete/addSurvey"
 import { pool } from "../utilities/database"
 import AthleteModel from "../models/athlete"
-import WorkoutModel from "../models/workout"
-import { Validator } from "jsonschema"
+
 const validator = new Validator()
 
 const router = express.Router()
@@ -48,20 +47,22 @@ router.get("/", async (_req, res) => {
  */
 router.post("/", async (req, res) => {
     console.log(req.body)
-    if (!validator.validate(req.body, {
-        type: "object",
-        properties: {
-            // To ensure that we are following Children's Online Privacy
-            // Protection Act (COPPA), we set the minimum for using our app
-            // to 13.
-            age: { type: "number", "minimum": 13 },
-            height: { type: "number"},
-            weight: { type: "number"},
-            gender: {type: ["string", "null"]},
-            user_id: {type: "number"}
-        },
-        additionalProperties: false,
-    }).valid) {
+    if (
+        !validator.validate(req.body, {
+            type: "object",
+            properties: {
+                // To ensure that we are following Children's Online Privacy
+                // Protection Act (COPPA), we set the minimum for using our app
+                // to 13.
+                age: { type: "number", minimum: 13 },
+                height: { type: "number" },
+                weight: { type: "number" },
+                gender: { type: ["string", "null"] },
+                user_id: { type: "number" },
+            },
+            additionalProperties: false,
+        }).valid
+    ) {
         return res.status(400).send({
             error: {
                 status: 400,
