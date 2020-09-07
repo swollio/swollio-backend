@@ -9,7 +9,7 @@ import WorkoutModel from "../../models/workout"
  * @param teamId The id of the team that is creating the workout
  * @param workout The workout object containing the data for the workout
  */
-export default async function createTeamWorkout(
+export default async function updateTeamWorkout(
     teamId: number,
     workout: Workout
 ): Promise<void> {
@@ -17,17 +17,17 @@ export default async function createTeamWorkout(
     const Workouts = new WorkoutModel(client)
     try {
         // Filter out all 0s from workout assignments
-        workout.assignments.map((assignment) =>
-            assignment.rep_count.filter((rep) => rep > 0)
-        )
-        console.log("b")
-        console.log(workout.assignments)
+        const filteredAssignments = workout.assignments.map((assignment) => ({
+            ...assignment,
+            rep_count: assignment.rep_count.filter((rep) => rep > 0),
+        }))
+
         if (workout.id) {
             await Workouts.updateOne({
                 id: workout.id,
                 name: workout.name,
                 dates: workout.dates,
-                assignments: workout.assignments,
+                assignments: filteredAssignments,
             })
         }
     } finally {

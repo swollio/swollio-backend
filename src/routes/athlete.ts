@@ -57,7 +57,7 @@ router.post("/", async (req, res) => {
             age: { type: "number", "minimum": 13 },
             height: { type: "number"},
             weight: { type: "number"},
-            gender: {type: ["number", "null"]},
+            gender: {type: ["string", "null"]},
             user_id: {type: "number"}
         },
         additionalProperties: false,
