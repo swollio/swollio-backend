@@ -1,6 +1,7 @@
 import sql from "sql-template-strings"
 import { ClientBase } from "pg"
 import Athlete from "../schema/athlete"
+import Team from "../schema/team"
 
 export interface AthleteRow {
     id: number

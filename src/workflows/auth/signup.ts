@@ -14,6 +14,8 @@ import { pool } from "../../utilities/database"
  * @param user An object containing the data of the user that is signing up
  */
 export default async function signup(userData: UserData): Promise<string> {
+
+
     // Encrypt / hash the password:
     let hash
     try {
@@ -47,10 +49,7 @@ export default async function signup(userData: UserData): Promise<string> {
         // Return this bearer token
         return token
     } catch (error) {
-        // If there is already a ::, throw the old message. If not, throw the new message
-        const colonIndex = error.message.indexOf("::")
-        if (colonIndex !== -1) throw new Error(error.message)
-        throw new Error(`workflows:auth:signup:: ${error.message}`)
+        throw new Error(`Email address already in use`)
     } finally {
         client.release()
     }

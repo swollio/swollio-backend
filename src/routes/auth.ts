@@ -2,8 +2,9 @@ import express from "express"
 import login from "../workflows/auth/login"
 import UserData from "../schema/userData"
 import signup from "../workflows/auth/signup"
-
+import { Validator } from "jsonschema"
 const router = express.Router()
+const validator = new Validator()
 
 /**
  * This route will call the login workflow, which will take the
@@ -46,7 +47,26 @@ router.post("/login", async (req, res) => {
  * }
  */
 router.post("/signup", async (req, res) => {
-    // Formatting body data
+    if (!validator.validate(req.body, {
+        type: "object",
+        properties: {
+            first_name: { type: "string", minLength: 1 },
+            last_name: { type: "string", minLength: 1 },
+            email: {
+                type: "string",
+                pattern: "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$",
+            },
+            password: { type: "string", minLength: 1 },
+        },
+        additionalProperties: false,
+    }).valid) {
+        return res.status(400).send({
+            error: {
+                status: 400,
+                message: "Invalid user information",
+            },
+        })
+    }
     const user = req.body as UserData
 
     // Trying to sign up
@@ -54,6 +74,8 @@ router.post("/signup", async (req, res) => {
         const token = await signup(user)
         return res.status(200).send(token)
     } catch (err) {
+        console.log(err)
+
         return res.status(401).send({
             error: {
                 status: 401,

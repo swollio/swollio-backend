@@ -1,4 +1,5 @@
 import express from "express"
+import sql from "sql-template-strings"
 import Athlete from "../schema/athlete"
 import requirePermission from "../middleware/auth"
 import Result from "../schema/result"
@@ -12,6 +13,9 @@ import addResults from "../workflows/athlete/addResults"
 import addSurvey from "../workflows/athlete/addSurvey"
 import { pool } from "../utilities/database"
 import AthleteModel from "../models/athlete"
+import WorkoutModel from "../models/workout"
+import { Validator } from "jsonschema"
+const validator = new Validator()
 
 const router = express.Router()
 router.use(requirePermission([]))
@@ -43,6 +47,28 @@ router.get("/", async (_req, res) => {
  * }
  */
 router.post("/", async (req, res) => {
+    console.log(req.body)
+    if (!validator.validate(req.body, {
+        type: "object",
+        properties: {
+            // To ensure that we are following Children's Online Privacy
+            // Protection Act (COPPA), we set the minimum for using our app
+            // to 13.
+            age: { type: "number", "minimum": 13 },
+            height: { type: "number"},
+            weight: { type: "number"},
+            gender: {type: ["number", "null"]},
+            user_id: {type: "number"}
+        },
+        additionalProperties: false,
+    }).valid) {
+        return res.status(400).send({
+            error: {
+                status: 400,
+                message: "Invalid athlete information",
+            },
+        })
+    }
     const athlete = req.body as Athlete
 
     const client = await pool.connect()
@@ -62,14 +88,20 @@ router.post("/", async (req, res) => {
  * Calls the find athlete workflow, and returns the athlete with the given id
  */
 router.get("/:id", async (req, res) => {
-    // Get the athleteId from the request parameters
     const athleteId = Number.parseInt(req.params.id, 10)
+    if (Number.isNaN(athleteId)) {
+        return res.status(400).send({
+            error: {
+                status: 400,
+                message: "Invalid id",
+            },
+        })
+    }
 
     try {
         const athlete = await findAthlete(athleteId)
         return res.status(200).send(athlete)
     } catch (err) {
-        console.log(err)
         return res.status(500).send(err.message)
     }
 })
@@ -82,14 +114,33 @@ router.get("/:id", async (req, res) => {
  */
 router.get("/:id/workouts", async (req, res) => {
     const athleteId = Number.parseInt(req.params.id, 10)
-    const date = req.query.date as string
-    try {
-        const workouts = await listAthleteWorkouts(athleteId, date)
-        return res.status(200).send(workouts)
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send(err.message)
+    if (Number.isNaN(athleteId)) {
+        return res.status(400).send({
+            error: {
+                status: 400,
+                message: "Invalid id",
+            },
+        })
     }
+
+    const { date } = req.query
+
+    if (date === undefined) {
+        const workouts = listAthleteWorkouts(athleteId, "")
+        return res.send(workouts)
+    }
+
+    if (date === "today") {
+        const workouts = listAthleteWorkouts(athleteId, "today")
+        return res.send(workouts)
+    }
+
+    return res.status(400).send({
+        error: {
+            status: 400,
+            message: "Invalid date",
+        },
+    })
 })
 
 /**
@@ -97,7 +148,25 @@ router.get("/:id/workouts", async (req, res) => {
  * of exercise assignments for a given workout
  */
 router.get("/:id/workouts/:workout_id", async (req, res) => {
-    const workoutId = Number.parseInt(req.params.workout_id, 10)
+    const athleteId = Number.parseInt(req.params.id, 10)
+    if (Number.isNaN(athleteId)) {
+        return res.status(400).send({
+            error: {
+                status: 400,
+                message: "Invalid athlete id",
+            },
+        })
+    }
+
+    const workoutId = Number.parseInt(req.params.workoutId, 10)
+    if (Number.isNaN(workoutId)) {
+        return res.status(400).send({
+            error: {
+                status: 400,
+                message: "Invalid workout id",
+            },
+        })
+    }
 
     try {
         const workout = await getAthleteWorkout(workoutId)
@@ -114,6 +183,14 @@ router.get("/:id/workouts/:workout_id", async (req, res) => {
  */
 router.get("/:id/exercises/", async (req, res) => {
     const athleteId = Number.parseInt(req.params.id, 10)
+    if (Number.isNaN(athleteId)) {
+        return res.status(400).send({
+            error: {
+                status: 400,
+                message: "Invalid id",
+            },
+        })
+    }
 
     try {
         const results = await getAthleteProgress(athleteId)
@@ -150,9 +227,27 @@ router.get("/:id/exercises/", async (req, res) => {
  * }]
  */
 router.post("/:athleteId/results/:workoutId", async (req, res) => {
-    const results = req.body as Result[]
-    const athleteId = Number.parseInt(req.params.athleteId, 10)
+    const athleteId = Number.parseInt(req.params.id, 10)
+    if (Number.isNaN(athleteId)) {
+        return res.status(400).send({
+            error: {
+                status: 400,
+                message: "Invalid athlete id",
+            },
+        })
+    }
+
     const workoutId = Number.parseInt(req.params.workoutId, 10)
+    if (Number.isNaN(workoutId)) {
+        return res.status(400).send({
+            error: {
+                status: 400,
+                message: "Invalid workout id",
+            },
+        })
+    }
+
+    const results = req.body as Result[]
 
     try {
         await addResults(athleteId, workoutId, results)
@@ -174,8 +269,26 @@ router.post("/:athleteId/results/:workoutId", async (req, res) => {
  * }
  */
 router.post("/:athleteId/surveys/:workoutId", async (req, res) => {
-    const athleteId = Number.parseInt(req.params.athleteId, 10)
+    const athleteId = Number.parseInt(req.params.id, 10)
+    if (Number.isNaN(athleteId)) {
+        return res.status(400).send({
+            error: {
+                status: 400,
+                message: "Invalid athlete id",
+            },
+        })
+    }
+
     const workoutId = Number.parseInt(req.params.workoutId, 10)
+    if (Number.isNaN(workoutId)) {
+        return res.status(400).send({
+            error: {
+                status: 400,
+                message: "Invalid workout id",
+            },
+        })
+    }
+
     const survey = req.body as Survey
 
     try {

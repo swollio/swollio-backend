@@ -25,14 +25,14 @@ export default async function login(
     const Users = new UserModel(client)
     try {
         const user = await Users.readOneByEmail(email)
-        if (!user) throw new Error(`User data is null (email invalid)`)
+        if (!user) throw new Error(`Incorrect email address`)
 
         const userId = user.id // Data to put into the token (payload)
         const { hash } = user // Database hash to verify authentication
         const valid = await bcrypt.compare(password, hash || "") // Boolean to determine if password passed in is valid
 
         // If the password passed in is not valid, throw an error saying something is wrong
-        if (!valid) throw new Error("workflows:auth:login:: Incorrect password")
+        if (!valid) throw new Error("Incorrect password")
 
         // If that isn't the case, then we will create a bearer token encoding the user id and return it
         const token = jwt.sign(
@@ -49,11 +49,6 @@ export default async function login(
         return token
 
         // Verify that the email is valid / we get actual user data back
-    } catch (error) {
-        // If there is already a ::, throw the old message. If not, throw the new message
-        const colonIndex = error.message.indexOf("::")
-        if (colonIndex !== -1) throw new Error(error.message)
-        throw new Error(`workflows:auth:login:: ${error.message}`)
     } finally {
         client.release()
     }
