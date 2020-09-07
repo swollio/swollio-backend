@@ -1,8 +1,9 @@
 import express from "express"
+import { Validator } from "jsonschema"
 import login from "../workflows/auth/login"
 import UserData from "../schema/userData"
 import signup from "../workflows/auth/signup"
-import { Validator } from "jsonschema"
+
 const router = express.Router()
 const validator = new Validator()
 
@@ -47,19 +48,21 @@ router.post("/login", async (req, res) => {
  * }
  */
 router.post("/signup", async (req, res) => {
-    if (!validator.validate(req.body, {
-        type: "object",
-        properties: {
-            first_name: { type: "string", minLength: 1 },
-            last_name: { type: "string", minLength: 1 },
-            email: {
-                type: "string",
-                pattern: "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$",
+    if (
+        !validator.validate(req.body, {
+            type: "object",
+            properties: {
+                first_name: { type: "string", minLength: 1 },
+                last_name: { type: "string", minLength: 1 },
+                email: {
+                    type: "string",
+                    pattern: "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$",
+                },
+                password: { type: "string", minLength: 1 },
             },
-            password: { type: "string", minLength: 1 },
-        },
-        additionalProperties: false,
-    }).valid) {
+            additionalProperties: false,
+        }).valid
+    ) {
         return res.status(400).send({
             error: {
                 status: 400,
