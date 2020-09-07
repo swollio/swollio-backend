@@ -349,7 +349,7 @@ export default class ExerciseModel {
                 SELECT full_workouts_unnested.*, EXISTS(
                     SELECT 1
                     FROM workout_surveys 
-                    WHERE id = full_workouts_unnested.id 
+                    WHERE workout_surveys.workout_id = full_workouts_unnested.id 
                     AND due_date = date 
                     AND athlete_id = ${athleteId}
                 ) 

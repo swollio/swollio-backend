@@ -14,7 +14,6 @@ export default async function addResults(
             results.map((result) => [
                 athleteId,
                 result.exercise_id,
-                result.assignment_id,
                 workoutId,
                 result.date,
                 result.weight,
