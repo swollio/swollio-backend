@@ -340,7 +340,7 @@ export default class ExerciseModel {
                         ON workouts.team_id = athletes_teams.team_id
                 INNER JOIN teams
                         ON workouts.team_id = teams.id
-                WHERE athletes_teams.athlete_id = 1
+                WHERE athletes_teams.athlete_id = ${athleteId}
             ), 
             full_workouts_unnested AS (
                 SELECT id, name, team_name, assignments, unnest(full_workouts.dates) as date
@@ -351,7 +351,7 @@ export default class ExerciseModel {
                     FROM workout_surveys 
                     WHERE id = full_workouts_unnested.id 
                     AND due_date = date 
-                    AND athlete_id = 1
+                    AND athlete_id = ${athleteId}
                 ) 
                 AS completed
                 FROM full_workouts_unnested

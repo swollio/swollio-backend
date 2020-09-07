@@ -219,10 +219,8 @@ async function setupWorkoutSurveys(client: Client) {
             athlete_id INT REFERENCES athletes(id) ON DELETE CASCADE ON UPDATE CASCADE,
             workout_id INT REFERENCES workouts(id) ON DELETE CASCADE ON UPDATE CASCADE,
             due_date TIMESTAMPTZ NOT NULL,
-            rating NUMERIC, -- 1-5,
-            hours_sleep INT, -- Sleep for the day
-            wellness INT -- General wellness after workout on a scale of 1-5
-        );             
+            difficulty INT
+        );        
         `)
     } catch (error) {
         throw new Error(`Unable to create exercises table: ${error.message}`)

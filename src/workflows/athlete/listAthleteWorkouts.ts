@@ -12,23 +12,12 @@ import WorkoutModel from "../../models/workout"
  */
 export default async function listAthleteWorkouts(
     athleteId: number,
-    date: string
 ): Promise<WorkoutList[]> {
     const client = await pool.connect()
     const Workouts = new WorkoutModel(client)
     try {
-        if (date === "today") {
-            const workouts = await Workouts.readAllWithAthleteId(
-                athleteId,
-                true
-            )
-            console.log(workouts[0].workouts[0].assignments)
-            // Returning the first element because this contains the workouts for today
-            return [] as WorkoutList[]
-        }
-
         const workouts = await Workouts.readAllWithAthleteId(athleteId)
-        return [] as WorkoutList[]
+        return workouts
     } catch (err) {
         console.log(err)
         throw new Error(

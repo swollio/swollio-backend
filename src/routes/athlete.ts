@@ -123,24 +123,8 @@ router.get("/:id/workouts", async (req, res) => {
         })
     }
 
-    const { date } = req.query
-
-    if (date === undefined) {
-        const workouts = listAthleteWorkouts(athleteId, "")
-        return res.send(workouts)
-    }
-
-    if (date === "today") {
-        const workouts = listAthleteWorkouts(athleteId, "today")
-        return res.send(workouts)
-    }
-
-    return res.status(400).send({
-        error: {
-            status: 400,
-            message: "Invalid date",
-        },
-    })
+    const workouts = await listAthleteWorkouts(athleteId)
+    return res.send(workouts);
 })
 
 /**
@@ -226,7 +210,7 @@ router.get("/:id/exercises/", async (req, res) => {
  *   weight: 160
  * }]
  */
-router.post("/:athleteId/results/:workoutId", async (req, res) => {
+router.post("/:id/results/:workoutId", async (req, res) => {
     const athleteId = Number.parseInt(req.params.id, 10)
     if (Number.isNaN(athleteId)) {
         return res.status(400).send({
@@ -269,7 +253,7 @@ router.post("/:athleteId/results/:workoutId", async (req, res) => {
  * }
  */
 router.post("/:athleteId/surveys/:workoutId", async (req, res) => {
-    const athleteId = Number.parseInt(req.params.id, 10)
+    const athleteId = Number.parseInt(req.params.athleteId, 10)
     if (Number.isNaN(athleteId)) {
         return res.status(400).send({
             error: {

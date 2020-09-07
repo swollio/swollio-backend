@@ -21,9 +21,7 @@ export default async function addSurvey(
             athleteId,
             workoutId,
             survey.due_date,
-            survey.rating,
-            survey.hours_sleep,
-            survey.wellness,
+            survey.difficulty,
         ])
     } catch (err) {
         console.log(err)
