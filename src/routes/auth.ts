@@ -23,7 +23,7 @@ router.post("/login", async (req, res) => {
 
     // Try to login
     try {
-        const token = await login(email, password)
+        const token = await login(email.toLowerCase(), password)
         return res.status(200).send(token)
     } catch (err) {
         return res.status(401).send({
@@ -74,7 +74,7 @@ router.post("/signup", async (req, res) => {
 
     // Trying to sign up
     try {
-        const token = await signup(user)
+        const token = await signup({...user, email: user.email.toLowerCase()})
         return res.status(200).send(token)
     } catch (err) {
         console.log(err)
