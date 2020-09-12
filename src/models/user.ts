@@ -7,6 +7,7 @@ import sql from "sql-template-strings"
 import { ClientBase } from "pg"
 import User from "../schema/user"
 import CurrentUser from "../schema/currentUser"
+import { pool } from "../utilities/database"
 
 export interface UserRow {
     id: number
@@ -17,9 +18,9 @@ export interface UserRow {
 }
 
 export default class UserModel {
-    client: ClientBase
+    client?: ClientBase
 
-    constructor(client: ClientBase) {
+    constructor(client?: ClientBase) {
         this.client = client
     }
 
@@ -37,7 +38,7 @@ export default class UserModel {
         const { hash } = user
 
         try {
-            const userResult = await this.client.query(sql`
+            const userResult = await (this.client || pool).query(sql`
             INSERT INTO users
             (first_name, last_name, email, hash)
             VALUES (${firstName}, ${lastName}, ${email}, ${hash})
@@ -58,7 +59,7 @@ export default class UserModel {
      */
     async readOne(userId: number): Promise<User | null> {
         try {
-            const users = await this.client.query(sql`
+            const users = await (this.client || pool).query(sql`
             SELECT id, first_name, last_name, email, hash
             FROM users
             WHERE id = ${userId};
@@ -83,7 +84,7 @@ export default class UserModel {
      */
     async readOneByEmail(email: string): Promise<User | null> {
         try {
-            const user = await this.client.query(sql`
+            const user = await (this.client || pool).query(sql`
             SELECT id, email, first_name, last_name, hash,
             (SELECT id FROM athletes WHERE athletes.user_id = users.id) as athlete_id,
             (SELECT id FROM teams WHERE teams.coach_id = users.id) as team_id
@@ -108,7 +109,7 @@ export default class UserModel {
      */
     async readAll(): Promise<User[]> {
         try {
-            const users = await this.client.query(sql`
+            const users = await (this.client || pool).query(sql`
             SELECT id, first_name, last_name, email, hash
             FROM users;
         `)
@@ -140,7 +141,7 @@ export default class UserModel {
             const emailUpdate = user.email
             const hashUpdate = user.hash
 
-            await this.client.query(sql`
+            await (this.client || pool).query(sql`
             UPDATE users
             SET
                 first_name = COALESCE(${firstNameUpdate}, first_name),
@@ -163,7 +164,7 @@ export default class UserModel {
      */
     async destroyOne(userId: number): Promise<User | null> {
         try {
-            const user = await this.client.query(sql`
+            const user = await (this.client || pool).query(sql`
             DELETE FROM users
             WHERE id=${userId}
             RETURNING id, first_name, last_name, email, hash;
@@ -187,7 +188,7 @@ export default class UserModel {
      */
     async current(userId: number): Promise<CurrentUser | null> {
         try {
-            const currentUser = await this.client.query(sql`
+            const currentUser = await (this.client || pool).query(sql`
             SELECT 
                 users.id as user_id, 
                 first_name, 

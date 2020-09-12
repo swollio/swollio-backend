@@ -16,7 +16,8 @@ import AthleteModel from "../models/athlete"
 import createTeamWorkout from "../workflows/teams/createTeamWorkouts"
 import updateTeamWorkout from "../workflows/teams/updateTeamWorkout"
 import Workout from "../schema/workout"
-
+import FeedModel from "../models/feed"
+import sql from "sql-template-strings"
 const validator = new Validator()
 
 const router = express.Router()
@@ -162,6 +163,35 @@ router.get("/:id/workouts/:workout_id", async (req, res) => {
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)
+    }
+})
+
+router.get("/:id/feed", async (req, res) => {
+    const athleteId = Number.parseInt(req.params.id, 10)
+
+    try {
+        const Feed = new FeedModel();
+        const items = await Feed.readAll();
+        return res.status(200).send(items.map(item => ({
+            id: item.id,
+            likes: item.likes,
+            created: item.created,
+            user: {
+                id: item.athlete_id,
+                first_name: item.first_name,
+                last_name: item.last_name,
+            },
+            kind: item.kind,
+            extra_data: item.extra_data
+        })))
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({
+            error: {
+                status: 500,
+                message: "Unable to fetch feed",
+            },
+        })
     }
 })
 

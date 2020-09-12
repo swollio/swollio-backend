@@ -92,6 +92,9 @@ async function setupDatabase() {
             athleteTeamTag.team_tag_id,
         ])
     }
+
+    await db["setup.feed"]()
+
 }
 
 
