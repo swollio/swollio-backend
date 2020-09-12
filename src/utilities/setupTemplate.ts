@@ -228,6 +228,22 @@ async function setupWorkoutSurveys(client: Client) {
     }
 }
 
+async function setupFeed(client: Client) {
+    try {
+        await client.query(sql`
+        CREATE TABLE IF NOT EXISTS feed (
+            id SERIAL PRIMARY KEY,
+            created TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            athlete_id INT NOT NULL REFERENCES athletes(id) ON DELETE CASCADE,
+            likes INT NOT NULL DEFAULT 0,
+            kind INT NOT NULL,
+            extra_data JSON
+        );
+        `);
+    } catch (error) {
+        throw new Error(`Unable to create feed table: ${error.message}`)
+    }
+}
 /**
  * This function creates a swollio-template database and populates it
  * with all of the tables that the swollio backend needs
@@ -259,6 +275,7 @@ async function setupTemplateDb(databaseName: string): Promise<void> {
         await setupAthleteTeamTags(client)
         await setupWorkoutResults(client)
         await setupWorkoutSurveys(client)
+        await setupFeed(client)
     } finally {
         client.end()
     }

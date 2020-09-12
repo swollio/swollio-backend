@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS feed (
+	id SERIAL PRIMARY KEY,
+    created TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    athlete_id INT NOT NULL REFERENCES athletes(id) ON DELETE CASCADE,
+    likes INT NOT NULL DEFAULT 0,
+    kind INT NOT NULL,
+    extra_data JSON
+);
