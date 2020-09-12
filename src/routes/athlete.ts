@@ -13,6 +13,9 @@ import addResults from "../workflows/athlete/addResults"
 import addSurvey from "../workflows/athlete/addSurvey"
 import { pool } from "../utilities/database"
 import AthleteModel from "../models/athlete"
+import createTeamWorkout from "../workflows/teams/createTeamWorkouts"
+import updateTeamWorkout from "../workflows/teams/updateTeamWorkout"
+import Workout from "../schema/workout"
 
 const validator = new Validator()
 
@@ -180,6 +183,35 @@ router.get("/:id/exercises/", async (req, res) => {
     try {
         const results = await getAthleteProgress(athleteId)
         return res.status(200).send(results)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
+    }
+})
+
+
+
+router.post("/:id/workouts", async (req, res) => {
+    const athleteId = Number.parseInt(req.params.id, 10)
+    const workout = req.body as Workout
+
+    try {
+        await createTeamWorkout(null, athleteId, workout)
+        return res.status(200).send({})
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
+    }
+})
+
+
+router.put("/:id/workouts", async (req, res) => {
+    const athleteId = Number.parseInt(req.params.id, 10)
+    const workout = req.body as Workout
+
+    try {
+        await updateTeamWorkout(workout)
+        return res.status(200).send({})
     } catch (err) {
         console.log(err)
         return res.status(500).send(err.message)

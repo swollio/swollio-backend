@@ -30,8 +30,8 @@ export default class AthleteModel {
     async createOne(athlete: Athlete): Promise<Athlete> {
         try {
             const athleteResult = await this.client.query(sql`
-            INSERT INTO athletes (user_id, age, height, weight, gender)
-            VALUES (${athlete.user_id}, ${athlete.age}, ${athlete.height}, ${athlete.weight}, ${athlete.gender})
+            INSERT INTO athletes (id, user_id, age, height, weight, gender)
+            VALUES (${athlete.user_id}, ${athlete.user_id}, ${athlete.age}, ${athlete.height}, ${athlete.weight}, ${athlete.gender})
             RETURNING id, user_id, age, height, weight, gender;
         `)
 

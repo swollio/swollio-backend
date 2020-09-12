@@ -14,10 +14,9 @@ router.get("/", async (req, res) => {
     const query = (req.query.search as string)?.toLowerCase()
 
     const client = await pool.connect()
-    const Exercises = new ExerciseModel(client)
     try {
+        const Exercises = new ExerciseModel(client)
         const exercises = await Exercises.search(query || "", 0, 25)
-        console.log(exercises)
         return res.status(200).send(exercises)
     } catch (err) {
         console.log(err)

@@ -115,8 +115,8 @@ export async function create(
         // Bulk insert all mock workouts data if it exists
         if (mockData.workouts !== undefined) {
             await client.query(sql`
-            INSERT INTO workouts (id, team_id, name, dates) 
-            SELECT id, team_id, name, dates FROM 
+            INSERT INTO workouts (id, team_id, athlete_id, name, dates) 
+            SELECT id, team_id, athlete_id, name, dates FROM 
             JSON_POPULATE_RECORDSET(NULL::workouts, ${JSON.stringify(
                 mockData.workouts
             )})

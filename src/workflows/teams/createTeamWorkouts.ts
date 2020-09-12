@@ -10,7 +10,8 @@ import WorkoutModel from "../../models/workout"
  * @param workout The workout object containing the data for the workout
  */
 export default async function createTeamWorkout(
-    teamId: number,
+    teamId: number | null,
+    athleteId: number | null,
     workout: Workout
 ): Promise<void> {
     const client = await pool.connect()
@@ -21,45 +22,11 @@ export default async function createTeamWorkout(
             ...assignment,
             rep_count: assignment.rep_count.filter((rep) => rep > 0),
         }))
-        await Workouts.createOne(teamId, {
+        await Workouts.createOne(teamId, athleteId, {
             ...workout,
             assignments: filteredAssignments,
         })
     } finally {
         client.release()
     }
-
-    /*
-    // After verification, add the workout to the workouts table
-    try {
-        const workoutQuery = await db["workouts.insert_one"]([
-            teamId,
-            workout.name,
-            `{${workout.dates.map((x) => `"${x}"`).join(",")}}`,
-        ])
-
-        // Store the id of the new workout that was created
-        workoutId = workoutQuery.rows[0].id
-    } catch (err) {
-        console.log(err)
-        throw new Error(`createTeamWorkouts Error: Could not create workout`)
-    }
-
-    // Now we can add the assignments from workout to the assignments database
-    try {
-        await db["assignments.insert_many"]([
-            workout.assignments.map((assignment) => [
-                workoutId,
-                assignment.exercise.id,
-                `{${assignment.rep_count
-                    .map((x) => `"${x.toString()}"`)
-                    .join(",")}}`,
-            ]),
-        ])
-    } catch (err) {
-        console.log(err)
-        throw new Error(
-            `createTeamWorkouts Error: Could not add assignments to workout`
-        )
-    } */
 }
