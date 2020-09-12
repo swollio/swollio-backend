@@ -161,7 +161,7 @@ router.post("/:team_id/workouts", async (req, res) => {
     const workout = req.body as Workout
 
     try {
-        await createTeamWorkout(teamId, workout)
+        await createTeamWorkout(teamId, null, workout)
         return res.status(200).send({})
     } catch (err) {
         console.log(err)
@@ -185,7 +185,7 @@ router.put("/:team_id/workouts", async (req, res) => {
     const workout = req.body as Workout
 
     try {
-        await updateTeamWorkout(teamId, workout)
+        await updateTeamWorkout(workout)
         return res.status(200).send({})
     } catch (err) {
         console.log(err)

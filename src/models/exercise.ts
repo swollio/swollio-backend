@@ -196,6 +196,7 @@ export default class ExerciseModel {
                 WHERE exercises.name 
                 LIKE '%' || ${query} || '%'
                 GROUP BY exercises.id
+                ORDER BY exercises.name
                 OFFSET ${offset} ROWS
                 FETCH NEXT ${pageSize} ROWS ONLY
             `)

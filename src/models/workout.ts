@@ -154,9 +154,11 @@ export default class ExerciseModel {
         }
     }
 
-    async createOne(teamId: number, workout: Workout): Promise<Workout> {
+    async createOne(teamId: number | null, athleteId: number | null, workout: Workout): Promise<Workout> {
         const { name } = workout
         const { dates } = workout
+
+        console.log(teamId, athleteId)
         const assignments = JSON.stringify(
             workout.assignments.map((a) => ({
                 exercise_id: a.exercise.id,
@@ -170,8 +172,8 @@ export default class ExerciseModel {
 
             // Insert workout into the workouts table
             const workoutResult = await this.client.query(sql`
-            INSERT INTO workouts (name, team_id, dates)
-            VALUES (${name}, ${teamId}, ${dates}::timestamp[])
+            INSERT INTO workouts (name, team_id, athlete_id, dates)
+            VALUES (${name}, ${teamId}, ${athleteId}, ${dates}::timestamp[])
             RETURNING id
         `)
 
@@ -316,12 +318,39 @@ export default class ExerciseModel {
                     ) as muscles
                 FROM exercises
             ), 
-            full_workouts AS (
+            
+            
+            self_workouts AS (
                 SELECT 
                     workouts.id,
                     workouts.name,
                     workouts.dates,
-                    teams.name as team_name,
+                    null as team_name
+                                   FROM workouts
+                WHERE workouts.athlete_id = ${athleteId}
+            ), team_workouts AS (
+                SELECT 
+                    workouts.id,
+                    workouts.name,
+                    workouts.dates,
+                    teams.name as team_name
+                    
+                FROM workouts
+                INNER JOIN athletes_teams
+                        ON workouts.team_id = athletes_teams.team_id
+                INNER JOIN teams
+                        ON workouts.team_id = teams.id
+                WHERE athletes_teams.athlete_id = ${athleteId}
+            ), all_workouts AS (
+                SELECT * FROM self_workouts UNION SELECT * FROM team_workouts
+            ),
+            
+            full_workouts_unnested AS (
+                SELECT
+                    id, 
+                    name,
+                    dates,
+                    team_name, 
                     (
                         SELECT COALESCE(
                             ARRAY_TO_JSON(ARRAY_AGG(JSON_BUILD_OBJECT(
@@ -333,32 +362,27 @@ export default class ExerciseModel {
                         ) FROM assignments 
                         INNER JOIN exercises
                             ON assignments.exercise_id = exercises.id
-                        WHERE workout_id = workouts.id
-                    ) as assignments
-                FROM workouts
-                INNER JOIN athletes_teams
-                        ON workouts.team_id = athletes_teams.team_id
-                INNER JOIN teams
-                        ON workouts.team_id = teams.id
-                WHERE athletes_teams.athlete_id = ${athleteId}
+                        WHERE workout_id = all_workouts.id
+                    ) as assignments,
+                    unnest(all_workouts.dates) as date
+                FROM all_workouts
             ), 
-            full_workouts_unnested AS (
-                SELECT id, name, team_name, assignments, unnest(full_workouts.dates) as date
-                FROM full_workouts
-                ), full_workouts_unnested_completed AS (
-                SELECT full_workouts_unnested.*, EXISTS(
-                    SELECT 1
-                    FROM workout_surveys 
-                    WHERE workout_surveys.workout_id = full_workouts_unnested.id 
-                    AND due_date = date 
-                    AND athlete_id = ${athleteId}
-                ) 
-                AS completed
-                FROM full_workouts_unnested
+            
+            full_workouts_unnested_completed AS (
+            SELECT full_workouts_unnested.*, EXISTS(
+                SELECT 1
+                FROM workout_surveys 
+                WHERE workout_surveys.workout_id = full_workouts_unnested.id 
+                AND due_date = date 
+                AND athlete_id = ${athleteId}
+            ) 
+            AS completed
+            FROM full_workouts_unnested
+
             ) 
             SELECT date, ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(full_workouts_unnested_completed))) AS workouts
             FROM full_workouts_unnested_completed
-            WHERE date >= CURRENT_DATE
+            WHERE date >= DATE_TRUNC('week', CURRENT_DATE)
             GROUP BY date
             ORDER BY date            
             OFFSET ${offset} ROWS
